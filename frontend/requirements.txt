@@ -1,0 +1,2 @@
+# UI only. Merge into the shared lock after integration with participant 1.
+streamlit==1.55.0
