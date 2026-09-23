@@ -324,7 +324,20 @@ def run(args: argparse.Namespace) -> dict[str, object]:
 
     # Complete the read-only weather preflight before mutating the forecast
     # store or output directory.  A partial month must never look successful.
-    selected_runs = tuple(provider.select_run(request) for request in requests)
+    selected_runs = []
+    missing_origins = []
+    for request in requests:
+        try:
+            selected_runs.append(provider.select_run(request))
+        except RuntimeError:
+            missing_origins.append(request.origin_time.isoformat())
+    if missing_origins:
+        raise RuntimeError(
+            "WEATHER_PREFLIGHT_FAILED: missing complete admissible cached GFS "
+            f"runs for {len(missing_origins)} origin(s): "
+            + ", ".join(missing_origins)
+        )
+    selected_runs = tuple(selected_runs)
     database_path = resolve_from_root(
         args.database if args.database is not None else Path(config.storage.database)
     )

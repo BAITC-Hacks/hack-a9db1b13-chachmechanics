@@ -87,6 +87,13 @@ class BackendAdapter:
              "detail": "Происхождение погоды сохранено в выпусках. Покрытие нового момента проверяется при расчёте; наличие кэша здесь не подтверждается." if weather_evidence else "Для нового расчёта нужен допустимый архивный прогноз погоды. Сервис проверит его для выбранного момента."},
         ]}
         turbine_meta = {t["id"]: t for t in summary.get("turbines", [])}
+        service_config = getattr(self.service, "config", None)
+        service_site = getattr(service_config, "site", None)
+        site_timezone = (
+            summary.get("timezone")
+            or getattr(service_site, "timezone", None)
+            or "UTC"
+        )
         return {"turbines": [{
                     "id": turbine_id,
                     "name": turbine_id.replace("turbine_", "Турбина "),
@@ -94,7 +101,8 @@ class BackendAdapter:
                     "longitude": turbine_meta.get(turbine_id, {}).get("longitude"),
                     "rated_power_mw": turbine_meta.get(turbine_id, {}).get("rated_power_mw"),
                 } for turbine_id in sorted(turbine_ids)],
-                "origins": origins, "timezone": "UTC", "site_name": "Ветровая площадка", "mode": mode,
+                "origins": origins, "timezone": site_timezone,
+                "site_name": "Ветровая площадка", "mode": mode,
                 "readiness": readiness}
 
     def create_forecast(self, request):

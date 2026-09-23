@@ -1,0 +1,33 @@
+{
+  "schema": "twinturbo.data-manifest.v1",
+  "timezone": "Etc/GMT-5",
+  "utc_offset": "+05:00",
+  "timestamp_semantics": "interval_start",
+  "notes": [
+    "The supplied filenames mention 2026-02-28, but both files actually end at 2026-01-31 23:50 local time.",
+    "SHA-256 values identify the immutable supplied CSV payloads; the stable repository filenames below contain the same bytes.",
+    "Archived GFS GRIB subsets are intentionally excluded from ordinary Git because the verified cache is multi-gigabyte. Fetch reports and reproducible download commands are retained in the repository."
+  ],
+  "files": [
+    {
+      "path": "data/raw/turbine_1.csv",
+      "bytes": 6049266,
+      "sha256": "c4c341582fb2dd348b7187f0128cff265fe055f469413871ebb5db50eef58b5b",
+      "source_rows": 142360,
+      "first_timestamp_local": "2023-03-11 00:00:00",
+      "last_timestamp_local": "2026-01-31 23:50:00",
+      "hourly_rows_after_ingest": 25392,
+      "complete_hours": 23667
+    },
+    {
+      "path": "data/raw/turbine_2.csv",
+      "bytes": 6354725,
+      "sha256": "820578cd18bb557cd30c2e102f3ae5a386dfc6c489a5a15743339c2b017305e5",
+      "source_rows": 149499,
+      "first_timestamp_local": "2023-03-11 00:00:00",
+      "last_timestamp_local": "2026-01-31 23:50:00",
+      "hourly_rows_after_ingest": 25392,
+      "complete_hours": 24785
+    }
+  ]
+}

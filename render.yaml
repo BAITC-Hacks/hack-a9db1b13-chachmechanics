@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: twinturbo-ai
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: TWINTURBO_CONFIG
+        value: /app/configs/site.yaml
+      - key: TWINTURBO_MODEL_ARTIFACT
+        value: /app/artifacts/models/february-production.json
+      - key: TWINTURBO_BIAS_ARTIFACT
+        value: /app/artifacts/bias/february-production-bias.json
+      - key: TWINTURBO_PREDICTOR
+        value: windoracle.models.registry:load_predictor
