@@ -9,7 +9,7 @@ from frontend.contracts import UIError, validate_result
 from frontend.fixture_service import FixtureService
 from frontend.gateway import ServiceGateway
 from ui.charts import chart_view
-from ui.controls import initial_selection, validate_selection
+from ui.controls import initial_selection, validate_selection, calculation_request
 from ui.events import error_view
 from ui.provenance import provenance_view
 
@@ -34,6 +34,8 @@ class Controller:
 
     def reload(self):
         self.error, self.download = None, None
+        self.catalog = {"origins": [], "turbines": [], "timezone": "UTC"}
+        self.gateway = None
         try:
             self.gateway = FixtureService() if self.mode == "fixture" else self.gateway_factory()
             self.catalog = self.call("get_catalog", mode=self.mode)
@@ -45,6 +47,8 @@ class Controller:
             if self.selection is None:
                 self.selection = initial_selection(self.catalog)
         except UIError as exc:
+            if not self.catalog["origins"]:
+                self.selection = None
             self.error = error_view(exc.code)
 
     def dispatch(self, action):
@@ -62,6 +66,16 @@ class Controller:
                 self.reload()
             elif kind == "simulate_failure" and self.mode == "fixture":
                 raise UIError("WEATHER_UNAVAILABLE")
+            elif kind == "calculate":
+                request = calculation_request(action, self.selection, self.catalog, self.mode)
+                created = self.call("create_forecast", request=request)
+                self.reload()
+                origin = next((o for o in self.catalog["origins"] if o["forecast_id"] == created["forecast_id"]), None)
+                if origin is None:
+                    raise UIError("NO_DATA")
+                self.selection = initial_selection({**self.catalog, "default_forecast_id": origin["forecast_id"]})
+                self.selection["horizon_hours"] = request["horizon_hours"]
+                self.error = None
             elif self.selection is None:
                 raise UIError("NO_DATA")
             elif kind == "select":
@@ -76,14 +90,6 @@ class Controller:
                     updated.update(forecast_id=origin["forecast_id"], origin_time=origin["origin_time"], as_of=origin["origin_time"])
                 validate_selection(updated, self.catalog)
                 self.selection = updated
-            elif kind == "calculate":
-                request = {"origin_time": self.selection["origin_time"], "turbine_ids": [t["id"] for t in self.catalog["turbines"]],
-                           "horizon_hours": self.selection["horizon_hours"], "mode": self.mode}
-                created = self.call("create_forecast", request=request)
-                self.reload()
-                if not self.error:
-                    self.selection.update(forecast_id=created["forecast_id"], origin_time=created["origin_time"],
-                                          as_of=created["origin_time"])
             elif kind == "export":
                 export_kind = "demo" if self.mode == "fixture" else "submission"
                 if action.get("kind") == "submission" and self.mode == "fixture":
@@ -101,8 +107,13 @@ class Controller:
         return self.view()
 
     def view(self):
+        readiness = self.catalog.get("readiness", {"can_calculate": False, "items": [
+            {"label": label, "state": "missing" if label == "Сервис" else "unknown",
+             "value": "Не подключён" if label == "Сервис" else "Не проверены" if label == "Датасеты" else "Не проверена",
+             "detail": "Подключите рабочий сервис, чтобы проверить данные и модель. Демо доступно отдельно."}
+            for label in ("Сервис", "Датасеты", "Модель", "Погода")]})
         view = {"mode": self.mode, "catalog": self.catalog, "selection": self.selection, "error": self.error,
-                "download": self.download, "result": None, "chart": None, "events": [], "advisor": []}
+                "download": self.download, "result": None, "chart": None, "events": [], "advisor": [], "readiness": readiness}
         if self.error or not self.selection:
             return view
         try:

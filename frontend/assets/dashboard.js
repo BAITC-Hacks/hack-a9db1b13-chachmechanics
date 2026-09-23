@@ -24,6 +24,11 @@ const timeFmt = v => dateFmt(v, {hour:'2-digit',minute:'2-digit'});
 const fullDate = v => dateFmt(v,{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
 const seasonOf = v => { const m = v ? new Date(v).getUTCMonth() : 6; return m < 2 || m===11 ? 'winter' : m<5 ? 'spring' : m<8 ? 'summer' : 'autumn'; };
 const seasonName = {winter:'Зима',spring:'Весна',summer:'Лето',autumn:'Осень'};
+const modes = {
+  fixture:{name:'Демо',help:'Готовые синтетические примеры. Можно изучить интерфейс; реальные прогнозы здесь не рассчитываются.'},
+  replay:{name:'Проверка на истории',help:'Прогноз из прошлого: используются только доступные тогда данные. Факт открывается по мере его поступления.'},
+  submission:{name:'Прогноз для сдачи',help:'Итоговые выпуски для конкурса. Нужны архивная погода и обученная модель; синтетический экспорт запрещён.'}
+};
 
 export function mountDashboard(root, data, sendAction) {
   const local = root._ttLocal || {tab:'forecast', paused:window.matchMedia('(prefers-reduced-motion: reduce)').matches, modal:null, busy:false};
@@ -37,8 +42,9 @@ export function mountDashboard(root, data, sendAction) {
   const weather = (result?.weather || []).find(w=>w.turbine_id===selection.turbine_id && Date.parse(w.valid_time)===Date.parse(first.target_start));
   const season = seasonOf(selection.origin_time), isDemo = data.mode==='fixture';
   const selectedName = turbines.find(t=>t.id===selection.turbine_id)?.name || 'Турбина';
-  const next = origins[originIndex+1], hasUpdate = next && next.origin_time.slice(0,10)===selection.origin_time?.slice(0,10);
-    const button = (text, action, style='outline', disabled=false) => `<button class="tt-button ${style}" data-action="${action}" ${action==='export'?'title="Готовый CSV полного выпуска для обеих турбин"':''} ${disabled?'disabled':''}>${text}</button>`;
+  const next = origins[originIndex+1];
+  const readiness = data.readiness || {items:[],can_calculate:false};
+  const button = (text, action, style='outline', disabled=false) => `<button class="tt-button ${style}" data-action="${action}" ${action==='export'?'title="Готовый CSV полного выпуска для обеих турбин"':''} ${disabled?'disabled':''}>${text}</button>`;
   const powerFor = id => (result?.predictions || []).find(r=>r.turbine_id===id)?.prediction_norm;
   const empty = text => `<div class="tt-empty">${text}</div>`;
   const error = data.error ? `<section class="tt-error" role="alert"><h2>${esc(data.error.title)}</h2><p>${esc(data.error.message)}</p><div class="tt-actions"><code>${esc(data.error.code)}</code>${button('Повторить запрос','refresh')}</div></section>` : '';
@@ -47,8 +53,10 @@ export function mountDashboard(root, data, sendAction) {
   root.innerHTML = `<div class="tt-app">
     <aside class="tt-sidebar"><div class="tt-symbol" aria-label="TwinTurbo">TT</div><nav class="tt-nav" aria-label="Разделы"><button class="active" data-action="overview" title="Обзор" aria-label="Обзор">${icon('grid')}</button><button data-action="nav-forecast" title="Прогноз" aria-label="Прогноз">${icon('chart')}</button><button data-action="nav-compare" title="Сравнение выпусков" aria-label="Сравнение выпусков">${icon('clock')}</button><button data-action="nav-events" title="Журнал агентов" aria-label="Журнал агентов">${icon('list')}</button></nav><div class="tt-sidebar-footer">CHACHMECHANICS · HACKALEM</div></aside>
     <main class="tt-main">
-      <header class="tt-topbar"><div class="tt-top-left"><div class="tt-brand">TwinTurbo<span>.ai</span></div><span class="tt-crumb">Энергетика / Ветровая площадка</span></div><div class="tt-top-right"><span class="tt-pill"><i class="tt-dot"></i>${isDemo?'Синтетические данные':'Архивные выпуски'}</span><select id="mode-select" class="tt-select" aria-label="Режим данных"><option value="fixture" ${isDemo?'selected':''}>Демо</option><option value="replay" ${data.mode==='replay'?'selected':''}>Replay</option><option value="submission" ${data.mode==='submission'?'selected':''}>Submission</option></select><div class="tt-avatar">CM</div></div></header>
-      <section class="tt-intro"><div><div class="tt-eyebrow">WIND INTELLIGENCE / 01</div><h1>Энергия ветра. Под контролем.</h1><p>Две турбины. Почасовой прогноз. Каждое решение на виду.</p></div><div class="tt-actions">${button(icon('refresh')+' Новый выпуск','update','outline',!hasUpdate || !result)}${button(icon('download')+ (isDemo?'Скачать демо CSV':'Скачать CSV'),'export','primary',!result)}</div></section>
+      <header class="tt-topbar"><div class="tt-top-left"><div class="tt-brand">TwinTurbo<span>.ai</span></div><span class="tt-crumb">Энергетика / Ветровая площадка</span></div><div class="tt-top-right"><span class="tt-pill"><i class="tt-dot"></i>${isDemo?'Синтетические данные':'Архивные выпуски'}</span><select id="mode-select" class="tt-select" aria-label="Режим данных" aria-describedby="mode-help">${Object.entries(modes).map(([key,mode])=>`<option value="${key}" ${data.mode===key?'selected':''}>${mode.name}</option>`).join('')}</select></div></header>
+      <p class="tt-mode-help" id="mode-help">${modes[data.mode].help}</p>
+      <section class="tt-intro"><div><div class="tt-eyebrow">WIND INTELLIGENCE / 01</div><h1>Энергия ветра. Под контролем.</h1><p>Две турбины. Почасовой прогноз. Каждое решение на виду.</p></div><div class="tt-actions">${button('Следующий выпуск','update','outline',!next || !result)}${button('Рассчитать прогноз','calculate','outline',isDemo || !readiness.can_calculate)}${button(icon('download')+ (isDemo?'Скачать демо CSV':'Скачать CSV'),'export','primary',!result)}</div></section>
+      <section class="tt-readiness" aria-label="Подключение данных">${readiness.items.map((item,i)=>`<button class="tt-readiness-item ${esc(item.state)}" data-readiness="${i}" title="${esc(item.detail)}"><i class="tt-dot"></i><span>${esc(item.label)}<strong>${esc(item.value)}</strong></span>${icon('info')}</button>`).join('')}</section>
       ${error}
       <div class="tt-grid">
         <section class="tt-scene" aria-label="Интерактивная схема ветровой площадки"><canvas class="tt-canvas" aria-hidden="true"></canvas>
@@ -56,7 +64,7 @@ export function mountDashboard(root, data, sendAction) {
           ${turbines.slice(0,2).map((t,i)=>`<button class="tt-turbine-hit ${i?'second':''}" data-turbine="${esc(t.id)}" aria-label="Выбрать ${esc(t.name)}" aria-pressed="${selection.turbine_id===t.id}"><span class="tt-label"><span class="tt-label-top"><i class="tt-dot"></i>${esc(t.name)}</span><strong>${num(powerFor(t.id))}<small class="tt-small"> норм.</small></strong></span></button>`).join('')}
           <button class="tt-pause" data-action="pause" title="${local.paused?'Включить анимацию':'Остановить анимацию'}" aria-label="${local.paused?'Включить анимацию':'Остановить анимацию'}">${icon(local.paused?'play':'pause')}</button>
           <div class="tt-scene-caption">${icon('leaf')} Сезон по дате · движение турбин условное</div>
-          <div class="tt-timeline"><div class="tt-timeline-head"><span>${icon('clock')} Момент выпуска</span><strong id="timeline-time">${fullDate(selection.origin_time)} UTC</strong></div><input id="release-timeline" aria-label="Шкала выпусков" type="range" min="0" max="${Math.max(0,origins.length-1)}" value="${originIndex}" step="1" ${origins.length<2?'disabled':''}><div class="tt-dates">${origins.filter((_,i)=>i%2===0).map(o=>`<span class="${o.origin_time.slice(0,10)===selection.origin_time?.slice(0,10)?'selected':''}">${dateFmt(o.origin_time)}</span>`).join('')}</div></div>
+          <div class="tt-timeline"><div class="tt-timeline-head">${button(icon('clock')+' Календарь','calendar','outline',!origins.length)}<strong id="timeline-time">${fullDate(selection.origin_time)} UTC</strong></div><input id="release-timeline" aria-label="Шкала выпусков" type="range" min="0" max="${Math.max(0,origins.length-1)}" value="${originIndex}" step="1" ${origins.length<2?'disabled':''}><div class="tt-dates">${origins.filter((_,i)=>i===0 || i===origins.length-1 || i%Math.max(1,Math.ceil(origins.length/4))===0).map(o=>`<span class="${o.origin_time.slice(0,10)===selection.origin_time?.slice(0,10)?'selected':''}">${dateFmt(o.origin_time)}</span>`).join('')}</div></div>
         </section>
         <aside class="tt-aside"><section class="tt-card"><div class="tt-card-header"><h2>${esc(selectedName)}</h2><span class="tt-status-tag">${result?(isDemo?'DEMO':'ПРОГНОЗ'):'НЕТ ДАННЫХ'}</span></div><div class="tt-small">Прогноз на ${dateFmt(first.target_start)} · ${timeFmt(first.target_start)} UTC</div><div class="tt-power">${num(first.prediction_norm)}<span>норм. ед.</span></div><div class="tt-meter"><i style="width:${(first.prediction_norm ?? 0)*100}%"></i></div><div class="tt-small">Доля от принятой базы нормализации</div><div class="tt-kpis"><div class="tt-kpi"><span>Интервал Q10–Q90</span><strong>${first.q10 == null?'Недоступен':num(first.q10)+' — '+num(first.q90)}</strong></div><div class="tt-kpi"><span>Горизонт прогноза</span><strong>${selection.horizon_hours || '—'} часов</strong></div></div><div class="tt-note">${isDemo?'Все значения — синтетический пример. Качество модели по ним не оценивается.':'Единицы — нормализованная мощность. Для МВт необходимы подтверждённые номиналы.'}</div></section>
         <section class="tt-card"><div class="tt-card-header"><h2>Происхождение данных</h2><button data-action="provenance" class="tt-button outline" style="padding:5px" aria-label="Подробнее о происхождении">${icon('info')}</button></div><dl class="tt-meta-list"><dt>Погодный run</dt><dd>${esc(meta.run_id || '—')}</dd><dt>Возраст run при выпуске</dt><dd>${esc(meta.weather_age || '—')}</dd><dt>Возраст телеметрии</dt><dd>${esc(meta.telemetry_age || '—')}</dd><dt>Версия модели</dt><dd>${esc(meta.model_id || '—')}</dd><dt>Часов показано</dt><dd>${esc(chart?.coverage || '—')}</dd></dl><div class="tt-divider"></div><div class="tt-actions">${button(icon('clock')+' Выпуск и время','controls','outline',!selection.forecast_id)}</div></section></aside>
@@ -81,10 +89,11 @@ export function mountDashboard(root, data, sendAction) {
     if(local.tab==='events') { target.innerHTML=`<div class="tt-card-header"><h2>Хронология действий</h2><span class="tt-small">${isDemo?'Синтетический сценарий':'Журнал сервиса'}</span></div>${eventMarkup}<div class="tt-actions" style="margin-top:15px">${button('Обновить журнал','refresh')}${isDemo?button('Показать отказ погоды','failure'):''}</div>`; bindActions(target); return; }
     if(!chart) { target.innerHTML=empty('Нет доступного выпуска. Выберите деморежим или подключите сервис.'); return; }
     if(local.tab==='compare') {
-      if(!result.parent_forecast_id) { target.innerHTML=empty('У этого выпуска нет предыдущей версии. Откройте обновлённый выпуск кнопкой «Новый выпуск».'); return; }
+      if(!result.parent_forecast_id) { target.innerHTML=empty('У этого выпуска нет предыдущей версии. Выберите обновлённый выпуск в календаре или нажмите «Следующий выпуск».'); return; }
       if(!selection.compare) { target.innerHTML=empty('Загрузка сравнения…'); act({type:'select',compare:true}); return; }
       const compared=chart.comparison;
-      target.innerHTML=`<div class="tt-chart-top"><div><h2>Что изменилось между выпусками</h2><span class="tt-small">${esc(result.parent_forecast_id)} → ${esc(result.forecast_id)} · только общие часы</span></div><span class="tt-small">${compared.length} совпадающих часов</span></div>${compared.length?`<div class="tt-table-scroll"><table class="tt-table"><thead><tr><th>Целевой час · UTC</th><th>Предыдущий</th><th>Новый</th><th>Изменение</th></tr></thead><tbody>${compared.map(r=>`<tr><td>${dateFmt(r.target_start)} ${timeFmt(r.target_start)}</td><td>${num(r.before,3)}</td><td>${num(r.after,3)}</td><td>${r.delta>0?'+':''}${num(r.delta,3)}</td></tr>`).join('')}</tbody></table></div>`:empty('Совпадающих целевых часов нет.')}<p class="tt-small">Разница получена из service.py. Причина изменения не установлена автоматически.</p>`;
+      target.innerHTML=`<div class="tt-chart-top"><div><h2>Что изменилось между выпусками</h2><span class="tt-small">${compared.length} общих часов · ${esc(selectedName)} · норм. ед.</span></div><div class="tt-legend"><span><i></i>Новый выпуск</span><span><i class="old"></i>Предыдущий выпуск</span></div></div>${compared.length?`<div class="tt-chart-wrap"><svg class="tt-chart" preserveAspectRatio="none" role="img" aria-label="Сравнение нового и предыдущего прогноза"></svg><div class="tt-tooltip"></div></div><details class="tt-comparison-details"><summary>Точные значения по часам</summary><div class="tt-table-scroll"><table class="tt-table"><thead><tr><th>Целевой час · UTC</th><th>Предыдущий</th><th>Новый</th><th>Изменение</th></tr></thead><tbody>${compared.map(r=>`<tr><td>${dateFmt(r.target_start)} ${timeFmt(r.target_start)}</td><td>${num(r.before,3)}</td><td>${num(r.after,3)}</td><td>${r.delta>0?'+':''}${num(r.delta,3)}</td></tr>`).join('')}</tbody></table></div></details>`:empty('Совпадающих целевых часов нет.')}<p class="tt-small">Сравнение сохранённых выпусков на одинаковых часах. Причина изменения автоматически не определяется.</p>`;
+      if(compared.length) renderChart(target.querySelector('svg'),{rows:compared.map(r=>({...r,prediction_norm:r.after})),actuals:[],comparison:compared,comparisonOnly:true});
       return;
     }
     target.innerHTML=`<div class="tt-chart-top"><div><h2>Почасовой прогноз · ${esc(selectedName)}</h2><span class="tt-small">Нормализованная мощность · ${dateFmt(first.target_start)} — ${dateFmt(rows.at(-1)?.target_start)}</span></div><div class="tt-legend"><span><i></i>Прогноз</span><span><i class="band"></i>Q10–Q90</span><span><i class="fact"></i>Доступный факт</span>${selection.compare?'<span><i class="old"></i>Предыдущий</span>':''}</div></div><div class="tt-chart-wrap"><svg class="tt-chart" viewBox="0 0 1080 250" preserveAspectRatio="none" role="img" aria-label="Почасовой прогноз нормализованной мощности"></svg><div class="tt-tooltip"></div></div><div class="tt-chart-foot"><span>${chart.actuals.length?`Факт доступен для ${chart.actuals.length} часов`:'Факт для целевых часов пока недоступен'} · ${rows.some(r=>r.q10!=null)?'Интервал — готовые квантили модели':'Интервал не оценён'}</span><span>Время · UTC</span></div>`;
@@ -108,9 +117,39 @@ export function mountDashboard(root, data, sendAction) {
   }
   function controlsModal() {
     const origin=origins[originIndex];
-    const modal=showModal('Выпуск и виртуальное время',`<p>Дата и список выпусков получены из каталога сервиса. Выбранный run определяет backend.</p><label for="origin-select">Сохранённый выпуск · UTC</label><select id="origin-select" class="tt-select">${origins.map(o=>`<option value="${esc(o.forecast_id)}" ${o.forecast_id===selection.forecast_id?'selected':''}>${esc(fullDate(o.origin_time))} · ${esc(o.label)}</option>`).join('')}</select><label for="turbine-select">Турбина</label><select id="turbine-select" class="tt-select">${turbines.map(t=>`<option value="${esc(t.id)}" ${t.id===selection.turbine_id?'selected':''}>${esc(t.name)}</option>`).join('')}</select><label for="clock-select">Показывать факт, доступный к моменту</label><select id="clock-select" class="tt-select">${[selection.origin_time,...(origin?.inspection_times || [])].map(t=>`<option value="${esc(t)}" ${t===selection.as_of?'selected':''}>${esc(fullDate(t))} UTC</option>`).join('')}</select><p>Продвижение времени открывает доступные измерения, не меняя сохранённый прогноз. В демо это синтетический факт.</p><div class="tt-actions">${button('Применить','apply','primary')}${button('Вызвать расчёт через сервис','calculate')}</div>`);
+    const modal=showModal('Выпуск и виртуальное время',`<p>Выберите сохранённый выпуск и момент просмотра факта. Время указано в UTC.</p><label for="origin-select">Сохранённый выпуск · UTC</label><select id="origin-select" class="tt-select">${origins.map(o=>`<option value="${esc(o.forecast_id)}" ${o.forecast_id===selection.forecast_id?'selected':''}>${esc(fullDate(o.origin_time))} · ${esc(o.label)}</option>`).join('')}</select><label for="turbine-select">Турбина</label><select id="turbine-select" class="tt-select">${turbines.map(t=>`<option value="${esc(t.id)}" ${t.id===selection.turbine_id?'selected':''}>${esc(t.name)}</option>`).join('')}</select><label for="clock-select">Показывать факт, доступный к моменту</label><select id="clock-select" class="tt-select">${[selection.origin_time,...(origin?.inspection_times || [])].map(t=>`<option value="${esc(t)}" ${t===selection.as_of?'selected':''}>${esc(fullDate(t))} UTC</option>`).join('')}</select><p>Продвижение времени открывает доступные измерения, не меняя сохранённый прогноз. В демо это синтетический факт.</p><div class="tt-actions">${button('Применить','apply','primary')}</div>`);
     modal.querySelector('[data-action=apply]').onclick=()=>act({type:'select',forecast_id:modal.querySelector('#origin-select').value,turbine_id:modal.querySelector('#turbine-select').value,...(modal.querySelector('#origin-select').value===selection.forecast_id?{as_of:modal.querySelector('#clock-select').value}:{})});
-    modal.querySelector('[data-action=calculate]').onclick=()=>act({type:'calculate'});
+  }
+  function calculationModal() {
+    if(isDemo || !readiness.can_calculate)return;
+    const defaultOrigin = selection.origin_time ? new Date(selection.origin_time).toISOString().slice(0,16) : '';
+    const modal=showModal('Рассчитать прогноз',`<p>Новый выпуск для ${data.catalog.turbines.length} турбин в режиме «${modes[data.mode].name}». Сервис проверит доступность погоды и модели на выбранный момент.</p><form><label for="calculate-origin">Момент выпуска · UTC</label><input id="calculate-origin" class="tt-select" type="datetime-local" required step="60" value="${esc(defaultOrigin)}"><label for="calculate-horizon">Горизонт</label><select id="calculate-horizon" class="tt-select"><option value="24" ${selection.horizon_hours===24?'selected':''}>24 часа</option><option value="48" ${selection.horizon_hours!==24?'selected':''}>48 часов</option></select><p>Сохранённые прогнозы останутся доступны. Время вводится в UTC, независимо от часового пояса компьютера.</p><button class="tt-button primary" type="submit">Запустить расчёт</button></form>`);
+    modal.querySelector('form').onsubmit=e=>{e.preventDefault();const value=modal.querySelector('#calculate-origin').value;if(value)act({type:'calculate',origin_time:new Date(value+'Z').toISOString(),horizon_hours:Number(modal.querySelector('#calculate-horizon').value)});};
+  }
+  function calendarModal() {
+    if(!origins.length)return;
+    const months=[...new Set(origins.map(o=>o.origin_time.slice(0,7)))].sort();
+    const modal=showModal('Календарь выпусков',`<p>Выделены только даты с сохранёнными прогнозами. После выбора даты укажите время выпуска. Все даты и часы — UTC.</p><label for="calendar-month">Месяц с данными</label><select id="calendar-month" class="tt-select">${months.map(m=>`<option value="${m}" ${m===selection.origin_time?.slice(0,7)?'selected':''}>${dateFmt(m+'-01T00:00:00Z',{month:'long',year:'numeric'})}</option>`).join('')}</select><div class="tt-calendar" aria-label="Даты с выпусками"></div><div class="tt-calendar-releases" aria-live="polite"></div>`);
+    const showReleases=day=>{
+      const items=origins.filter(o=>o.origin_time.slice(0,10)===day);
+      const target=modal.querySelector('.tt-calendar-releases');
+      target.innerHTML=`<p>${dateFmt(day+'T00:00:00Z',{day:'numeric',month:'long',year:'numeric'})}</p><div class="tt-actions">${items.map(o=>`<button class="tt-button outline" data-release="${esc(o.forecast_id)}">${timeFmt(o.origin_time)} · ${esc(o.label)}</button>`).join('')}</div>`;
+      target.querySelectorAll('[data-release]').forEach(b=>b.onclick=()=>act({type:'select',forecast_id:b.dataset.release}));
+      modal.querySelectorAll('[data-day]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.day===day)));
+    };
+    const drawCalendar=()=>{
+      const month=modal.querySelector('#calendar-month').value;
+      const firstDay=new Date(month+'-01T00:00:00Z'),offset=(firstDay.getUTCDay()+6)%7;
+      const count=new Date(Date.UTC(firstDay.getUTCFullYear(),firstDay.getUTCMonth()+1,0)).getUTCDate();
+      const days=new Set(origins.map(o=>o.origin_time.slice(0,10)));
+      modal.querySelector('.tt-calendar').innerHTML=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(d=>`<span>${d}</span>`).join('')+'<span></span>'.repeat(offset)+Array.from({length:count},(_,i)=>{
+        const day=month+'-'+String(i+1).padStart(2,'0');return `<button data-day="${day}" aria-label="${dateFmt(day+'T00:00:00Z',{day:'numeric',month:'long',year:'numeric'})}" aria-pressed="false" ${days.has(day)?'':'disabled'}>${i+1}</button>`;
+      }).join('');
+      modal.querySelectorAll('[data-day]:not(:disabled)').forEach(b=>b.onclick=()=>showReleases(b.dataset.day));
+      showReleases(selection.origin_time?.startsWith(month)?selection.origin_time.slice(0,10):origins.find(o=>o.origin_time.startsWith(month)).origin_time.slice(0,10));
+    };
+    modal.querySelector('#calendar-month').onchange=drawCalendar;
+    drawCalendar();
   }
   function bindActions(container) {
     container.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>{
@@ -120,12 +159,15 @@ export function mountDashboard(root, data, sendAction) {
       else if(action==='pause'){local.paused=!local.paused;sceneStop();sceneStop=startScene(root.querySelector('canvas'),season,local.paused,selection.turbine_id,Boolean(weather));b.innerHTML=icon(local.paused?'play':'pause');b.setAttribute('aria-label',local.paused?'Включить анимацию':'Остановить анимацию');}
       else if(action==='provenance')showModal('Паспорт выпуска',`<p>Исходные идентификаторы и временные метки. Возраст данных указан относительно момента выпуска.</p><pre>${esc(JSON.stringify(meta,null,2))}</pre><p>Прогноз ${esc(result?.forecast_id || 'недоступен')}. ${isDemo?'Источник synthetic; конкурсный экспорт запрещён.':''}</p>`);
       else if(action==='controls')controlsModal();
+      else if(action==='calendar')calendarModal();
+      else if(action==='calculate')calculationModal();
       else if(action==='update' && next)act({type:'select',forecast_id:next.forecast_id,compare:true});
       else if(action==='failure')act({type:'simulate_failure'});
-      else if(['refresh','export','calculate'].includes(action))act({type:action});
+      else if(['refresh','export'].includes(action))act({type:action});
     });
   }
   bindActions(root);
+  root.querySelectorAll('[data-readiness]').forEach(b=>b.onclick=()=>{const item=readiness.items[Number(b.dataset.readiness)];showModal(item.label,`<p><strong>${esc(item.value)}</strong></p><p>${esc(item.detail)}</p>`);});
   root.querySelectorAll('[data-turbine]').forEach(b=>b.onclick=()=>act({type:'select',turbine_id:b.dataset.turbine}));
   root.querySelectorAll('[data-horizon]').forEach(b=>b.onclick=()=>act({type:'select',horizon_hours:Number(b.dataset.horizon)}));
   root.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{local.tab=b.dataset.tab;renderAnalysis();});
@@ -165,7 +207,7 @@ function renderChart(svg, chart) {
   markup+='<line class="hover-line" y1="10" y2="215" stroke="#cbdca288" style="display:none"/>';
   svg.innerHTML=markup;
   const tooltip=svg.parentElement.querySelector('.tt-tooltip');
-  svg.onpointermove=e=>{const rect=svg.getBoundingClientRect();const i=Math.max(0,Math.min(rows.length-1,Math.round(((e.clientX-rect.left)/rect.width*W-L)/(W-L-R)*(rows.length-1))));const r=rows[i];const line=svg.querySelector('.hover-line');line.style.display='';line.setAttribute('x1',x(i));line.setAttribute('x2',x(i));tooltip.style.display='block';tooltip.style.left=Math.min(e.clientX-rect.left+10,rect.width-190)+'px';tooltip.style.top='20px';tooltip.textContent=`${dateFmt(r.target_start)} · ${timeFmt(r.target_start)} UTC\nПрогноз: ${num(r.prediction_norm,3)}\nQ10–Q90: ${r.q10==null?'недоступен':num(r.q10,3)+' — '+num(r.q90,3)}\nФакт: ${num(actuals.get(r.target_start),3)}`;};
+  svg.onpointermove=e=>{const rect=svg.getBoundingClientRect();const i=Math.max(0,Math.min(rows.length-1,Math.round(((e.clientX-rect.left)/rect.width*W-L)/(W-L-R)*(rows.length-1))));const r=rows[i];const line=svg.querySelector('.hover-line');line.style.display='';line.setAttribute('x1',x(i));line.setAttribute('x2',x(i));tooltip.style.display='block';tooltip.style.left=Math.max(0,Math.min(e.clientX-rect.left+10,rect.width-190))+'px';tooltip.style.top='20px';tooltip.textContent=`${dateFmt(r.target_start)} · ${timeFmt(r.target_start)} UTC\n`+(chart.comparisonOnly?`Новый: ${num(r.prediction_norm,3)}\nПредыдущий: ${num(r.before,3)}\nИзменение: ${r.delta>0?'+':''}${num(r.delta,3)}`:`Прогноз: ${num(r.prediction_norm,3)}\nQ10–Q90: ${r.q10==null?'недоступен':num(r.q10,3)+' — '+num(r.q90,3)}\nФакт: ${num(actuals.get(r.target_start),3)}`);};
   svg.onpointerleave=()=>{tooltip.style.display='none';svg.querySelector('.hover-line').style.display='none';};
 }
 

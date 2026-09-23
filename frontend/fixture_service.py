@@ -19,7 +19,12 @@ class FixtureService:
     def get_catalog(self, mode="fixture"):
         if mode != "fixture":
             raise UIError("FIXTURE_EXPORT_BLOCKED")
-        return copy.deepcopy(self.data["catalog"])
+        catalog = copy.deepcopy(self.data["catalog"])
+        catalog["readiness"] = {"can_calculate": False, "items": [
+            {"label": label, "state": "demo", "value": value,
+             "detail": "Готовый синтетический пример. Подключение реальных данных в деморежиме не проверяется."}
+            for label, value in (("Сервис", "Демо"), ("Датасеты", "Примеры"), ("Модель", "Готовые прогнозы"), ("Погода", "Пример"))]}
+        return catalog
 
     def create_forecast(self, request):
         if request.get("mode") != "fixture":

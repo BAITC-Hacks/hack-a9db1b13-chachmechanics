@@ -49,8 +49,10 @@ class BackendAdapter:
         self.service = service
 
     def get_catalog(self, mode="replay"):
-        saved = self.service.list_forecasts(mode=mode)
+        saved = sorted(self.service.list_forecasts(mode=mode), key=lambda r: (r.origin_time, r.forecast_id))
+        summary = self.service.data_summary() if callable(getattr(self.service, "data_summary", None)) else {}
         origins, turbine_ids = [], set()
+        turbine_ids.update(t["id"] for t in summary.get("turbines", []))
         for result in saved:
             turbine_ids.update(row.turbine_id for row in result.predictions.rows)
             final_hour = max(row.target_end for row in result.predictions.rows)
@@ -58,8 +60,24 @@ class BackendAdapter:
                             "label": "Обновление" if result.parent_forecast_id else "Основной выпуск",
                             "inspection_times": [(result.origin_time + timedelta(hours=12)).isoformat(),
                                                  (final_hour + timedelta(hours=1)).isoformat()]})
+        predictor = getattr(self.service, "predictor", None)
+        trained = predictor is not None and getattr(predictor.state, "provenance", None) == "trained"
+        rows = summary.get("rows")
+        weather_evidence = any(r.provenance == "operational_archive" for r in saved)
+        readiness = {"can_calculate": trained and bool(turbine_ids), "items": [
+            {"label": "Сервис", "state": "ready", "value": "Подключён", "detail": "Сохранённые выпуски доступны для просмотра."},
+            {"label": "Датасеты", "state": "ready" if rows else "missing" if rows == 0 else "unknown",
+             "value": f"{rows:,} записей".replace(",", " ") if rows else "Не загружены" if rows == 0 else "Не проверены",
+             "detail": "Число импортированных записей по данным сервиса. Доступность к моменту выпуска проверяется при расчёте."},
+            {"label": "Модель", "state": "ready" if trained else "missing",
+             "value": "Подключена" if trained else "Тестовая" if predictor else "Не подключена",
+             "detail": "Время активации модели проверяется при расчёте." if trained else "Для расчёта подключите обученную модель. Сохранённые выпуски можно просматривать без неё."},
+            {"label": "Погода", "state": "unknown", "value": "Есть в выпусках" if weather_evidence else "Не проверена",
+             "detail": "Происхождение погоды сохранено в выпусках. Покрытие нового момента проверяется при расчёте; наличие кэша здесь не подтверждается." if weather_evidence else "Для нового расчёта нужен допустимый архивный прогноз погоды. Сервис проверит его для выбранного момента."},
+        ]}
         return {"turbines": [{"id": t, "name": t.replace("turbine_", "Турбина ")} for t in sorted(turbine_ids)],
-                "origins": origins, "timezone": "UTC", "site_name": "Ветровая площадка", "mode": mode}
+                "origins": origins, "timezone": "UTC", "site_name": "Ветровая площадка", "mode": mode,
+                "readiness": readiness}
 
     def create_forecast(self, request):
         if self.service.predictor is None:

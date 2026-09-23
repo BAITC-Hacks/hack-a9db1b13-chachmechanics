@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 import importlib.util
+import json
 import unittest
 
 from frontend.contracts import UIError, validate_result, visible_actuals
@@ -12,6 +13,7 @@ from frontend.controller import Controller
 from frontend.fixture_service import FixtureService
 from frontend.gateway import BackendAdapter, ServiceGateway, display_result
 from ui.charts import chart_view
+from ui.controls import calculation_request
 from windoracle.agents.advisor import explain_forecast
 
 
@@ -149,6 +151,92 @@ class UIContractTests(unittest.TestCase):
             self.assertEqual(len(result["predictions"]), 96)
 
 
+class UIReadinessTests(unittest.TestCase):
+    def test_empty_catalog_keeps_configured_turbines_and_service_inventory(self):
+        service = SimpleNamespace(
+            list_forecasts=lambda **kwargs: [],
+            data_summary=lambda: {"rows": 1200, "turbines": [{"id": "turbine_1"}]},
+            predictor=SimpleNamespace(state=SimpleNamespace(provenance="trained")),
+        )
+        catalog = BackendAdapter(service).get_catalog()
+        self.assertEqual(catalog["origins"], [])
+        self.assertEqual(catalog["turbines"][0]["id"], "turbine_1")
+        self.assertTrue(catalog["readiness"]["can_calculate"])
+        states = {item["label"]: item for item in catalog["readiness"]["items"]}
+        self.assertEqual(states["Датасеты"]["value"], "1 200 записей")
+        self.assertEqual(states["Погода"]["state"], "unknown")
+        service.predictor = None
+        service.data_summary = lambda: {"rows": 0, "turbines": [{"id": "turbine_1"}]}
+        readiness = BackendAdapter(service).get_catalog()["readiness"]
+        self.assertFalse(readiness["can_calculate"])
+        self.assertEqual([i["state"] for i in readiness["items"]], ["ready", "missing", "missing", "unknown"])
+
+    def test_demo_readiness_does_not_claim_real_connections_or_calculate(self):
+        controller = Controller()
+        before = deepcopy(controller.catalog)
+        view = controller.dispatch({"type": "calculate"})
+        self.assertEqual(view["error"]["code"], "DEMO_CALCULATION_DISABLED")
+        self.assertFalse(view["readiness"]["can_calculate"])
+        self.assertTrue(all(i["state"] == "demo" for i in view["readiness"]["items"]))
+        self.assertEqual(controller.catalog, before)
+
+    def test_failed_refresh_discards_previous_readiness(self):
+        service = SimpleNamespace(list_forecasts=lambda **kwargs: [],
+                                  data_summary=lambda: {"rows": 500, "turbines": []}, predictor=None)
+        controller = Controller("replay", gateway_factory=lambda: ServiceGateway(service))
+        self.assertEqual(controller.view()["readiness"]["items"][0]["state"], "ready")
+        def unavailable():
+            raise UIError("SERVICE_UNAVAILABLE")
+        controller.gateway_factory = unavailable
+        view = controller.dispatch({"type": "refresh"})
+        self.assertEqual(view["error"]["code"], "SERVICE_UNAVAILABLE")
+        self.assertEqual(view["readiness"]["items"][0]["state"], "missing")
+        self.assertIsNone(view["selection"])
+        self.assertIsNone(view["result"])
+
+    def test_calculation_validates_time_and_horizon_and_uses_catalog_turbines(self):
+        catalog = {"turbines": [{"id": "turbine_1"}, {"id": "turbine_2"}]}
+        action = {"origin_time": "2026-07-15T06:00:00Z", "horizon_hours": 24, "turbine_ids": ["unknown"]}
+        request = calculation_request(action, None, catalog, "replay")
+        self.assertEqual(request["turbine_ids"], ["turbine_1", "turbine_2"])
+        self.assertEqual(request["mode"], "replay")
+        for change, code in [({"origin_time": "2026-07-15T06:00:00"}, "INVALID_TIME"),
+                             ({"horizon_hours": 12}, "INVALID_SELECTION")]:
+            with self.assertRaisesRegex(UIError, code):
+                calculation_request({**action, **change}, None, catalog, "replay")
+
+    def test_first_calculation_works_without_existing_release_and_selects_result(self):
+        # Mock the service boundary; this does not certify a real model or weather archive.
+        fixture = FixtureService()
+        result = deepcopy(fixture.data["forecasts"]["demo-0715-r1"])
+        result.update(synthetic=False, mode="replay")
+        result["provenance"]["kind"] = "operational_archive"
+        catalog = {"origins": [], "turbines": fixture.get_catalog()["turbines"], "timezone": "UTC"}
+        calls = []
+        class Gateway:
+            def call(self, method, **kwargs):
+                calls.append((method, kwargs))
+                if method == "get_catalog":
+                    return deepcopy(catalog)
+                if method == "create_forecast":
+                    catalog["origins"].append({"forecast_id": result["forecast_id"], "origin_time": result["origin_time"]})
+                    return result
+                if method == "get_forecast":
+                    return deepcopy(result)
+                if method == "get_events":
+                    return []
+                raise AssertionError(method)
+        controller = Controller("replay", gateway_factory=Gateway)
+        self.assertEqual(controller.view()["error"]["code"], "NO_DATA")
+        view = controller.dispatch({"type": "calculate", "origin_time": result["origin_time"], "horizon_hours": 24})
+        self.assertIsNone(view["error"])
+        self.assertEqual(view["selection"]["forecast_id"], result["forecast_id"])
+        self.assertEqual(len(view["chart"]["rows"]), 24)
+        request = next(kwargs["request"] for method, kwargs in calls if method == "create_forecast")
+        self.assertEqual(request["origin_time"], result["origin_time"])
+        self.assertEqual(request["horizon_hours"], 24)
+
+
 @unittest.skipUnless(importlib.util.find_spec("pydantic"), "Optional integration check requires backend pydantic")
 class BackendSchemaIntegrationTests(unittest.TestCase):
     def test_adapter_with_actual_forecastresult_and_backend_export(self):
@@ -237,10 +325,18 @@ def test_streamlit_host_starts_without_exception():
     app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / "app.py")).run(timeout=20)
     assert not app.exception
     assert app.session_state["tt_controller"].view()["error"] is None
+    before = json.loads(app.get("bidi_component")[0].proto.json)
     app.session_state["tt_controller"].dispatch({"type": "export"})
+    app.session_state["tt_last_action"] = "export-1"
     app.run(timeout=20)
     assert not app.exception
     assert len(app.get("download_button")) == 1
+    after = json.loads(app.get("bidi_component")[0].proto.json)
+    # Export is delivered by Streamlit, but its completion must still notify
+    # the component or the unchanged view leaves subsequent controls blocked.
+    assert after.pop("action_ack") == "export-1"
+    before.pop("action_ack")
+    assert after == before
 
 
 if __name__ == "__main__":
