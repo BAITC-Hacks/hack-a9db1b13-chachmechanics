@@ -50,8 +50,7 @@ def audit_csv(path) -> dict:
         "complete_hours": int((hours == 6).sum()),
         "partial_hours": int(((hours > 0) & (hours < 6)).sum()),
         "missing_hours": int((hours == 0).sum()),
-        "timezone": "unspecified in source", "february_2026_rows": int(
-            ((d.timestamp >= "2026-02-01") & (d.timestamp < "2026-03-01")).sum()),
+        "timezone": "unspecified in source",
     }
 
 

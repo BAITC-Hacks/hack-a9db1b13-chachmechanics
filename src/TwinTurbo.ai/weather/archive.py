@@ -90,6 +90,7 @@ class GFSArchive:
     def __init__(self, config: Config, cache: WeatherCache | None = None):
         self.config = config
         self.cache = cache or WeatherCache(config.weather.cache_dir)
+        self.last_fetch_events = []
 
     def fetch_run(self, initialized_at, request):
         init = utc(initialized_at)
@@ -181,6 +182,8 @@ class GFSArchive:
                     continue
                 if bundle.metadata.wind_height_m != self.config.weather.wind_height_m:
                     continue
+                if request.origin_time < bundle.metadata.run_init_time + timedelta(hours=self.config.weather.publication_delay_hours):
+                    continue
             try:
                 audit_bundle(bundle, request, self.config.weather.max_run_age_hours)
             except ValueError:
@@ -191,6 +194,7 @@ class GFSArchive:
         return max(candidates, key=lambda b: (b.metadata.run_init_time, b.metadata.available_at, b.metadata.run_id))
 
     def fetch_latest(self, request):
+        self.last_fetch_events = []
         delay = timedelta(hours=self.config.weather.publication_delay_hours)
         latest = request.origin_time - delay
         latest = latest.replace(hour=latest.hour // 6 * 6, minute=0, second=0, microsecond=0)
@@ -202,7 +206,11 @@ class GFSArchive:
             try:
                 bundle = self.fetch_run(init, request)
                 audit_bundle(bundle, request, self.config.weather.max_run_age_hours)
+                self.last_fetch_events.append({"reason": "FALLBACK_RUN" if errors else "RUN_AVAILABLE",
+                    "details": {"run_id": bundle.metadata.run_id, "run_init_time": init.isoformat()}})
                 return self.select_run(request)
             except (WeatherUnavailable, ValueError) as exc:
                 errors.append(str(exc))
+                self.last_fetch_events.append({"reason": "RUN_REJECTED", "details": {
+                    "run_init_time": init.isoformat(), "message": str(exc)}})
         raise WeatherUnavailable("WEATHER_UNAVAILABLE: " + "; ".join(errors))

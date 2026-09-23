@@ -15,3 +15,16 @@ def test_new_run_preserves_previous_version(setup):
     again = replay(setup, [ORIGIN, ORIGIN + timedelta(hours=7)], mode="fixture", include_updates=True)
     assert again == result
     assert len(setup.list_forecasts()) == 3
+
+
+def test_same_cycle_with_different_cached_window_is_not_new_run(setup):
+    from windoracle.agents.orchestrator import Orchestrator
+    from windoracle.clock import VirtualClock
+    from windoracle.schemas import ForecastRequest
+    req = ForecastRequest(origin_time=ORIGIN, turbine_ids=("turbine_1", "turbine_2"), mode="fixture")
+    first = setup.create_forecast(req)
+    copy = bundle("same-cycle-other-window", count=75)
+    setup.weather.cache.save(copy)
+    orchestrator = Orchestrator(setup, VirtualClock(ORIGIN + timedelta(hours=1)))
+    assert orchestrator.new_run(copy, first) == first
+    assert len(setup.list_forecasts()) == 1

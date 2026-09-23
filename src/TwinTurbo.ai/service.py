@@ -2,14 +2,14 @@
 from datetime import timedelta
 from .clock import targets
 from .config import Config
-from .schemas import AsOfSnapshot, BiasState, ForecastRequest, ForecastResult, PredictionBatch, Predictor, digest
+from .schemas import AsOfSnapshot, BiasState, ForecastRequest, ForecastResult, ModelState, PredictionBatch, Predictor, digest
 from .store import Store
 from .weather.audit import audit_bundle
 from .weather.base import WeatherProvider
 
 
 class ForecastService:
-    def __init__(self, config: Config, store: Store, weather: WeatherProvider, predictor: Predictor):
+    def __init__(self, config: Config, store: Store, weather: WeatherProvider, predictor: Predictor | None = None):
         self.config, self.store, self.weather, self.predictor = config, store, weather, predictor
 
     def snapshot(self, request: ForecastRequest):
@@ -37,21 +37,30 @@ class ForecastService:
 
     def create_forecast(self, request: ForecastRequest, bias: BiasState | None = None,
                         parent_forecast_id: str | None = None):
-        state = self.predictor.state
+        if self.predictor is None:
+            raise ValueError("MODEL_REQUIRED: attach participant 2's predictor to create forecasts")
+        # Revalidate at the boundary, including model_copy() objects from plugins.
+        state = ModelState.model_validate(self.predictor.state.model_dump())
         if state.activated_at > request.origin_time:
             raise ValueError("FUTURE_MODEL")
         if state.provenance == "synthetic" and request.mode != "fixture":
             raise ValueError("SYNTHETIC_MODEL_NOT_ALLOWED")
-        if bias and (bias.model_id != state.model_id or bias.created_as_of > request.origin_time):
-            raise ValueError("INADMISSIBLE_BIAS")
+        if bias:
+            bias = BiasState.model_validate(bias.model_dump())
+            if bias.model_id != state.model_id or bias.created_as_of > request.origin_time:
+                raise ValueError("INADMISSIBLE_BIAS")
         if parent_forecast_id:
             parent = self.store.get_forecast(parent_forecast_id)
-            if parent.origin_time > request.origin_time or parent.mode != request.mode:
+            parent_request = ForecastRequest.model_validate(parent.manifest["request"])
+            if (parent.origin_time > request.origin_time or parent.mode != request.mode
+                    or set(parent_request.turbine_ids) != set(request.turbine_ids)
+                    or request.release_kind != "update"):
                 raise ValueError("Invalid parent forecast")
         snapshot = self.snapshot(request)
         identity = {"request": request.model_dump(mode="json"), "model": state.model_dump(mode="json"),
                     "bias": bias.model_dump(mode="json") if bias else None,
-                    "snapshot_hash": digest(snapshot), "config_hash": self.config.config_hash}
+                    "snapshot_hash": digest(snapshot), "config_hash": self.config.config_hash,
+                    "parent_forecast_id": parent_forecast_id}
         forecast_id = digest(identity)
         try:
             return self.store.get_forecast(forecast_id)
@@ -73,6 +82,9 @@ class ForecastService:
                       "source_revisions": sorted({o.revision for o in snapshot.observations}),
                       "observation_count": len(snapshot.observations),
                       "last_actual_available_at": max((o.available_at.isoformat() for o in snapshot.observations), default=None)})
+        self.store.save_model(state)
+        if bias:
+            self.store.save_bias(bias)
         return self.store.save_forecast(result)
 
     def get_forecast(self, forecast_id):
@@ -83,6 +95,12 @@ class ForecastService:
 
     def events(self, as_of=None):
         return self.store.events(as_of)
+
+    def data_summary(self):
+        """UI can inspect dataset bounds without accessing the raw dataframe."""
+        return {**self.store.bounds(), "time_basis": self.config.site.time_basis,
+                "timezone": self.config.site.timezone,
+                "turbines": [t.model_dump() for t in self.config.site.turbines]}
 
     def compare_forecasts(self, first_id, second_id):
         a, b = self.get_forecast(first_id), self.get_forecast(second_id)

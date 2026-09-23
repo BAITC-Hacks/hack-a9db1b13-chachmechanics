@@ -1,9 +1,10 @@
 """SQLite store with immutable observations, forecast versions and event records."""
 from datetime import datetime
+from contextlib import contextmanager
 import json
 from pathlib import Path
 import sqlite3
-from .schemas import ForecastResult, Observation, digest, utc
+from .schemas import BiasState, ForecastResult, ModelState, Observation, digest, utc
 
 
 class Store:
@@ -24,10 +25,58 @@ class Store:
                     id TEXT PRIMARY KEY, event_time TEXT NOT NULL, payload TEXT NOT NULL);
                 CREATE TABLE IF NOT EXISTS imports (
                     id TEXT PRIMARY KEY, payload TEXT NOT NULL);
+                CREATE TABLE IF NOT EXISTS model_states (
+                    id TEXT PRIMARY KEY, activated TEXT NOT NULL, payload TEXT NOT NULL);
+                CREATE TABLE IF NOT EXISTS bias_states (
+                    id TEXT PRIMARY KEY, model_id TEXT NOT NULL, created_as_of TEXT NOT NULL,
+                    payload TEXT NOT NULL);
             """)
 
+    @contextmanager
     def connect(self):
-        return sqlite3.connect(self.path, timeout=30)
+        db = sqlite3.connect(self.path, timeout=30)
+        try:
+            with db:
+                yield db
+        finally:
+            db.close()
+
+    def save_model(self, state: ModelState):
+        state = ModelState.model_validate(state.model_dump())
+        body = state.model_dump_json()
+        with self.connect() as db:
+            previous = db.execute("SELECT payload FROM model_states WHERE id=?", (state.model_id,)).fetchone()
+            if previous and previous[0] != body:
+                raise ValueError("Model versions are immutable")
+            db.execute("INSERT OR IGNORE INTO model_states VALUES(?,?,?)",
+                       (state.model_id, state.activated_at.isoformat(), body))
+
+    def models_as_of(self, origin):
+        with self.connect() as db:
+            rows = db.execute("SELECT payload FROM model_states WHERE activated<=? ORDER BY activated,id",
+                              (utc(origin).isoformat(),)).fetchall()
+        return tuple(ModelState.model_validate_json(row[0]) for row in rows)
+
+    def save_bias(self, state: BiasState):
+        state = BiasState.model_validate(state.model_dump())
+        body = state.model_dump_json()
+        with self.connect() as db:
+            model = db.execute("SELECT payload FROM model_states WHERE id=?", (state.model_id,)).fetchone()
+            if model is None:
+                raise ValueError("Register the model before its bias")
+            if ModelState.model_validate_json(model[0]).activated_at > state.created_as_of:
+                raise ValueError("Bias predates model activation")
+            previous = db.execute("SELECT payload FROM bias_states WHERE id=?", (state.bias_id,)).fetchone()
+            if previous and previous[0] != body:
+                raise ValueError("Bias versions are immutable")
+            db.execute("INSERT OR IGNORE INTO bias_states VALUES(?,?,?,?)",
+                       (state.bias_id, state.model_id, state.created_as_of.isoformat(), body))
+
+    def bias_as_of(self, model_id, origin):
+        with self.connect() as db:
+            row = db.execute("SELECT payload FROM bias_states WHERE model_id=? AND created_as_of<=? ORDER BY created_as_of DESC,id DESC LIMIT 1",
+                             (model_id, utc(origin).isoformat())).fetchone()
+        return BiasState.model_validate_json(row[0]) if row else None
 
     def ingest(self, observations, report):
         with self.connect() as db:

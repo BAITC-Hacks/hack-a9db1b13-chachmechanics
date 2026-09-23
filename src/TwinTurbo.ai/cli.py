@@ -9,13 +9,13 @@ import sys
 from .config import load_config
 from .ingest import audit_csv, ingest_csv
 from .replay import replay, scheduled_origins
-from .schemas import ForecastRequest, ModelState, utc
+from .schemas import ForecastRequest, ForecastResult, ModelState, digest, utc
 from .service import ForecastService
 from .store import Store
 from .weather.archive import GFSArchive
 from .weather.audit import audit_bundle
 from .weather.cache import atomic_write
-from .export import export_csv
+from .export import export_csv, verify_result
 
 
 def timestamp(value):
@@ -96,10 +96,30 @@ def request_for(config, origin, mode=None):
 
 def persist_outputs(service, ids, directory):
     path = Path(directory)
+    checksums = {}
     for identity in ids:
         result = service.get_forecast(identity)
+        verify_result(result)
         atomic_write(path / (identity + ".json"), result.model_dump_json(indent=2).encode())
-    output({"forecast_ids": ids}, path / "index.json")
+        checksums[identity] = digest(result)
+    output({"forecast_ids": ids, "checksums": checksums}, path / "index.json")
+
+
+def read_outputs(directory):
+    path = Path(directory)
+    index = json.loads((path / "index.json").read_text(encoding="utf-8"))
+    results = []
+    for identity in index["forecast_ids"]:
+        if len(identity) != 64 or any(c not in "0123456789abcdef" for c in identity):
+            raise ValueError("Invalid forecast filename in index")
+        result = ForecastResult.model_validate_json((path / (identity + ".json")).read_text(encoding="utf-8"))
+        if result.forecast_id != identity:
+            raise ValueError("Forecast file does not match index")
+        if index.get("checksums", {}).get(identity) != digest(result):
+            raise ValueError("OUTPUT_CHECKSUM_MISMATCH: use a checksummed export from persist_outputs")
+        verify_result(result)
+        results.append(result)
+    return results
 
 
 def execute(args):
@@ -158,11 +178,9 @@ def execute(args):
         mode = args.mode or config.forecast.mode
         if args.command == "predict":
             req = request_for(config, timestamp(args.origin), mode)
-            if args.online:
-                archive.fetch_latest(req)
             from .agents.orchestrator import Orchestrator
             from .clock import VirtualClock
-            result = Orchestrator(service, VirtualClock(req.origin_time)).run(req)
+            result = Orchestrator(service, VirtualClock(req.origin_time)).run(req, online=args.online)
             return persist_outputs(service, [result.forecast_id], args.output)
         from zoneinfo import ZoneInfo
         default_end = store.bounds()["end"]
@@ -184,20 +202,12 @@ def execute(args):
         return
     results = store.forecasts()
     if args.input:
-        ids = json.loads((Path(args.input) / "index.json").read_text())["forecast_ids"]
-        results = [store.get_forecast(i) for i in ids]
+        results = read_outputs(args.input)
     if args.command == "verify":
         if not results:
             raise ValueError("No forecasts to verify")
-        from .clock import targets
         for result in results:
-            req = ForecastRequest.model_validate(result.manifest["request"])
-            expected = {(t, h.target_start, h.target_end) for t in req.turbine_ids for h in targets(req)}
-            actual = [(r.turbine_id, r.target_start, r.target_end) for r in result.predictions.rows]
-            if len(actual) != len(expected) or set(actual) != expected:
-                raise ValueError("Stored forecast has invalid coverage")
-            if timestamp(result.manifest["weather"]["available_at"]) > result.origin_time:
-                raise ValueError("Stored forecast contains future weather")
+            verify_result(result)
         return output({"verified_forecasts": len(results), "rows": sum(len(r.predictions.rows) for r in results)})
     if args.command == "export":
         from zoneinfo import ZoneInfo

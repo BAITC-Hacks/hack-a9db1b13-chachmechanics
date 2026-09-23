@@ -63,6 +63,8 @@ class WeatherCache:
         files = bundle.metadata.evidence.get("files", [])
         for record in files:
             self.get_object(record["sha256"])
+        if files and digest(files) != bundle.metadata.sha256:
+            raise ValueError("CACHE_EVIDENCE_CHECKSUM_MISMATCH")
         if bundle.metadata.provenance == "operational_archive" and not files:
             raise ValueError("Operational cache requires raw evidence")
         return bundle

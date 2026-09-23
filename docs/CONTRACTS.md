@@ -1,6 +1,7 @@
 # Контракты между участниками
 
-Статус: описание интерфейсов до реализации. Классы и функции ещё не написаны.
+Статус: интерфейсы участника 1 реализованы и проверены. Исходники находятся в
+`src/TwinTurbo.ai/`, Python-импорты и CLI сохраняют имя `windoracle` через настройку setuptools.
 Владелец схем — участник 1. Участники 2 и 3 согласуют необходимые поля до начала интеграции.
 
 ## Путь данных
@@ -31,7 +32,73 @@
 - `agents/critic.py`: вычисляет оценку и предложение изменения состояния. Факт сохранения версии контролирует общий store.
 - `ui/`: отображает ForecastResult и вызывает service. Не рассчитывает собственную мощность, метрики и bias.
 
-Точные сигнатуры и типы фиксируются участником 1 в schemas.py до реализации интеграции. Изменение контракта требует согласования всех затронутых потребителей.
+Точные сигнатуры и типы зафиксированы в `src/TwinTurbo.ai/schemas.py`.
+Следующие примеры являются текущим API, а не командами из первоначальной спецификации README.
+
+### Подключение модели участника 2
+
+Объект predictor содержит `state: ModelState` и метод
+`predict(snapshot: AsOfSnapshot, bias: BiasState | None = None) -> PredictionBatch`.
+`PredictionBatch(rows=(PredictionRow(...), ...))` содержит по одной строке на
+каждую пару турбина/целевой час. `ModelState` обязательно включает
+`max_label_available_at <= training_cutoff <= activated_at`, а также `artifact_ref`.
+В рабочей модели `provenance="trained"`, в тестовой — `"synthetic"`.
+`ModelState` описывает метаданные; сохранение/загрузка весов остаётся у участника 2.
+
+`snapshot.observations` — tuple из Observation; `snapshot.weather_values` — tuple
+из WeatherValue, уже отобранных на целевые часы. Доступ к полям через атрибуты,
+таблицы pandas при необходимости создаются внутри features из `model_dump()`.
+Неполные часы имеют `power_norm=None` и quality_flag, их нельзя обучать как нули.
+
+Для CLI участник 2 предоставляет фабрику без аргументов, например
+`windoracle.models.registry:load_predictor`. Она возвращает predictor с уже
+загруженным состоянием. Эта фабрика в текущем каркасе ещё не реализована.
+Передать её явно: `--predictor windoracle.models.registry:load_predictor`.
+Ни CLI, ни интегратор не подменяют отсутствие модели случайными числами.
+
+### Подключение интерфейса участника 3
+
+```python
+from windoracle.config import load_config
+from windoracle.store import Store
+from windoracle.weather.archive import GFSArchive
+from windoracle.service import ForecastService
+from windoracle.schemas import ForecastRequest
+
+config = load_config("configs/site.example.yaml")
+store = Store(config.storage.database)
+service = ForecastService(config, store, GFSArchive(config))
+# Без predictor доступны чтение, сравнение, экспорт, журнал и описание данных.
+results = service.list_forecasts()  # list[ForecastResult]
+events = service.events()          # list[dict]
+summary = service.data_summary()
+```
+
+Для расчёта передать predictor четвёртым аргументом ForecastService. Вызов:
+`service.create_forecast(ForecastRequest(origin_time=..., turbine_ids=(...), mode="replay"))`.
+UI передаёт aware datetime или ISO 8601 с offset, не строку без пояса.
+`result.predictions.rows` — tuple PredictionRow; `result.manifest` содержит
+происхождение данных, модель, конфигурацию и предупреждения.
+`service.compare_forecasts(id1, id2)` сравнивает только пересекающиеся целевые часы.
+`service.export([id1, id2])` возвращает текст CSV. Для fixture необходимо явно
+`strict=False`; такой файл нельзя выдавать за конкурсный результат.
+
+### Хранение и время
+
+`store.observations_as_of(origin, turbine_ids)` выбирает только доступные записи.
+`store.save_model(state)` / `models_as_of(origin)` сохраняют и выбирают версии модели.
+`store.save_bias(state)` / `bias_as_of(model_id, origin)` делают то же для коррекции.
+Существующая версия не может менять содержимое. Повтор идентичной записи безопасен.
+`service.create_forecast(..., bias=bias)` проверяет версию и время bias.
+Расчёт новых коэффициентов и обработка факта остаются у участника 2; автоматического
+обучения без его компонента нет.
+
+`replay(service, origins, mode="replay", include_updates=True)` возвращает
+`{"forecast_ids": [...], "failures": [...]}`. `origins` — реальные aware datetime,
+не индексы строк. VirtualClock не движется назад. При новых runs сохраняются новые
+выпуски со ссылкой parent_forecast_id; старые прогнозы остаются неизменными.
+Сохранённые JSON + index.json с checksum можно проверять и экспортировать на другой
+машине без исходной SQLite через `verify --input` и `export --input`.
 
 ## Минимальные инварианты
 
@@ -46,4 +113,9 @@
 
 ## Как начинать независимо
 
-Пока погодный адаптер готовится, участник 1 задаёт схему небольшого синтетического снимка для tests/fixtures. Участник 2 работает с этим снимком, участник 3 — с согласованным примером ForecastResult в demo/fixtures. Содержание fixtures создаётся командой и явно маркируется; сейчас эти папки пусты.
+`tests/conftest.py` содержит синтетические входы и тестовую модель.
+`python scripts/prepare_demo.py --fixture --origin 2025-06-01T18:00:00Z` создаёт
+три выпуска по 96 строк, index.json, CSV и журнал в outputs/integration-smoke.
+Они подходят для подключения интерфейса, явно маркированы fixture и запрещены в strict-экспорте.
+`--real-weather` использует уже скачанную настоящую погоду, но модель по-прежнему
+тестовая: это проверка интеграции, а не оценка качества прогноза.
