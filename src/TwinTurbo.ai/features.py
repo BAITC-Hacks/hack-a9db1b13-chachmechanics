@@ -310,7 +310,7 @@ def eligible_observations(snapshot: AsOfSnapshot, cutoff: datetime) -> tuple[Obs
         raise ValueError("Training cutoff cannot be after the snapshot origin")
     result = (
         observation
-        for observation in snapshot.observations
+        for observation in latest_observations(snapshot.observations, cutoff)
         if observation.available_at <= cutoff
         and observation.quality_flag == "complete"
         and observation.power_norm is not None
@@ -319,6 +319,48 @@ def eligible_observations(snapshot: AsOfSnapshot, cutoff: datetime) -> tuple[Obs
     return tuple(sorted(result, key=lambda value: (
         value.turbine_id, value.event_start, value.available_at, value.revision
     )))
+
+
+def latest_observations(observations, as_of):
+    """Select one revision per hour, rejecting ambiguous simultaneous revisions."""
+    selected = {}
+    for raw in observations:
+        observation = Observation.model_validate(raw.model_dump())
+        if observation.available_at > utc(as_of):
+            continue
+        key = observation.turbine_id, observation.event_start, observation.event_end
+        old = selected.get(key)
+        if old and old.available_at == observation.available_at and old != observation:
+            raise ValueError("AMBIGUOUS_OBSERVATION_REVISION")
+        if old is None or old.available_at < observation.available_at:
+            selected[key] = observation
+    return tuple(selected[key] for key in sorted(selected))
+
+
+def supervised_examples(snapshots, observations, *, training_cutoff, allow_synthetic=False):
+    """Join archived forecast features to mature labels; never use target telemetry."""
+    cutoff = utc(training_cutoff)
+    labels = {(o.turbine_id, o.event_start, o.event_end): o
+              for o in latest_observations(observations, cutoff) if o.quality_flag == "complete"}
+    examples = {}
+    for snapshot in snapshots:
+        if snapshot.origin_time > cutoff:
+            continue
+        allowed = {"operational_archive", "synthetic"} if allow_synthetic else {"operational_archive"}
+        if snapshot.weather_run_metadata.provenance not in allowed:
+            raise ValueError("ML_REQUIRES_OPERATIONAL_FORECASTS")
+        for row in build_features(snapshot):
+            actual = labels.get((row.turbine_id, row.target_start, row.target_end))
+            if actual is None:
+                continue
+            example = TrainingExample(row.turbine_id, row.origin_time, row.target_start,
+                row.weather_run_init_time, row.wind_ms, row.temperature_c, row.u_ms, row.v_ms,
+                actual.power_norm, actual.available_at)
+            key = row.origin_time, row.turbine_id, row.target_start
+            if key in examples and examples[key] != example:
+                raise ValueError("DUPLICATE_TRAINING_ORIGIN")
+            examples[key] = example
+    return tuple(examples[key] for key in sorted(examples))
 
 
 def select_training_examples(

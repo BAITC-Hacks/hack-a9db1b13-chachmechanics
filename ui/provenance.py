@@ -16,7 +16,7 @@ def provenance_view(result, as_of):
     meta = dict(result["provenance"])
     meta.update(run_id=result["run_id"], model_id=result["model_id"], bias_id=result.get("bias_id"),
                 forecast_id=result["forecast_id"], parent_forecast_id=result.get("parent_forecast_id"),
-                weather_age=age_label(meta.get("weather_available_at"), result["origin_time"]),
+                weather_age=age_label(meta.get("run_init_time"), result["origin_time"]),
                 telemetry_age=age_label(meta.get("last_observation_available_at"), result["origin_time"]),
                 view_as_of=as_of)
     return meta

@@ -1,0 +1,647 @@
+{
+  "as_of": "2025-02-09T00:00:00+00:00",
+  "comparison_keys_sha256": "501d5f6f7fb10f4866ad6b259afe8ade8b6f00d85c6e76ee0f678072db548a6c",
+  "coverage": {
+    "baseline": {
+      "complete_origins": 14,
+      "expected_origins": 14,
+      "expected_rows": 1344,
+      "forecast_rows": 1344,
+      "matched_rows": 1344,
+      "own_scoreable_rows": 1344,
+      "release_coverage": 1.0
+    },
+    "curve": {
+      "complete_origins": 14,
+      "expected_origins": 14,
+      "expected_rows": 1344,
+      "forecast_rows": 1344,
+      "matched_rows": 1344,
+      "own_scoreable_rows": 1344,
+      "release_coverage": 1.0
+    },
+    "curve_bias": {
+      "complete_origins": 14,
+      "expected_origins": 14,
+      "expected_rows": 1344,
+      "forecast_rows": 1344,
+      "matched_rows": 1344,
+      "own_scoreable_rows": 1344,
+      "release_coverage": 1.0
+    }
+  },
+  "coverage_basis": "planned_origins",
+  "eligible_actual_rows": 1344,
+  "error_sign": "prediction_minus_actual",
+  "failures": [],
+  "fixture": {
+    "fold_count": 2,
+    "generator": "tests.test_models.prepared_experiment",
+    "seed": 42,
+    "validation_origins": 14,
+    "warning": "SYNTHETIC TEST DATA ONLY; NOT REAL TURBINE PERFORMANCE"
+  },
+  "fixture_only": true,
+  "input_sha256": "42e69c186ebf6107aa46d5a9be8505b558e756fffb59516df976824a75207a7a",
+  "matched_sample_count": 1344,
+  "missing_or_immature_actual_rows": 0,
+  "model_provenance": [
+    "synthetic"
+  ],
+  "protocol": {
+    "activation_delay": "synchronous unless supplied by model factory",
+    "adaptation": "matured scheduled out-of-sample residuals only",
+    "interval_fallback": false,
+    "interval_min_samples": 30,
+    "split": "expanding/rolling chronological folds supplied by integration layer",
+    "wind_calibration": "none: measured turbine wind curve applied to supplied grid wind"
+  },
+  "reports": {
+    "baseline": {
+      "forecast_coverage": 1.0,
+      "interval_metrics": {
+        "turbine_1": {
+          "1-6": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "13-24": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "25-48": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "7-12": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "all": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          }
+        },
+        "turbine_2": {
+          "1-6": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "13-24": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "25-48": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "7-12": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "all": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          }
+        }
+      },
+      "metrics_by_turbine_and_lead": {
+        "turbine_1": {
+          "1-6": {
+            "mae": 0.16905531259660955,
+            "mean_error": 0.07586036736073379,
+            "rmse": 0.1849363713330146,
+            "sample_count": 84
+          },
+          "13-24": {
+            "mae": 0.23574822121271455,
+            "mean_error": -0.006086286711924407,
+            "rmse": 0.2600986214241064,
+            "sample_count": 168
+          },
+          "25-48": {
+            "mae": 0.19447111209193005,
+            "mean_error": -0.01731427420559328,
+            "rmse": 0.22642180364010173,
+            "sample_count": 336
+          },
+          "7-12": {
+            "mae": 0.15250473096810155,
+            "mean_error": 0.06976201361331713,
+            "rmse": 0.16533456887406459,
+            "sample_count": 84
+          },
+          "all": {
+            "mae": 0.1963676167947326,
+            "mean_error": 0.008024088840978624,
+            "rmse": 0.22413915864217698,
+            "sample_count": 672
+          }
+        },
+        "turbine_2": {
+          "1-6": {
+            "mae": 0.11749058390269125,
+            "mean_error": 0.0718244561986351,
+            "rmse": 0.13083945453793727,
+            "sample_count": 84
+          },
+          "13-24": {
+            "mae": 0.18142581725663687,
+            "mean_error": 0.00906595893590601,
+            "rmse": 0.20459790724268756,
+            "sample_count": 168
+          },
+          "25-48": {
+            "mae": 0.15585936935219247,
+            "mean_error": -0.015088170876692035,
+            "rmse": 0.18634177799112833,
+            "sample_count": 336
+          },
+          "7-12": {
+            "mae": 0.15682105446464367,
+            "mean_error": 0.033557494414997016,
+            "rmse": 0.17241935759971946,
+            "sample_count": 84
+          },
+          "all": {
+            "mae": 0.15757509378617232,
+            "mean_error": 0.007895148122334505,
+            "rmse": 0.1835282804960313,
+            "sample_count": 672
+          }
+        }
+      },
+      "period": [
+        "2025-01-22T01:00:00Z",
+        "2025-02-07T01:00:00Z"
+      ],
+      "sample_count": 1344
+    },
+    "curve": {
+      "forecast_coverage": 1.0,
+      "interval_metrics": {
+        "turbine_1": {
+          "1-6": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "13-24": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "25-48": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "7-12": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "all": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          }
+        },
+        "turbine_2": {
+          "1-6": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "13-24": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "25-48": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "7-12": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          },
+          "all": {
+            "coverage": null,
+            "interval_availability": 0.0,
+            "mean_width": null,
+            "pinball_q10": null,
+            "pinball_q50": null,
+            "pinball_q90": null,
+            "sample_count": 0,
+            "target_coverage": 0.8
+          }
+        }
+      },
+      "metrics_by_turbine_and_lead": {
+        "turbine_1": {
+          "1-6": {
+            "mae": 0.049921384087454425,
+            "mean_error": -0.048809988250803696,
+            "rmse": 0.06310852630212374,
+            "sample_count": 84
+          },
+          "13-24": {
+            "mae": 0.059151528782888305,
+            "mean_error": -0.05748313633453284,
+            "rmse": 0.07748482850048413,
+            "sample_count": 168
+          },
+          "25-48": {
+            "mae": 0.06453082880886685,
+            "mean_error": -0.0634531015501578,
+            "rmse": 0.07804439947521725,
+            "sample_count": 336
+          },
+          "7-12": {
+            "mae": 0.05044891186087807,
+            "mean_error": -0.049347452276159866,
+            "rmse": 0.05989907372485289,
+            "sample_count": 84
+          },
+          "all": {
+            "mae": 0.05959958359369705,
+            "mean_error": -0.05836701492458256,
+            "rmse": 0.07411316986407447,
+            "sample_count": 672
+          }
+        },
+        "turbine_2": {
+          "1-6": {
+            "mae": 0.037072545301427624,
+            "mean_error": -0.0353930312014655,
+            "rmse": 0.04545478893963315,
+            "sample_count": 84
+          },
+          "13-24": {
+            "mae": 0.04732099325158573,
+            "mean_error": -0.04589580602780537,
+            "rmse": 0.06255746551638111,
+            "sample_count": 168
+          },
+          "25-48": {
+            "mae": 0.052119947992274526,
+            "mean_error": -0.051105809740200646,
+            "rmse": 0.06357196042562605,
+            "sample_count": 336
+          },
+          "7-12": {
+            "mae": 0.040945614193025164,
+            "mean_error": -0.040016431346575614,
+            "rmse": 0.052442087661821596,
+            "sample_count": 84
+          },
+          "all": {
+            "mae": 0.047642492245840294,
+            "mean_error": -0.04645303919555681,
+            "rmse": 0.060009124294740236,
+            "sample_count": 672
+          }
+        }
+      },
+      "period": [
+        "2025-01-22T01:00:00Z",
+        "2025-02-07T01:00:00Z"
+      ],
+      "sample_count": 1344
+    },
+    "curve_bias": {
+      "forecast_coverage": 1.0,
+      "interval_metrics": {
+        "turbine_1": {
+          "1-6": {
+            "coverage": 0.5833333333333334,
+            "interval_availability": 0.2857142857142857,
+            "mean_width": 0.09824753228258316,
+            "pinball_q10": 0.014911047683880083,
+            "pinball_q50": 0.027083257971295006,
+            "pinball_q90": 0.00878167147387192,
+            "sample_count": 24,
+            "target_coverage": 0.8
+          },
+          "13-24": {
+            "coverage": 0.53125,
+            "interval_availability": 0.5714285714285714,
+            "mean_width": 0.14408830321919994,
+            "pinball_q10": 0.018591809429792563,
+            "pinball_q50": 0.034130289589001016,
+            "pinball_q90": 0.011398447825048888,
+            "sample_count": 96,
+            "target_coverage": 0.8
+          },
+          "25-48": {
+            "coverage": 0.5625,
+            "interval_availability": 0.5714285714285714,
+            "mean_width": 0.13587707993107967,
+            "pinball_q10": 0.029501805724023056,
+            "pinball_q50": 0.035911670156943104,
+            "pinball_q90": 0.011889985735550425,
+            "sample_count": 192,
+            "target_coverage": 0.8
+          },
+          "7-12": {
+            "coverage": 0.7083333333333334,
+            "interval_availability": 0.2857142857142857,
+            "mean_width": 0.09506623528915285,
+            "pinball_q10": 0.01159977477324827,
+            "pinball_q50": 0.017197195238678364,
+            "pinball_q90": 0.00653753272203924,
+            "sample_count": 24,
+            "target_coverage": 0.8
+          },
+          "all": {
+            "coverage": 0.5654761904761905,
+            "interval_availability": 0.5,
+            "mean_width": 0.1326202585640838,
+            "pinball_q10": 0.024063750426320214,
+            "pinball_q50": 0.03343535520153731,
+            "pinball_q90": 0.011145205812893579,
+            "sample_count": 336,
+            "target_coverage": 0.8
+          }
+        },
+        "turbine_2": {
+          "1-6": {
+            "coverage": 0.5416666666666666,
+            "interval_availability": 0.2857142857142857,
+            "mean_width": 0.07083896444032346,
+            "pinball_q10": 0.008582951231281439,
+            "pinball_q50": 0.020922437653631998,
+            "pinball_q90": 0.005649021993357301,
+            "sample_count": 24,
+            "target_coverage": 0.8
+          },
+          "13-24": {
+            "coverage": 0.5,
+            "interval_availability": 0.5714285714285714,
+            "mean_width": 0.11013349020950784,
+            "pinball_q10": 0.014026407692214258,
+            "pinball_q50": 0.027793413357668727,
+            "pinball_q90": 0.009083372063678798,
+            "sample_count": 96,
+            "target_coverage": 0.8
+          },
+          "25-48": {
+            "coverage": 0.5520833333333334,
+            "interval_availability": 0.5714285714285714,
+            "mean_width": 0.11256441228459535,
+            "pinball_q10": 0.024069466720703456,
+            "pinball_q50": 0.030094414528459474,
+            "pinball_q90": 0.009365046030359581,
+            "sample_count": 192,
+            "target_coverage": 0.8
+          },
+          "7-12": {
+            "coverage": 0.75,
+            "interval_availability": 0.2857142857142857,
+            "mean_width": 0.10124456698029431,
+            "pinball_q10": 0.006027052473250735,
+            "pinball_q50": 0.016829198687974264,
+            "pinball_q90": 0.007692411167178445,
+            "sample_count": 24,
+            "target_coverage": 0.8
+          },
+          "all": {
+            "coverage": 0.5505952380952381,
+            "interval_availability": 0.5,
+            "mean_width": 0.10808091360967229,
+            "pinball_q10": 0.01880509773135835,
+            "pinball_q50": 0.027834328999996927,
+            "pinball_q90": 0.008899663547009114,
+            "sample_count": 336,
+            "target_coverage": 0.8
+          }
+        }
+      },
+      "metrics_by_turbine_and_lead": {
+        "turbine_1": {
+          "1-6": {
+            "mae": 0.03513642053456484,
+            "mean_error": -0.00881694213154495,
+            "rmse": 0.04209947710102916,
+            "sample_count": 84
+          },
+          "13-24": {
+            "mae": 0.05074365923704609,
+            "mean_error": -0.016598156766722546,
+            "rmse": 0.060447669466537,
+            "sample_count": 168
+          },
+          "25-48": {
+            "mae": 0.05235005921641571,
+            "mean_error": -0.018948110156357466,
+            "rmse": 0.062496739419798136,
+            "sample_count": 336
+          },
+          "7-12": {
+            "mae": 0.03376103815914663,
+            "mean_error": -0.009438315190100664,
+            "rmse": 0.04032857747767048,
+            "sample_count": 84
+          },
+          "all": {
+            "mae": 0.04747312675418331,
+            "mean_error": -0.01590550143506507,
+            "rmse": 0.057369385753475444,
+            "sample_count": 672
+          }
+        },
+        "turbine_2": {
+          "1-6": {
+            "mae": 0.026877767379289135,
+            "mean_error": -0.005020966928053089,
+            "rmse": 0.031198901282154353,
+            "sample_count": 84
+          },
+          "13-24": {
+            "mae": 0.040620659975149374,
+            "mean_error": -0.014190046996874687,
+            "rmse": 0.04871994181012382,
+            "sample_count": 168
+          },
+          "25-48": {
+            "mae": 0.043467712490843025,
+            "mean_error": -0.016707033796528145,
+            "rmse": 0.051596602202725286,
+            "sample_count": 336
+          },
+          "7-12": {
+            "mae": 0.03296190390016508,
+            "mean_error": -0.00908174559471013,
+            "rmse": 0.03936612646986597,
+            "sample_count": 84
+          },
+          "all": {
+            "mae": 0.039368980149140635,
+            "mean_error": -0.013663867712828147,
+            "rmse": 0.04732753724033702,
+            "sample_count": 672
+          }
+        }
+      },
+      "period": [
+        "2025-01-22T01:00:00Z",
+        "2025-02-07T01:00:00Z"
+      ],
+      "sample_count": 1344
+    }
+  },
+  "selection": "scheduled releases only",
+  "training": [
+    {
+      "baseline": {
+        "activated_at": "2025-01-21T00:00:00Z",
+        "artifact_ref": "model://constant-805e50a61ff97f1850b37030",
+        "feature_schema_version": "weather-calendar-v1",
+        "max_label_available_at": "2025-01-20T23:15:00Z",
+        "model_id": "constant-805e50a61ff97f1850b37030",
+        "provenance": "synthetic",
+        "training_cutoff": "2025-01-21T00:00:00Z"
+      },
+      "curve": {
+        "activated_at": "2025-01-21T00:00:00Z",
+        "artifact_ref": "model://power_curve-153c44a720502e741fe2edfb",
+        "feature_schema_version": "weather-calendar-v1",
+        "max_label_available_at": "2025-01-20T23:15:00Z",
+        "model_id": "power_curve-153c44a720502e741fe2edfb",
+        "provenance": "synthetic",
+        "training_cutoff": "2025-01-21T00:00:00Z"
+      }
+    },
+    {
+      "baseline": {
+        "activated_at": "2025-01-29T00:00:00Z",
+        "artifact_ref": "model://constant-158f96b42b680b8789e1b945",
+        "feature_schema_version": "weather-calendar-v1",
+        "max_label_available_at": "2025-01-28T23:15:00Z",
+        "model_id": "constant-158f96b42b680b8789e1b945",
+        "provenance": "synthetic",
+        "training_cutoff": "2025-01-29T00:00:00Z"
+      },
+      "curve": {
+        "activated_at": "2025-01-29T00:00:00Z",
+        "artifact_ref": "model://power_curve-46a21360fc76784a51e911f9",
+        "feature_schema_version": "weather-calendar-v1",
+        "max_label_available_at": "2025-01-28T23:15:00Z",
+        "model_id": "power_curve-46a21360fc76784a51e911f9",
+        "provenance": "synthetic",
+        "training_cutoff": "2025-01-29T00:00:00Z"
+      }
+    }
+  ],
+  "weather_provenance": [
+    "synthetic"
+  ]
+}

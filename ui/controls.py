@@ -24,3 +24,15 @@ def validate_selection(selection, catalog):
     allowed_clocks = [selection["origin_time"], *origins[selection["forecast_id"]].get("inspection_times", [])]
     if selection["as_of"] not in allowed_clocks or utc(selection["as_of"]) < utc(selection["origin_time"]):
         raise UIError("INVALID_SELECTION")
+
+
+def calculation_request(action, selection, catalog, mode):
+    if mode == "fixture":
+        raise UIError("DEMO_CALCULATION_DISABLED")
+    origin = action.get("origin_time", (selection or {}).get("origin_time"))
+    horizon = action.get("horizon_hours", (selection or {}).get("horizon_hours", 48))
+    utc(origin)
+    if horizon not in (24, 48) or not catalog.get("turbines"):
+        raise UIError("INVALID_SELECTION")
+    return {"origin_time": origin, "horizon_hours": horizon, "mode": mode,
+            "turbine_ids": [t["id"] for t in catalog["turbines"]]}

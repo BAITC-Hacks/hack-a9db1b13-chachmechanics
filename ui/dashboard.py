@@ -36,7 +36,10 @@ def main():
     view = controller.view()
     download = view["download"]
     # Streamlit owns file delivery; local preview keeps its own download dialog.
-    register_component()(data={**view, "download": None}, key="twinturbo", on_action_change=handle_action)
+    # Acknowledge even actions that leave the view identical (export, refresh,
+    # selecting the same release), so the frontend clears its loading state.
+    register_component()(data={**view, "download": None, "action_ack": st.session_state.get("tt_last_action")},
+                         key="twinturbo", on_action_change=handle_action)
     if download:
         @st.dialog("Экспорт готов")
         def export_dialog():
