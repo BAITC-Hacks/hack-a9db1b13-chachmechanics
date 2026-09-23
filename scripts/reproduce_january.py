@@ -542,10 +542,37 @@ def main(config_path: Path = CONFIG_PATH) -> None:
     config = load_config(config_path)
     store = Store(ROOT / config.storage.database)
     actuals = store.observations_as_of(JAN_EVALUATION_AS_OF, TURBINES)
-    bundles = tuple(WeatherCache(ROOT / config.weather.cache_dir).bundles())
-    provider = MemoryWeatherProvider(config, bundles)
+    cached_bundles = tuple(WeatherCache(ROOT / config.weather.cache_dir).bundles())
+    provider = MemoryWeatherProvider(config, cached_bundles)
     dec_snapshots = tuple(make_snapshot(provider, origin) for origin in DEC_ORIGINS)
     jan_snapshots = tuple(make_snapshot(provider, origin) for origin in JAN_ORIGINS)
+    selected_run_ids = {
+        snapshot.weather_run_metadata.run_id
+        for snapshot in (*dec_snapshots, *jan_snapshots)
+    }
+    bundle_by_id = {
+        bundle.metadata.run_id: bundle for bundle in cached_bundles
+    }
+    missing_selected_runs = selected_run_ids - set(bundle_by_id)
+    if missing_selected_runs:
+        raise RuntimeError(
+            "SELECTED_WEATHER_RUN_MISSING_FROM_CACHE: "
+            + ",".join(sorted(missing_selected_runs))
+        )
+    bundles = tuple(
+        sorted(
+            (bundle_by_id[run_id] for run_id in selected_run_ids),
+            key=lambda item: item.metadata.run_init_time,
+        )
+    )
+    expected_run_count = len(DEC_ORIGINS) + len(JAN_ORIGINS)
+    if len(bundles) != expected_run_count or any(
+        bundle.metadata.provenance != "operational_archive" for bundle in bundles
+    ):
+        raise RuntimeError(
+            "JANUARY_WEATHER_PROVENANCE_INCOMPLETE: expected "
+            f"{expected_run_count} unique operational runs, selected {len(bundles)}"
+        )
     examples = build_training_examples(
         dec_snapshots, actuals, label_as_of=FINAL_TRAIN_CUTOFF
     )
@@ -853,6 +880,7 @@ def main(config_path: Path = CONFIG_PATH) -> None:
     )["intervals"]
 
     code_files = (
+        Path(__file__).resolve(),
         ROOT / "src" / "TwinTurbo.ai" / "features.py",
         ROOT / "src" / "TwinTurbo.ai" / "evaluate.py",
         ROOT / "src" / "TwinTurbo.ai" / "models" / "baseline.py",
