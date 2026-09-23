@@ -1,0 +1,42 @@
+name: Integration checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integration-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements.lock
+      - name: Install dependencies and actual package
+        run: |
+          python -m pip install -r requirements.lock
+          python -m pip install --no-deps .
+          python -m pip check
+      - name: Verify shared contracts and all team tests
+        run: python -m pytest -q
+      - name: Run offline integration scenario
+        run: |
+          python -m TwinTurbo.ai --help
+          python scripts/prepare_demo.py --fixture --origin 2025-06-01T18:00:00Z
+          python -m TwinTurbo.ai verify --input outputs/integration-smoke
+          python -m TwinTurbo.ai export --input outputs/integration-smoke --allow-fixture --output outputs/smoke.csv

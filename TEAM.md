@@ -54,6 +54,7 @@ fetch, проверка изменений команды, слияние при
 
 ### Файлы участника 1
 
+- `.github/workflows/ci.yml` — установка, все тесты команды и offline-интеграция на Windows/Linux.
 - `pyproject.toml`
 - `requirements.lock`
 - `.env.example`
