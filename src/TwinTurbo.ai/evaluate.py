@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import datetime, timedelta
+import json
 from math import fsum, isclose, isfinite, sqrt
 from typing import Any, Generic, TypeVar
 
@@ -481,6 +482,34 @@ class ModelComparison:
     baseline: EvaluationReport
     candidate: EvaluationReport
 
+    def to_dict(self) -> dict[str, Any]:
+        """Return a stable, JSON-safe comparison report document."""
+
+        return {
+            "schema": "twinturbo.model-comparison.v1",
+            "common_keys": [
+                {
+                    "origin_time": key.origin_time.isoformat(),
+                    "target_start": key.target_start.isoformat(),
+                    "turbine_id": key.turbine_id,
+                }
+                for key in self.common_keys
+            ],
+            "baseline": self.baseline.model_dump(mode="json"),
+            "candidate": self.candidate.model_dump(mode="json"),
+        }
+
+    def to_json(self, *, indent: int | None = 2) -> str:
+        """Serialize deterministically; suitable for a reproducible report."""
+
+        return json.dumps(
+            self.to_dict(),
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=indent,
+            allow_nan=False,
+        )
+
 
 def compare_models(
     baseline: Iterable[EvaluationPoint | Mapping[str, Any] | Any],
@@ -508,11 +537,22 @@ def compare_models(
                                evaluation_as_of=evaluation_as_of, lead_groups=lead_groups)
     candidate_report = evaluate(candidate_common, expected_keys=expected, period=period,
                                 evaluation_as_of=evaluation_as_of, lead_groups=lead_groups)
+    period_start = _as_utc(period[0], "period start")
+    period_end = _as_utc(period[1], "period end")
+    expected_in_period = tuple(
+        key for key in expected if period_start <= _as_key(key).target_start < period_end
+    )
+    base_in_period = tuple(
+        point for point in base_all if period_start <= point.target_start < period_end
+    )
+    candidate_in_period = tuple(
+        point for point in candidate_all if period_start <= point.target_start < period_end
+    )
     baseline_report = baseline_report.model_copy(update={
-        "forecast_coverage": forecast_coverage(base_all, expected),
+        "forecast_coverage": forecast_coverage(base_in_period, expected_in_period),
     })
     candidate_report = candidate_report.model_copy(update={
-        "forecast_coverage": forecast_coverage(candidate_all, expected),
+        "forecast_coverage": forecast_coverage(candidate_in_period, expected_in_period),
     })
     return ModelComparison(
         common_keys=tuple(point.key for point in base_common),

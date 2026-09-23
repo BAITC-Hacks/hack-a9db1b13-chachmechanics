@@ -149,6 +149,10 @@ def test_models_are_scored_only_on_common_keys_but_keep_separate_coverage():
     assert comparison.candidate.forecast_coverage == pytest.approx(2 / 3)
     assert comparison.baseline.metrics_by_turbine_and_lead["turbine_1"]["all"]["mae"] == pytest.approx(.2)
     assert comparison.candidate.metrics_by_turbine_and_lead["turbine_1"]["all"]["mae"] == pytest.approx(.1)
+    document = comparison.to_dict()
+    assert document["schema"] == "twinturbo.model-comparison.v1"
+    assert comparison.to_json() == comparison.to_json()
+    assert '"baseline"' in comparison.to_json()
 
 
 def test_alignment_rejects_different_actual_revisions_for_same_key():
