@@ -152,16 +152,28 @@ class UIContractTests(unittest.TestCase):
 @unittest.skipUnless(importlib.util.find_spec("pydantic"), "Optional integration check requires backend pydantic")
 class BackendSchemaIntegrationTests(unittest.TestCase):
     def test_adapter_with_actual_forecastresult_and_backend_export(self):
-        from windoracle.schemas import ForecastResult
+        from windoracle.schemas import ForecastResult, ForecastRequest, ModelState, WeatherRunMetadata, digest
         from windoracle.export import export_csv
         fixtures=FixtureService().data["forecasts"]
         native={}
         for key in ("demo-0715-r1", "demo-0715-r2"):
             row=fixtures[key]
             fields={k:row[k] for k in ("forecast_id","origin_time","run_id","model_id","parent_forecast_id","mode","release_kind")}
-            native[key]=ForecastResult.model_validate({**fields,"predictions":{"rows":row["predictions"]},"provenance":"synthetic",
-                "manifest":{"weather":{"available_at":row["provenance"]["weather_available_at"]},
-                            "model":{"provenance":"synthetic","activated_at":row["provenance"]["model_activated_at"],"training_cutoff":row["provenance"]["training_cutoff"]}}})
+            provenance = row["provenance"]
+            request = ForecastRequest(origin_time=row["origin_time"], turbine_ids=("turbine_1", "turbine_2"),
+                                      mode="fixture", release_kind=row["release_kind"])
+            model = ModelState(model_id=row["model_id"], provenance="synthetic", artifact_ref="UI test fixture",
+                               activated_at=provenance["model_activated_at"], training_cutoff=provenance["training_cutoff"],
+                               max_label_available_at=provenance["training_cutoff"])
+            weather = WeatherRunMetadata(run_id=row["run_id"], provider="UI fixture", model="DEMO-WX",
+                run_init_time=provenance["run_init_time"], available_at=provenance["weather_available_at"],
+                retrieved_at=row["origin_time"], availability_basis="synthetic", provenance="synthetic", sha256="0" * 64)
+            parent = native[row["parent_forecast_id"]].forecast_id if row["parent_forecast_id"] else None
+            identity = {"request": request.model_dump(mode="json"), "model": model.model_dump(mode="json"),
+                        "bias": None, "snapshot_hash": "UI-test-only", "config_hash": "UI-test-only", "parent_forecast_id": parent}
+            native[key]=ForecastResult.model_validate({**fields, "forecast_id": digest(identity), "parent_forecast_id": parent,
+                "predictions":{"rows":row["predictions"]}, "provenance":"synthetic",
+                "manifest":{**identity, "weather":weather.model_dump(mode="json")}})
         class Service:
             predictor=None
             def get_forecast(self, forecast_id): return native[forecast_id]
@@ -182,6 +194,53 @@ class BackendSchemaIntegrationTests(unittest.TestCase):
         self.assertEqual(exported["content"],export_csv([native["demo-0715-r2"]],strict=False,release_policy="all"))
         with self.assertRaisesRegex(UIError,"FIXTURE_EXPORT_BLOCKED"):
             adapter.export_forecast("demo-0715-r2","submission","2026-07-15T06:00:00Z")
+
+
+def test_adapter_with_persisted_service_releases(setup):
+    """Exercise the real service/store boundary with explicitly synthetic inputs."""
+    from datetime import timedelta
+    import pytest
+    from windoracle.schemas import ForecastRequest
+    from windoracle.service import ForecastService
+    from tests.conftest import ORIGIN, bundle
+
+    request = ForecastRequest(origin_time=ORIGIN, turbine_ids=("turbine_1", "turbine_2"), mode="fixture")
+    first = setup.create_forecast(request)
+    later = ORIGIN + timedelta(hours=6)
+    setup.weather.cache.save(bundle("run-2", init=ORIGIN, available=later, wind=8))
+    second = setup.create_forecast(request.model_copy(update={"origin_time": later, "release_kind": "update"}),
+                                   parent_forecast_id=first.forecast_id)
+    reader = ForecastService(setup.config, setup.store, setup.weather)
+    adapter = BackendAdapter(reader)
+    assert len(adapter.get_catalog("fixture")["origins"]) == 2
+    result = adapter.get_forecast(second.forecast_id, later.isoformat())
+    validate_result(result, mode="fixture", as_of=later.isoformat())
+    comparison = adapter.compare_forecasts(first.forecast_id, second.forecast_id, later.isoformat())
+    assert len(comparison) == 84
+    assert all(abs(row["delta"] - .15) < 1e-10 for row in comparison)
+    assert adapter.get_events(second.forecast_id, later.isoformat())
+    exported = adapter.export_forecast(second.forecast_id, "demo", later.isoformat())
+    assert exported["content"] == reader.export([second.forecast_id], strict=False, release_policy="all")
+    with pytest.raises(UIError, match="FIXTURE_EXPORT_BLOCKED"):
+        adapter.export_forecast(second.forecast_id, "submission", later.isoformat())
+    with pytest.raises(UIError, match="FUTURE_DATA"):
+        adapter.get_forecast(second.forecast_id, ORIGIN.isoformat())
+    with pytest.raises(UIError, match="MODEL_UNAVAILABLE"):
+        adapter.create_forecast(request.model_dump(mode="json"))
+    assert reader.get_forecast(first.forecast_id) == first
+
+
+def test_streamlit_host_starts_without_exception():
+    import pytest
+    pytest.importorskip("streamlit")
+    from streamlit.testing.v1 import AppTest
+    app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / "app.py")).run(timeout=20)
+    assert not app.exception
+    assert app.session_state["tt_controller"].view()["error"] is None
+    app.session_state["tt_controller"].dispatch({"type": "export"})
+    app.run(timeout=20)
+    assert not app.exception
+    assert len(app.get("download_button")) == 1
 
 
 if __name__ == "__main__":

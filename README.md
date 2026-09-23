@@ -39,20 +39,20 @@ python -m venv .venv
 Windows PowerShell:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install -r frontend/requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.lock -r frontend/requirements.txt
 .\.venv\Scripts\python.exe -m streamlit run app.py
 ```
 
 Linux / macOS:
 
 ```bash
-.venv/bin/python -m pip install -r frontend/requirements.txt
+.venv/bin/python -m pip install -r requirements.lock -r frontend/requirements.txt
 .venv/bin/python -m streamlit run app.py
 ```
 
 Streamlit использует тот же HTML/CSS/JavaScript-компонент и тот же Python-контроллер, что и локальный просмотр. Сборка Node.js и внешние CDN не нужны. Зависимость UI отделена от общего `requirements.lock`, которым владеет участник 1.
 
-**Граница проверки:** локальный просмотр и Python-контракт UI проверены. Запуск Streamlit в среде разработки не проверен: установка пакета была запрещена политикой доступа. Перед сдачей выполнить указанный запуск в среде с установленным Streamlit.
+**Проверка интеграции:** на Windows / Python 3.12 совместно установлены общий lock и Streamlit 1.64.0, pip check не обнаружил конфликтов. Все 48 тестов прошли, включая запуск Streamlit через AppTest и работу UI-адаптера с настоящим сервисом и SQLite на явно синтетических входах.
 
 ## Сценарий работы
 
@@ -128,6 +128,6 @@ python -m unittest tests.test_ui_contract -v
 
 ## Ограничения и оставшаяся интеграция
 
-Не подтверждены реальные метрики качества, полный replay на архиве, обучение моделей и запуск Streamlit в текущей среде. Публичного деплоя нет. Демо-данные не являются конкурсным прогнозом за февраль 2026 года.
+Не подтверждены реальные метрики качества, полный replay на архиве и обучение моделей. Публичного деплоя нет. Демо-данные не являются конкурсным прогнозом за февраль 2026 года.
 
 Исходная подробная спецификация сохранена в [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md) как исторический план: её команды и статусы не заменяют актуальные инструкции выше. Общие [контракты команды](docs/CONTRACTS.md) и [владение файлами](TEAM.md).

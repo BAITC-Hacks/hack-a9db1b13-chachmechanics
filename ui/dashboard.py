@@ -1,4 +1,5 @@
 """Streamlit host for the frontend component; all actions use one controller."""
+import base64
 from pathlib import Path
 
 
@@ -23,10 +24,25 @@ def main():
 
     if "tt_controller" not in st.session_state:
         st.session_state.tt_controller = Controller()
+    def handle_action():
+        # Callbacks run before rendering: the component receives the new view
+        # in the same rerun, including errors and export download payloads.
+        action = st.session_state["twinturbo"].get("action")
+        if action and action.get("nonce") != st.session_state.get("tt_last_action"):
+            st.session_state.tt_last_action = action["nonce"]
+            st.session_state.tt_controller.dispatch(action)
+
     controller = st.session_state.tt_controller
-    result = register_component()(data=controller.view(), key="twinturbo", on_action_change=lambda: None)
-    action = result.action
-    if action and action.get("nonce") != st.session_state.get("tt_last_action"):
-        st.session_state.tt_last_action = action["nonce"]
-        controller.dispatch(action)
-        st.rerun()
+    view = controller.view()
+    download = view["download"]
+    # Streamlit owns file delivery; local preview keeps its own download dialog.
+    register_component()(data={**view, "download": None}, key="twinturbo", on_action_change=handle_action)
+    if download:
+        @st.dialog("Экспорт готов")
+        def export_dialog():
+            st.write(download["filename"])
+            if controller.mode == "fixture":
+                st.caption("Синтетические данные. Не использовать для конкурсной сдачи.")
+            st.download_button("Сохранить CSV", data=base64.b64decode(download["base64"]),
+                file_name=download["filename"], mime=download["mime"], on_click="ignore")
+        export_dialog()
