@@ -43,3 +43,55 @@ def test_corrupt_raw_and_manifest_fail_closed(setup):
 def test_index_selects_only_required_fields():
     idx = "1:0:d=2026010112:TMP:2 m above ground:6 hour fcst:\n2:100:d=2026010112:UGRD:100 m above ground:6 hour fcst:\n3:200:d=2026010112:VGRD:100 m above ground:6 hour fcst:\n4:300:d=2026010112:OTHER:surface:6 hour fcst:"
     assert index_ranges(idx, 100) == [("TMP", 0, 99), ("UGRD", 100, 199), ("VGRD", 200, 299)]
+
+
+def test_resume_reuses_completed_fragments_after_failure(setup, monkeypatch):
+    from windoracle.weather import archive
+    calls = []
+    def network(url, start, end, max_bytes, budget=None):
+        calls.append((url, start, end))
+        if url.endswith("bad"):
+            raise WeatherUnavailable("interrupted")
+        return b"abc", {"Last-Modified": "Thu, 15 Jan 2026 15:00:00 GMT"}
+    monkeypatch.setattr(archive, "get_bytes", network)
+    setup.weather._get("https://example.test/good", 0, 2)
+    with pytest.raises(WeatherUnavailable):
+        setup.weather._get("https://example.test/bad", 0, 2)
+    resumed = archive.GFSArchive(setup.config, setup.weather.cache)
+    assert resumed._get("https://example.test/good", 0, 2)[0] == b"abc"
+    assert len(calls) == 2
+    assert resumed.transfer_stats["cache_hits"] == 1
+    assert resumed.download_budget.used_bytes == 0
+
+
+def test_resume_rejects_corrupted_object(setup, monkeypatch):
+    cache = setup.weather.cache
+    cache.save_request("https://example.test/field", 0, 2, b"abc", {})
+    checksum = cache.put_object(b"abc")
+    (cache.root / "objects" / checksum).write_bytes(b"xyz")
+    with pytest.raises(ValueError, match="CHECKSUM"):
+        setup.weather._get("https://example.test/field", 0, 2)
+
+
+def test_budget_stops_before_network_for_oversized_range(monkeypatch):
+    from windoracle.weather import archive
+    def forbidden(*args, **kwargs):
+        pytest.fail("Network must not be called beyond budget")
+    monkeypatch.setattr(archive, "urlopen", forbidden)
+    with pytest.raises(archive.DownloadLimitExceeded):
+        archive.get_bytes("https://example.test", 0, 10, budget=archive.DownloadBudget(10))
+
+
+def test_budget_accounts_network_bytes_across_requests(monkeypatch):
+    import io
+    from windoracle.weather import archive
+    class Response(io.BytesIO):
+        status = 206
+        headers = {"Content-Range": "bytes 0-2/20"}
+    monkeypatch.setattr(archive, "urlopen", lambda *a, **kw: Response(b"abc"))
+    budget = archive.DownloadBudget(6)
+    assert archive.get_bytes("https://example.test/a", 0, 2, budget=budget)[0] == b"abc"
+    assert archive.get_bytes("https://example.test/b", 0, 2, budget=budget)[0] == b"abc"
+    assert budget.used_bytes == 6
+    with pytest.raises(archive.DownloadLimitExceeded):
+        archive.get_bytes("https://example.test/c", 0, 2, budget=budget)

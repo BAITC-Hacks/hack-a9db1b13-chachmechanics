@@ -58,6 +58,8 @@ def parser():
     fetch.add_argument("--start", type=date.fromisoformat, help="First target date, inclusive")
     fetch.add_argument("--end", type=date.fromisoformat, help="Last target date, inclusive")
     fetch.add_argument("--max-runs", type=int, default=2, help="Safety limit on origins fetched")
+    fetch.add_argument("--max-download-mb", type=int, default=500, help="Network payload budget across all runs and fallbacks")
+    fetch.add_argument("--progress", action="store_true", help="Print progress JSON to stderr")
     fetch.add_argument("--output", default="reports/weather-fetch.json")
     wa = wc.add_parser("audit")
     wa.add_argument("--origin")
@@ -127,7 +129,8 @@ def execute(args):
         return output([audit_csv(path) for path in args.paths], args.output)
     config = load_config(args.config)
     store = Store(config.storage.database)
-    archive = GFSArchive(config)
+    archive = GFSArchive(config, max_download_mb=getattr(args, "max_download_mb", 500),
+        progress=(lambda value: print(json.dumps(value), file=sys.stderr)) if getattr(args, "progress", False) else None)
     if args.command == "doctor":
         import importlib.metadata
         return output({"config_hash": config.config_hash, "time_basis": config.site.time_basis,
@@ -172,6 +175,9 @@ def execute(args):
             req = request_for(config, origin)
             bundle = archive.fetch_run(timestamp(args.run), req) if args.run else archive.fetch_latest(req)
             reports.append(audit_bundle(bundle, req, config.weather.max_run_age_hours))
+        for report in reports:
+            report["transfer"] = {**archive.transfer_stats, "network_bytes": archive.download_budget.used_bytes,
+                                  "budget_bytes": archive.download_budget.limit_bytes}
         return output(reports, args.output)
     if args.command in ("predict", "replay"):
         service = ForecastService(config, store, archive, load_predictor(args.predictor))

@@ -26,6 +26,39 @@ class WeatherCache:
         self.root = Path(root)
         (self.root / "objects").mkdir(parents=True, exist_ok=True)
         (self.root / "runs").mkdir(exist_ok=True)
+        (self.root / "requests").mkdir(exist_ok=True)
+
+    def request_key(self, url, start=None, end=None):
+        return {"url": url, "start": start, "end": end}
+
+    def get_request(self, url, start=None, end=None):
+        key = self.request_key(url, start, end)
+        path = self.root / "requests" / (digest(key) + ".json")
+        if not path.exists():
+            return None
+        envelope = json.loads(path.read_text(encoding="utf-8"))
+        record = envelope["record"]
+        if digest(record) != envelope["checksum"] or record["request"] != key:
+            raise ValueError("CACHE_REQUEST_CHECKSUM_MISMATCH")
+        payload = self.get_object(record["sha256"])
+        if len(payload) != record["bytes"]:
+            raise ValueError("CACHE_REQUEST_LENGTH_MISMATCH")
+        if start is not None and len(payload) != end - start + 1:
+            raise ValueError("CACHE_RANGE_LENGTH_MISMATCH")
+        return payload, record["headers"]
+
+    def save_request(self, url, start, end, payload, headers):
+        key = self.request_key(url, start, end)
+        existing = self.get_request(url, start, end)
+        if existing is not None:
+            if existing[0] != payload:
+                raise ValueError("Cached archive response is immutable")
+            return
+        record = {"request": key, "sha256": self.put_object(payload), "bytes": len(payload),
+                  "headers": {k: v for k, v in headers.items()
+                              if k.lower() in ("last-modified", "etag", "content-range", "content-length")}}
+        atomic_write(self.root / "requests" / (digest(key) + ".json"),
+                     json.dumps({"record": record, "checksum": digest(record)}).encode())
 
     def put_object(self, payload: bytes) -> str:
         checksum = sha256(payload).hexdigest()

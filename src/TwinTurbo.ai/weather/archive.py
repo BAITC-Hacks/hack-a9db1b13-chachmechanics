@@ -16,18 +16,57 @@ from .cache import WeatherCache
 BASE_URL = "https://noaa-gfs-bdp-pds.s3.amazonaws.com"
 
 
-def get_bytes(url, start=None, end=None, max_bytes=5_000_000):
+class DownloadLimitExceeded(RuntimeError):
+    pass
+
+
+class DownloadBudget:
+    """Shared by all runs/fallbacks in one command; only network payload counts."""
+    def __init__(self, limit_bytes):
+        if limit_bytes <= 0:
+            raise ValueError("Download budget must be positive")
+        self.limit_bytes, self.used_bytes = limit_bytes, 0
+
+    @property
+    def remaining(self):
+        return self.limit_bytes - self.used_bytes
+
+
+def get_bytes(url, start=None, end=None, max_bytes=5_000_000, budget=None):
     headers = {"User-Agent": "WindOracle/0.1 (NOAA archive research)"}
     if start is not None:
         headers["Range"] = f"bytes={start}-{end}"
     for attempt in range(3):
         try:
+            if budget and (budget.remaining <= 0 or
+                           (start is not None and end - start + 1 > budget.remaining)):
+                raise DownloadLimitExceeded("DOWNLOAD_BUDGET_EXCEEDED; cached fragments retained for resume")
             with urlopen(Request(url, headers=headers), timeout=40) as response:
                 if start is not None:
                     expected_range = f"bytes {start}-{end}/"
                     if response.status != 206 or not response.headers.get("Content-Range", "").startswith(expected_range):
                         raise ValueError("Server ignored or changed bounded Range request")
-                data = response.read(max_bytes + 1)
+                parts, size = [], 0
+                while True:
+                    remaining = max_bytes + 1 - size
+                    if budget:
+                        remaining = min(remaining, budget.remaining)
+                    if remaining <= 0:
+                        raise DownloadLimitExceeded("DOWNLOAD_BUDGET_EXCEEDED")
+                    chunk = response.read(min(65536, remaining))
+                    if not chunk:
+                        break
+                    parts.append(chunk)
+                    size += len(chunk)
+                    if budget:
+                        budget.used_bytes += len(chunk)
+                    # For bounded ranges exact size is sufficient; no extra read
+                    # is needed when the command budget is exhausted exactly.
+                    if start is not None and size == end - start + 1:
+                        break
+                    if size > max_bytes:
+                        raise ValueError("Response exceeds download limit")
+                data = b"".join(parts)
                 if len(data) > max_bytes:
                     raise ValueError("Response exceeds download limit")
                 if start is not None and len(data) != end - start + 1:
@@ -87,10 +126,24 @@ def decode_points(payload, turbines, initialized_at, lead, variable, height):
 
 
 class GFSArchive:
-    def __init__(self, config: Config, cache: WeatherCache | None = None):
+    def __init__(self, config: Config, cache: WeatherCache | None = None, *, max_download_mb=500, progress=None):
         self.config = config
         self.cache = cache or WeatherCache(config.weather.cache_dir)
         self.last_fetch_events = []
+        self.download_budget = DownloadBudget(max_download_mb * 1_000_000)
+        self.progress = progress
+        self.transfer_stats = {"cache_hits": 0, "network_requests": 0, "reused_bytes": 0}
+
+    def _get(self, url, start=None, end=None, max_bytes=5_000_000):
+        cached = self.cache.get_request(url, start, end)
+        if cached is not None:
+            self.transfer_stats["cache_hits"] += 1
+            self.transfer_stats["reused_bytes"] += len(cached[0])
+            return cached
+        payload, headers = get_bytes(url, start, end, max_bytes, budget=self.download_budget)
+        self.cache.save_request(url, start, end, payload, headers)
+        self.transfer_stats["network_requests"] += 1
+        return payload, headers
 
     def fetch_run(self, initialized_at, request):
         init = utc(initialized_at)
@@ -118,14 +171,14 @@ class GFSArchive:
         total = 0
         for lead in range(first, last + 1, cfg.sample_step_hours):
             url = f"{BASE_URL}/gfs.{init:%Y%m%d}/{init:%H}/atmos/gfs.t{init:%H}z.pgrb2.0p25.f{lead:03d}"
-            idx, headers = get_bytes(url + ".idx", max_bytes=200_000)
+            idx, headers = self._get(url + ".idx", max_bytes=200_000)
             total += len(idx)
             records.append({"url": url + ".idx", "sha256": self.cache.put_object(idx), "bytes": len(idx)})
             fields = {}
             for variable, start, end in index_ranges(idx.decode(), cfg.wind_height_m):
                 if total + end - start + 1 > cfg.max_download_mb_per_run * 1_000_000:
                     raise ValueError("Per-run download budget exceeded")
-                payload, headers = get_bytes(url, start, end, max_bytes=10_000_000)
+                payload, headers = self._get(url, start, end, max_bytes=10_000_000)
                 total += len(payload)
                 last_modified = next((v for k, v in headers.items() if k.lower() == "last-modified"), None)
                 if last_modified:
@@ -135,6 +188,10 @@ class GFSArchive:
                                 "last_modified": last_modified})
                 fields[variable] = decode_points(payload, chosen, init, lead, variable, cfg.wind_height_m)
             sample[lead] = fields
+            if self.progress:
+                self.progress({"run_init_time": init.isoformat(), "lead_hours": lead,
+                    "last_lead_hours": last, "network_bytes": self.download_budget.used_bytes,
+                    **self.transfer_stats})
         values = []
         for hour in range(first, last + 1):
             lower = hour // cfg.sample_step_hours * cfg.sample_step_hours
