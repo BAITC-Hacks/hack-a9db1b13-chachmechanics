@@ -1,7 +1,7 @@
 """Operational presentation built from already supplied forecast evidence."""
 from __future__ import annotations
 
-from math import hypot
+from math import atan2, degrees, hypot
 
 from windoracle.evaluate import (
     capacity_factor_summary,
@@ -130,13 +130,23 @@ def wind_map_rows(result, turbines: list[dict], turbine_id: str) -> list[dict]:
         wind = weather.get("wind_ms")
         if wind is None and isinstance(u_ms, (int, float)) and isinstance(v_ms, (int, float)):
             wind = hypot(u_ms, v_ms)
+        direction = weather.get("direction")
+        if (
+            direction is None
+            and isinstance(u_ms, (int, float))
+            and isinstance(v_ms, (int, float))
+            and (u_ms != 0 or v_ms != 0)
+        ):
+            # Meteorological direction: degrees clockwise from north from
+            # which the wind arrives.  GFS u/v describe where it travels.
+            direction = degrees(atan2(-u_ms, -v_ms)) % 360.0
         result_rows.append({
             "turbine_id": current_id,
             "latitude": latitude,
             "longitude": longitude,
             "wind_ms": wind,
             "temperature_c": weather.get("temperature_c"),
-            "direction": weather.get("direction"),
+            "direction": direction,
             "selected": current_id == turbine_id,
         })
     return result_rows

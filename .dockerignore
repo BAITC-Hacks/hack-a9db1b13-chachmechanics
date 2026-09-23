@@ -1,0 +1,21 @@
+.git
+.venv
+venv
+**/__pycache__
+**/*.py[cod]
+.pytest_cache
+tmp
+
+# The image reconstructs SQLite from the committed raw CSV pair.  The 2+ GB
+# GFS cache stays an explicit bootstrap option instead of bloating every image.
+artifacts/*.sqlite*
+data/weather
+data/processed
+
+# Include a checksummed real replay seed when the team publishes it, but no
+# ad-hoc local exports.
+outputs/*
+!outputs/replay-february
+!outputs/replay-february/**
+
+.env

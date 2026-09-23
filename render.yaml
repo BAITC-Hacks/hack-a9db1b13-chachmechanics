@@ -15,3 +15,5 @@ services:
         value: /app/artifacts/bias/february-production-bias.json
       - key: TWINTURBO_PREDICTOR
         value: windoracle.models.registry:load_predictor
+      - key: TWINTURBO_DEFAULT_MODE
+        value: replay

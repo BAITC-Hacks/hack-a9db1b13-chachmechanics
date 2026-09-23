@@ -8,6 +8,7 @@ explicitly supplied.
 from __future__ import annotations
 
 import argparse
+from contextlib import closing
 from datetime import date, datetime, time, timedelta, timezone
 import json
 import math
@@ -27,6 +28,7 @@ DEFAULT_REPORT = Path("reports/january-model-comparison.json")
 DEFAULT_INGEST_REPORT = Path("reports/ingest-utc-plus05.json")
 DEFAULT_TURBINE_1 = Path("data/raw/turbine_1.csv")
 DEFAULT_TURBINE_2 = Path("data/raw/turbine_2.csv")
+REPLAY_SEED = Path("outputs/replay-february")
 
 
 class BootstrapError(RuntimeError):
@@ -61,6 +63,7 @@ def _json_file(path: Path, label: str) -> object:
 def _load_project_modules():
     try:
         from windoracle.config import load_config
+        from windoracle.cli import read_outputs
         from windoracle.ingest import audit_csv, ingest_csv
         from windoracle.models.registry import load_predictor
         from windoracle.schemas import BiasState, digest
@@ -71,7 +74,16 @@ def _load_project_modules():
             "`python -m pip install -r requirements.lock` and "
             "`python -m pip install --no-deps -e .`, then retry."
         ) from exc
-    return load_config, audit_csv, ingest_csv, load_predictor, BiasState, digest, Store
+    return (
+        load_config,
+        read_outputs,
+        audit_csv,
+        ingest_csv,
+        load_predictor,
+        BiasState,
+        digest,
+        Store,
+    )
 
 
 def _verify_config(config_path: Path, load_config):
@@ -163,6 +175,40 @@ def _verify_selection_report(report_path: Path, config, model_id: str) -> dict[s
     }
 
 
+def _load_replay_seed(directory: Path, model_id: str, read_outputs):
+    """Load only the checksummed, non-fixture replay shipped by the team."""
+    if not directory.exists():
+        return (), {"status": "not_present", "path": _relative_or_absolute(directory)}
+    if directory.resolve() != (ROOT / REPLAY_SEED).resolve():
+        raise BootstrapError("Replay seed directory is not on the deployment whitelist.")
+    if not (directory / "index.json").is_file():
+        raise BootstrapError(
+            f"Replay seed exists without its checksummed index: {directory / 'index.json'}"
+        )
+    try:
+        results = tuple(read_outputs(directory))
+    except Exception as exc:
+        raise BootstrapError(f"Replay seed failed checksum/contract validation: {exc}") from exc
+    if not results:
+        raise BootstrapError("Replay seed index contains no forecasts.")
+    for result in results:
+        if result.mode == "fixture" or result.provenance == "synthetic":
+            raise BootstrapError(
+                f"Fixture/synthetic forecast is forbidden in the real replay seed: {result.forecast_id}"
+            )
+        if result.model_id != model_id:
+            raise BootstrapError(
+                f"Replay seed forecast {result.forecast_id} uses model {result.model_id}, "
+                f"not deployment model {model_id}."
+            )
+    return results, {
+        "status": "validated",
+        "path": _relative_or_absolute(directory),
+        "forecast_count": len(results),
+        "prediction_rows": sum(len(result.predictions.rows) for result in results),
+    }
+
+
 def _verify_raw_csvs(paths, turbine_ids, audit_csv, ingest_report_path: Path):
     present = tuple(path.is_file() for path in paths)
     if any(present) and not all(present):
@@ -233,7 +279,10 @@ def _verify_raw_csvs(paths, turbine_ids, audit_csv, ingest_report_path: Path):
 
 def _database_counts(path: Path) -> dict[str, int]:
     try:
-        with sqlite3.connect(path) as database:
+        # sqlite3.Connection's context manager commits/rolls back but does not
+        # close the handle.  Explicit closing is required before an atomic
+        # rename on Windows.
+        with closing(sqlite3.connect(path)) as database:
             quick_check = database.execute("PRAGMA quick_check").fetchone()
             if quick_check != ("ok",):
                 raise BootstrapError(f"SQLite integrity check failed: {quick_check}")
@@ -245,7 +294,15 @@ def _database_counts(path: Path) -> dict[str, int]:
     return {str(turbine): int(count) for turbine, count in rows}
 
 
-def _prepare_database(database_path: Path, config, csv_paths, audits, ingest_csv, Store):
+def _prepare_database(
+    database_path: Path,
+    config,
+    csv_paths,
+    audits,
+    replay_seed,
+    ingest_csv,
+    Store,
+):
     expected_ids = tuple(turbine.id for turbine in config.site.turbines)
     created = False
     if not database_path.exists():
@@ -265,6 +322,8 @@ def _prepare_database(database_path: Path, config, csv_paths, audits, ingest_csv
             for turbine, csv_path in zip(config.site.turbines, csv_paths):
                 observations, report = ingest_csv(csv_path, turbine.id, config.site)
                 store.ingest(observations, report)
+            for result in replay_seed:
+                store.save_forecast(result)
             counts = _database_counts(temporary)
             if set(counts) != set(expected_ids):
                 raise BootstrapError(f"Temporary database is missing a turbine: {counts}")
@@ -272,6 +331,11 @@ def _prepare_database(database_path: Path, config, csv_paths, audits, ingest_csv
             created = True
         finally:
             temporary.unlink(missing_ok=True)
+
+    if not created and replay_seed:
+        store = Store(database_path)
+        for result in replay_seed:
+            store.save_forecast(result)
 
     counts = _database_counts(database_path)
     missing = sorted(set(expected_ids) - set(counts))
@@ -294,10 +358,16 @@ def _prepare_database(database_path: Path, config, csv_paths, audits, ingest_csv
                     f"Database row count for {turbine_id} is {counts[turbine_id]}, "
                     f"but the included CSV spans {expected} hourly rows."
                 )
+    try:
+        with closing(sqlite3.connect(database_path)) as database:
+            forecast_count = int(database.execute("SELECT COUNT(*) FROM forecasts").fetchone()[0])
+    except sqlite3.Error as exc:
+        raise BootstrapError(f"Cannot count seeded forecasts in {database_path}: {exc}") from exc
     return {
         "status": "created" if created else "reused",
         "path": _relative_or_absolute(database_path),
         "rows_by_turbine": counts,
+        "forecast_count": forecast_count,
     }
 
 
@@ -443,9 +513,16 @@ def parser() -> argparse.ArgumentParser:
 
 def bootstrap(args: argparse.Namespace) -> dict[str, object]:
     os.chdir(ROOT)
-    load_config, audit_csv, ingest_csv, load_predictor, BiasState, digest, Store = (
-        _load_project_modules()
-    )
+    (
+        load_config,
+        read_outputs,
+        audit_csv,
+        ingest_csv,
+        load_predictor,
+        BiasState,
+        digest,
+        Store,
+    ) = _load_project_modules()
     config_path = _resolve(args.config)
     model_path = _resolve(args.model)
     bias_path = _resolve(args.bias)
@@ -455,6 +532,9 @@ def bootstrap(args: argparse.Namespace) -> dict[str, object]:
 
     config = _verify_config(config_path, load_config)
     predictor = _verify_model(model_path, load_predictor)
+    replay_seed, replay_summary = _load_replay_seed(
+        (ROOT / REPLAY_SEED).resolve(), predictor.state.model_id, read_outputs
+    )
     turbine_ids = tuple(turbine.id for turbine in config.site.turbines)
     if len(turbine_ids) != 2:
         raise BootstrapError(
@@ -474,7 +554,13 @@ def bootstrap(args: argparse.Namespace) -> dict[str, object]:
         },
         "raw_csv": raw_summary,
         "database": _prepare_database(
-            database_path, config, csv_paths, audits, ingest_csv, Store
+            database_path,
+            config,
+            csv_paths,
+            audits,
+            replay_seed,
+            ingest_csv,
+            Store,
         ),
         "model": {
             "status": "validated",
@@ -486,6 +572,7 @@ def bootstrap(args: argparse.Namespace) -> dict[str, object]:
         "report": _verify_selection_report(
             report_path, config, predictor.state.model_id
         ),
+        "replay_seed": replay_summary,
         "weather": {"status": "not_requested"},
     }
     if args.fetch_january:

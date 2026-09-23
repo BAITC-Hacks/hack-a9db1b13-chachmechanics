@@ -51,6 +51,12 @@ def parser() -> argparse.ArgumentParser:
         "--predictor",
         default=os.environ.get("TWINTURBO_PREDICTOR", DEFAULT_PREDICTOR),
     )
+    result.add_argument(
+        "--default-mode",
+        choices=("fixture", "replay", "submission"),
+        default=os.environ.get("TWINTURBO_DEFAULT_MODE", "replay"),
+        help="Initial UI mode; users can still switch modes in the dashboard.",
+    )
     result.add_argument("--host", default=os.environ.get("HOST", "0.0.0.0"))
     result.add_argument("--port", type=_port, default=_port(os.environ.get("PORT", "8501")))
     result.add_argument(
@@ -81,6 +87,7 @@ def main(argv: list[str] | None = None) -> int:
             "TWINTURBO_CONFIG": str(config_path),
             "TWINTURBO_MODEL_ARTIFACT": str(model_path),
             "TWINTURBO_PREDICTOR": args.predictor,
+            "TWINTURBO_DEFAULT_MODE": args.default_mode,
             "PYTHONUNBUFFERED": "1",
             "PORT": str(args.port),
         }
@@ -142,6 +149,7 @@ def main(argv: list[str] | None = None) -> int:
                             "TWINTURBO_MODEL_ARTIFACT",
                             "TWINTURBO_BIAS_ARTIFACT",
                             "TWINTURBO_PREDICTOR",
+                            "TWINTURBO_DEFAULT_MODE",
                             "PORT",
                         )
                     },
@@ -155,6 +163,11 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     os.chdir(ROOT)
+    if os.name == "nt":
+        try:
+            return subprocess.call(command, cwd=ROOT, env=environment)
+        except KeyboardInterrupt:
+            return 130
     os.execvpe(sys.executable, command, environment)
     return 0
 
