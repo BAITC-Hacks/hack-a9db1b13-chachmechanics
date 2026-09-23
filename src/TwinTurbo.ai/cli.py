@@ -46,6 +46,10 @@ def parser():
     audit.add_argument("paths", nargs="+")
     audit.add_argument("--output")
     doctor = commands.add_parser("doctor")
+    train = commands.add_parser("train", help="Train an as-of model using imported observations and cached weather")
+    train.add_argument("--origin", required=True)
+    train.add_argument("--kind", choices=["power-curve", "baseline"], default="power-curve")
+    train.add_argument("--output", required=True)
     ingest = commands.add_parser("ingest")
     ingest.add_argument("--turbine-1", required=True)
     ingest.add_argument("--turbine-2", required=True)
@@ -86,7 +90,7 @@ def parser():
     export.add_argument("--allow-fixture", action="store_true")
     verify = commands.add_parser("verify")
     verify.add_argument("--input", help="Optional saved output directory")
-    for p in (doctor, ingest, fetch, wa, predict, rp, export, verify):
+    for p in (doctor, train, ingest, fetch, wa, predict, rp, export, verify):
         p.add_argument("--config", default="configs/site.example.yaml")
     return root
 
@@ -147,6 +151,16 @@ def execute(args):
             store.ingest(observations, report)
             reports.append({"turbine_id": turbine.id, **report})
         return output(reports, args.output)
+    if args.command == "train":
+        from .agents.twin_builder import TwinBuilder
+        from .models.registry import save_predictor
+        service = ForecastService(config, store, archive)
+        snapshot = service.snapshot(request_for(config, timestamp(args.origin)))
+        predictor = TwinBuilder().build(snapshot, kind=args.kind.replace("-", "_"))
+        save_predictor(predictor, args.output)
+        store.save_model(predictor.state)
+        return output({"artifact": args.output, "model": predictor.state.model_dump(mode="json"),
+                       "training_rows": len(snapshot.observations), "warnings": snapshot.quality_flags})
     if args.command == "weather":
         if args.weather_command == "audit":
             reports = []

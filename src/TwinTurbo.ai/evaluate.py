@@ -708,9 +708,9 @@ def residuals_from_forecasts(
 
         base_rows = None
         if forecast.bias_id is not None:
-            if forecast.forecast_id not in supplied:
+            raw_batch = supplied.get(forecast.forecast_id) or forecast.manifest.get("base_predictions")
+            if raw_batch is None:
                 raise ValueError("BASE_BATCH_REQUIRED_FOR_CORRECTED_FORECAST")
-            raw_batch = supplied[forecast.forecast_id]
             batch = PredictionBatch.model_validate(
                 raw_batch.model_dump() if hasattr(raw_batch, "model_dump") else raw_batch
             )
@@ -801,3 +801,8 @@ def walk_forward(
 
     return tuple(run_fold(fold.train, fold.origin_time) for fold in walk_forward_folds(
         origins, labels, get_actual_available_at=get_actual_available_at))
+
+
+if __name__ == "__main__":
+    from .backtest import main
+    raise SystemExit(main())

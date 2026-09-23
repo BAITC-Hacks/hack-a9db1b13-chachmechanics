@@ -2,7 +2,7 @@
 from datetime import timedelta
 from .clock import targets
 from .config import Config
-from .schemas import AsOfSnapshot, BiasState, ForecastRequest, ForecastResult, ModelState, PredictionBatch, Predictor, digest
+from .schemas import AsOfSnapshot, BiasState, ForecastRequest, ForecastResult, ModelState, PredictionBatch, Predictor, digest, utc
 from .store import Store
 from .weather.audit import audit_bundle
 from .weather.base import WeatherProvider
@@ -72,6 +72,14 @@ class ForecastService:
         if len(actual) != len(expected) or set(actual) != expected:
             raise ValueError("MODEL_OUTPUT_COVERAGE: exactly one prediction per turbine/hour required")
         batch = PredictionBatch(rows=tuple(sorted(batch.rows, key=lambda r: (r.turbine_id, r.target_start))))
+        base_batch = None
+        if callable(getattr(self.predictor, "predict_base", None)):
+            base_batch = PredictionBatch.model_validate(self.predictor.predict_base(snapshot))
+            base_keys = [(r.turbine_id, r.target_start, r.target_end) for r in base_batch.rows]
+            if len(base_keys) != len(expected) or set(base_keys) != expected:
+                raise ValueError("BASE_BATCH_COVERAGE_MISMATCH")
+        elif bias is not None:
+            raise ValueError("BASE_BATCH_REQUIRED_FOR_CORRECTED_FORECAST")
         metadata = snapshot.weather_run_metadata
         result = ForecastResult(forecast_id=forecast_id, origin_time=request.origin_time,
             predictions=batch, run_id=metadata.run_id, model_id=state.model_id,
@@ -79,6 +87,8 @@ class ForecastService:
             warnings=snapshot.quality_flags, provenance=metadata.provenance,
             mode=request.mode, release_kind=request.release_kind,
             manifest={**identity, "weather": metadata.model_dump(mode="json"),
+                      "weather_values": [v.model_dump(mode="json") for v in snapshot.weather_values],
+                      "base_predictions": base_batch.model_dump(mode="json") if base_batch else None,
                       "source_revisions": sorted({o.revision for o in snapshot.observations}),
                       "observation_count": len(snapshot.observations),
                       "last_actual_available_at": max((o.available_at.isoformat() for o in snapshot.observations), default=None)})
@@ -101,6 +111,22 @@ class ForecastService:
         return {**self.store.bounds(), "time_basis": self.config.site.time_basis,
                 "timezone": self.config.site.timezone,
                 "turbines": [t.model_dump() for t in self.config.site.turbines]}
+
+    def get_display_context(self, forecast_id, *, as_of):
+        """Frozen forecast weather plus actual revisions available at viewing time."""
+        as_of = utc(as_of)
+        result = self.get_forecast(forecast_id)
+        if as_of < result.origin_time:
+            raise ValueError("FUTURE_DATA")
+        keys = {(r.turbine_id, r.target_start, r.target_end) for r in result.predictions.rows}
+        turbine_ids = tuple(sorted({r.turbine_id for r in result.predictions.rows}))
+        actuals = [{"turbine_id": o.turbine_id, "target_start": o.event_start,
+                    "target_end": o.event_end, "available_at": o.available_at,
+                    "power_norm": o.power_norm}
+                   for o in self.store.observations_as_of(as_of, turbine_ids)
+                   if o.quality_flag == "complete" and (o.turbine_id, o.event_start, o.event_end) in keys]
+        return {"weather": result.manifest.get("weather_values", []),
+                "actuals": actuals, "metrics": None}
 
     def compare_forecasts(self, first_id, second_id):
         a, b = self.get_forecast(first_id), self.get_forecast(second_id)

@@ -11,6 +11,14 @@ from ..schemas import AsOfSnapshot, BiasState, ModelState, PredictionBatch, Pred
 
 
 @dataclass(frozen=True)
+class ForecastTrace:
+    base_predictions: PredictionBatch
+    predictions: PredictionBatch
+    model_id: str
+    bias_id: str | None
+
+
+@dataclass(frozen=True)
 class Forecaster:
     """Delegate a forecast to an immutable, versioned predictor.
 
@@ -35,3 +43,10 @@ class Forecaster:
         """Agent-style alias used by orchestration code."""
 
         return self.predict(snapshot, bias)
+
+    def predict_base(self, snapshot):
+        return self.predictor.predict_base(snapshot)
+
+    def predict_with_trace(self, snapshot, bias=None):
+        return ForecastTrace(self.predict_base(snapshot), self.predict(snapshot, bias),
+                             self.state.model_id, bias.bias_id if bias else None)

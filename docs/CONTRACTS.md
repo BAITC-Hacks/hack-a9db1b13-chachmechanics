@@ -52,7 +52,7 @@
 
 Для CLI участник 2 предоставляет фабрику без аргументов, например
 `windoracle.models.registry:load_predictor`. Она возвращает predictor с уже
-загруженным состоянием. Эта фабрика в текущем каркасе ещё не реализована.
+загруженным состоянием. Фабрика реализована и читает путь JSON из `TWINTURBO_MODEL_ARTIFACT` (также поддерживается `TWINTURBO_AI_MODEL_PATH`).
 Передать её явно: `--predictor windoracle.models.registry:load_predictor`.
 Ни CLI, ни интегратор не подменяют отсутствие модели случайными числами.
 
@@ -119,3 +119,11 @@ UI передаёт aware datetime или ISO 8601 с offset, не строку 
 Они подходят для подключения интерфейса, явно маркированы fixture и запрещены в strict-экспорте.
 `--real-weather` использует уже скачанную настоящую погоду, но модель по-прежнему
 тестовая: это проверка интеграции, а не оценка качества прогноза.
+
+## Дополнения финальной интеграции
+
+`train --origin ... --output ...` обучает кривую или baseline через TwinBuilder на допустимом снимке. `get_display_context(id, as_of=...)` отдаёт замороженную почасовую погоду из manifest и доступные факты. Время просмотра может продвигаться независимо от origin; старый прогноз не меняется.
+
+Новые выпуски сохраняют `manifest.base_predictions` до bias/clipping. `Critic.review` и `residuals_from_forecasts` читают его автоматически; для старого скорректированного выпуска требуется явно переданный base_batches. `Forecaster.predict_with_trace` сохраняет API модельной ветки.
+
+`windoracle.backtest.walk_forward_snapshots` выполняет сравнение подготовленных временных folds. Общий `evaluate.walk_forward` остаётся функцией для произвольных последовательных проверок. CLI подготовленного эксперимента: `python -m windoracle.evaluate --input prepared.json --output report.json`.

@@ -31,6 +31,7 @@ configs/site.yaml
 /outputs/**
 !/outputs/**/
 !/outputs/**/.gitkeep
+/outputs/final-env/
 
 # Editor and operating system files
 .idea/

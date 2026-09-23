@@ -29,7 +29,8 @@ jobs:
           cache-dependency-path: requirements.lock
       - name: Install dependencies and actual package
         run: |
-          python -m pip install -r requirements.lock
+          python -m pip install -r requirements.lock -r frontend/requirements.txt
+          python -m pip install scikit-learn==1.8.0
           python -m pip install --no-deps .
           python -m pip check
       - name: Verify shared contracts and all team tests
@@ -37,6 +38,7 @@ jobs:
       - name: Run offline integration scenario
         run: |
           python -m windoracle --help
+          python -m TwinTurbo.ai --help
           python scripts/prepare_demo.py --fixture --origin 2025-06-01T18:00:00Z
           python -m windoracle verify --input outputs/integration-smoke
           python -m windoracle export --input outputs/integration-smoke --allow-fixture --output outputs/smoke.csv

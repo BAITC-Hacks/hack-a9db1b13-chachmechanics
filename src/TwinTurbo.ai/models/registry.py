@@ -36,7 +36,7 @@ def predictor_to_dict(predictor: Predictor) -> dict[str, object]:
     return json.loads(json.dumps(payload, sort_keys=True, allow_nan=False))
 
 
-def predictor_from_dict(value: Mapping[str, Any]) -> Predictor:
+def predictor_from_dict(value: Mapping[str, Any], *, trusted=False) -> Predictor:
     payload = _mapping(value, "predictor payload")
     kind = payload.get("kind")
     if kind == "power_curve":
@@ -45,11 +45,17 @@ def predictor_from_dict(value: Mapping[str, Any]) -> Predictor:
         predictor = ConstantBaselinePredictor.from_dict(payload)
     elif kind == "ridge":
         predictor = RidgePredictor.from_dict(payload)
+    elif kind == "persistence":
+        from .baseline import PersistenceBaseline
+        predictor = PersistenceBaseline.from_dict(payload)
+    elif kind == "hist_gradient_boosting":
+        from .boosting import GradientBoostingPredictor
+        predictor = GradientBoostingPredictor.from_dict(payload, trusted=trusted)
     elif kind == "ensemble":
         predictor = EnsemblePredictor(
             state=ModelState.model_validate(payload.get("state")),
-            twin=predictor_from_dict(_mapping(payload.get("twin"), "ensemble twin")),
-            ml=predictor_from_dict(_mapping(payload.get("ml"), "ensemble ml")),
+            twin=predictor_from_dict(_mapping(payload.get("twin"), "ensemble twin"), trusted=trusted),
+            ml=predictor_from_dict(_mapping(payload.get("ml"), "ensemble ml"), trusted=trusted),
             selection=WeightSelection.from_dict(
                 _mapping(payload.get("selection"), "ensemble selection")
             ),
@@ -115,7 +121,7 @@ def save_predictor(predictor: Predictor, path: str | Path) -> Path:
     return target
 
 
-def load_predictor(path: str | Path | None = None) -> Predictor:
+def load_predictor(path: str | Path | None = None, *, trusted=False) -> Predictor:
     """Load a predictor, defaulting to ``TWINTURBO_MODEL_ARTIFACT``.
 
     This signature is intentionally callable with no arguments so it can be
@@ -123,7 +129,7 @@ def load_predictor(path: str | Path | None = None) -> Predictor:
     There is no silent model or random-number fallback.
     """
 
-    configured = path if path is not None else os.environ.get(MODEL_ARTIFACT_ENV)
+    configured = path if path is not None else (os.environ.get(MODEL_ARTIFACT_ENV) or os.environ.get("TWINTURBO_AI_MODEL_PATH"))
     if configured is None or not str(configured).strip():
         raise ValueError(
             f"MODEL_ARTIFACT_REQUIRED: set {MODEL_ARTIFACT_ENV} to a trained JSON artifact"
@@ -142,7 +148,7 @@ def load_predictor(path: str | Path | None = None) -> Predictor:
     expected = document.get("payload_sha256")
     if not isinstance(expected, str) or digest(payload) != expected:
         raise ValueError("MODEL_ARTIFACT_CHECKSUM_MISMATCH")
-    return predictor_from_dict(payload)
+    return predictor_from_dict(payload, trusted=trusted or os.environ.get("TWINTURBO_AI_TRUSTED_MODEL") == "1")
 
 
 # Explicit aliases used by notebooks and integration scripts.

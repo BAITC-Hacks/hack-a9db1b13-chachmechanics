@@ -79,8 +79,11 @@ class Controller:
             elif kind == "calculate":
                 request = {"origin_time": self.selection["origin_time"], "turbine_ids": [t["id"] for t in self.catalog["turbines"]],
                            "horizon_hours": self.selection["horizon_hours"], "mode": self.mode}
-                self.call("create_forecast", request=request)
+                created = self.call("create_forecast", request=request)
                 self.reload()
+                if not self.error:
+                    self.selection.update(forecast_id=created["forecast_id"], origin_time=created["origin_time"],
+                                          as_of=created["origin_time"])
             elif kind == "export":
                 export_kind = "demo" if self.mode == "fixture" else "submission"
                 if action.get("kind") == "submission" and self.mode == "fixture":

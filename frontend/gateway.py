@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib
 import os
+from datetime import timedelta
 
 from frontend.bootstrap import ensure_package
 from frontend.contracts import UIError, utc, wire
@@ -52,8 +53,11 @@ class BackendAdapter:
         origins, turbine_ids = [], set()
         for result in saved:
             turbine_ids.update(row.turbine_id for row in result.predictions.rows)
+            final_hour = max(row.target_end for row in result.predictions.rows)
             origins.append({"origin_time": result.origin_time.isoformat(), "forecast_id": result.forecast_id,
-                            "label": "Обновление" if result.parent_forecast_id else "Основной выпуск", "inspection_times": []})
+                            "label": "Обновление" if result.parent_forecast_id else "Основной выпуск",
+                            "inspection_times": [(result.origin_time + timedelta(hours=12)).isoformat(),
+                                                 (final_hour + timedelta(hours=1)).isoformat()]})
         return {"turbines": [{"id": t, "name": t.replace("turbine_", "Турбина ")} for t in sorted(turbine_ids)],
                 "origins": origins, "timezone": "UTC", "site_name": "Ветровая площадка", "mode": mode}
 

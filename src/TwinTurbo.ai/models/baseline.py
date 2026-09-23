@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 import math
 from typing import Iterable, Mapping
 
-from ..features import build_features
+from ..features import build_features, latest_observations
 from ..schemas import (
     AsOfSnapshot,
     BiasState,
@@ -183,4 +183,28 @@ def fit_constant_baseline(
 
 # Concise aliases used in reports and by callers that prefer the statistical name.
 MeanBaselinePredictor = ConstantBaselinePredictor
+
+
+@dataclass(frozen=True, slots=True)
+class PersistenceBaseline(ConstantBaselinePredictor):
+    """Last complete hour, with an explicit one-hour freshness requirement."""
+
+    def predict_base(self, snapshot):
+        features = build_features(snapshot)
+        latest = {}
+        for obs in latest_observations(snapshot.observations, snapshot.origin_time):
+            if obs.quality_flag == "complete" and (obs.turbine_id not in latest or
+                    obs.event_end > latest[obs.turbine_id].event_end):
+                latest[obs.turbine_id] = obs
+        rows = []
+        for row in features:
+            actual = latest.get(row.turbine_id)
+            if actual is None or snapshot.origin_time - actual.event_end > timedelta(hours=1):
+                raise ValueError("STALE_PERSISTENCE:" + row.turbine_id)
+            rows.append(PredictionRow(turbine_id=row.turbine_id, target_start=row.target_start,
+                target_end=row.target_end, prediction_norm=actual.power_norm))
+        return PredictionBatch(rows=tuple(rows))
+
+    def to_dict(self):
+        return {**ConstantBaselinePredictor.to_dict(self), "kind": "persistence"}
 fit_mean_baseline = fit_constant_baseline

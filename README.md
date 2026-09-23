@@ -18,7 +18,7 @@
 
 **Данные демонстрации синтетические.** Включены 10 неизменяемых выпусков по 96 строк: две турбины × 48 часов, пять дат в разных сезонах, исходный и обновлённый выпуск. Это демонстрация интерфейса, а не доказательство качества модели или работающего погодного архива. Февральский пример не содержит факта и интервалов.
 
-В ревизии `6d32813` появились импорт CSV, GFS-архив, сохранение, replay и сервисный слой. На момент интеграции UI файлы моделей и папки исходных датасетов оставались пустыми. Проверка реального прогноза требует данных, конфигурации и predictor участника 2. Интерфейс не подставляет fixture при отказе рабочего сервиса.
+Финальная интеграция включает CSV → почасовой as-of снимок → настоящий NOAA GFS → обученную модель → 96 строк прогноза → SQLite/JSON/CSV → интерфейс. Базовая кривая, средний baseline, persistence, ridge, необязательный градиентный бустинг, bias и интервалы объединены. Проверка реальных выпусков выполнена на локальных исходных CSV и погодном кэше; сами данные и веса в Git не включены. Подробности слияния и проверки: [RELEASE_CHECK.md](docs/RELEASE_CHECK.md).
 
 ## Быстрый просмотр без установки библиотек
 
@@ -50,9 +50,9 @@ Linux / macOS:
 .venv/bin/python -m streamlit run app.py
 ```
 
-Streamlit использует тот же HTML/CSS/JavaScript-компонент и тот же Python-контроллер, что и локальный просмотр. Сборка Node.js и внешние CDN не нужны. Зависимость UI отделена от общего `requirements.lock`, которым владеет участник 1.
+Streamlit использует тот же HTML/CSS/JavaScript-компонент и тот же Python-контроллер, что и локальный просмотр. Сборка Node.js и внешние CDN не нужны. Общий `requirements.lock` теперь включает проверенные зависимости UI и ML.
 
-**Проверка интеграции:** на Windows / Python 3.12 совместно установлены общий lock и Streamlit 1.64.0, pip check не обнаружил конфликтов. Все 48 тестов прошли, включая запуск Streamlit через AppTest и работу UI-адаптера с настоящим сервисом и SQLite на явно синтетических входах.
+**Проверка интеграции:** на Windows / Python 3.12 совместно установлены общий lock и Streamlit 1.64.0, pip check не обнаружил конфликтов. Все 97 тестов прошли, включая запуск Streamlit через AppTest и работу UI-адаптера с настоящим сервисом и SQLite на явно синтетических входах.
 
 ## Сценарий работы
 
@@ -87,9 +87,28 @@ python -m streamlit run app.py
 
 На экране переключиться в **Replay** или **Submission**. Без конфигурации сервис недоступен; без сохранённых выпусков каталог пуст. Если модель не подключена, просмотр сохранённых результатов доступен, новый расчёт возвращает понятный отказ. В качестве альтернативы оператор может задать `TWINTURBO_SERVICE_FACTORY=module:factory`, возвращающую настроенный `ForecastService`. Это доверенная настройка окружения, не поле для ввода произвольного кода в браузере.
 
-Существующий сервис уже предоставляет `list_forecasts`, `get_forecast`, `create_forecast`, `compare_forecasts`, `events`, `export`. Его текущий `ForecastResult` не включает почасовую погоду и доступные факты: UI честно показывает их отсутствие. Для этих данных предусмотрено необязательное расширение `get_display_context(forecast_id, as_of=...)`. Спецификация и точные поля: [интеграция UI](docs/UI_INTEGRATION.md). UI не читает `store`, сырые CSV или погодный кэш напрямую.
+Существующий сервис уже предоставляет `list_forecasts`, `get_forecast`, `create_forecast`, `compare_forecasts`, `events`, `export`. Метод `get_display_context(forecast_id, as_of=...)` возвращает сохранённую погоду выпуска и только доступные к моменту просмотра факты. Для старых выпусков без сохранённой почасовой погоды поле остаётся пустым. Спецификация и точные поля: [интеграция UI](docs/UI_INTEGRATION.md). UI не читает `store`, сырые CSV или погодный кэш напрямую.
 
-Папка исходников называется `src/TwinTurbo.ai`, а импортируемый Python-пакет — `windoracle`; соответствие уже задано в `pyproject.toml`.
+Дистрибутив называется `TwinTurbo.ai`. Импорты `windoracle` и `TwinTurbo.ai` используют одни и те же классы; работают `python -m windoracle` и `python -m TwinTurbo.ai`. Основная реализация находится в `src/TwinTurbo.ai`.
+
+## Реальный расчёт из CSV
+
+После установки зависимостей и `python -m pip install --no-deps -e .`:
+
+```powershell
+python -m windoracle ingest --turbine-1 data/raw/turbine_1.csv --turbine-2 data/raw/turbine_2.csv
+python -m windoracle weather fetch --origin 2026-01-15T18:00:00Z --run 2026-01-15T12:00:00Z --progress
+python -m windoracle train --origin 2026-01-15T18:00:00Z --output artifacts/models/model.json
+$env:TWINTURBO_MODEL_ARTIFACT = 'artifacts/models/model.json'
+python -m windoracle predict --origin 2026-01-15T18:00:00Z --predictor windoracle.models.registry:load_predictor --output outputs/forecast
+python -m windoracle verify --input outputs/forecast
+python -m windoracle export --input outputs/forecast --output outputs/forecast.csv
+$env:TWINTURBO_CONFIG = 'configs/site.example.yaml'
+$env:TWINTURBO_PREDICTOR = 'windoracle.models.registry:load_predictor'
+python -m streamlit run app.py
+```
+
+Дата в примере — проверенный запуск из диапазона CSV; CLI принимает любой подготовленный origin. В UI выбрать **Replay**. Для Linux переменные задаются через `export NAME=value`. В примере UTC и начало интервала — явно отмеченные допущения исходного времени, а не подтверждённые сведения организаторов. Результат не является доказательством точности модели на всём периоде.
 
 ## Временной контракт и единицы
 
