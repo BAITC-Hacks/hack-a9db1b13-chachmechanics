@@ -20,6 +20,17 @@ class FixtureService:
         if mode != "fixture":
             raise UIError("FIXTURE_EXPORT_BLOCKED")
         catalog = copy.deepcopy(self.data["catalog"])
+        demo_coordinates = {
+            "turbine_1": (43.645150, 78.535604),
+            "turbine_2": (43.643198, 78.538828),
+        }
+        for turbine in catalog.get("turbines", []):
+            latitude, longitude = demo_coordinates.get(
+                turbine.get("id"), (None, None)
+            )
+            turbine.setdefault("latitude", latitude)
+            turbine.setdefault("longitude", longitude)
+            turbine.setdefault("rated_power_mw", None)
         catalog["readiness"] = {"can_calculate": False, "items": [
             {"label": label, "state": "demo", "value": value,
              "detail": "Готовый синтетический пример. Подключение реальных данных в деморежиме не проверяется."}

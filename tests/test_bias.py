@@ -343,6 +343,15 @@ def test_critic_proposes_only_on_new_fact_and_reports_error_basis():
     assert first.retrain_recommended is True
     assert first.evaluation["error_sign"] == "actual_minus_prediction"
     assert first.evaluation["all"]["base"]["mean_error"] == pytest.approx(0.4)
+    model_review = next(
+        item
+        for item in first.recommendations
+        if item.code == "REVIEW_MODEL_PERSISTENT_SIGNED_ERROR"
+    )
+    assert model_review.turbine_id == "turbine_1"
+    assert model_review.next_step == "review_model_and_inputs"
+    assert model_review.evidence["direction"] == "underprediction"
+    assert "не доказывают неисправность" in model_review.causal_limitation
 
     second = critic.review_residuals(
         rows,
@@ -355,6 +364,88 @@ def test_critic_proposes_only_on_new_fact_and_reports_error_basis():
     assert second.action == "skip"
     assert second.proposed_bias is None
     assert "NO_NEW_ACTUALS" in second.reasons
+
+
+def test_critic_recommendations_report_insufficient_and_stale_evidence():
+    state = update_bias([residual()], model_id="curve-v1", as_of=T0)
+    decision = Critic().review_residuals(
+        [residual()],
+        model_id="curve-v1",
+        as_of=T0 + timedelta(days=22),
+        previous=state,
+    )
+
+    by_code = {item.code: item for item in decision.recommendations}
+    assert "INSUFFICIENT_MATURE_ERROR_EVIDENCE" in by_code
+    assert "STALE_ERROR_HISTORY" in by_code
+    assert by_code["INSUFFICIENT_MATURE_ERROR_EVIDENCE"].evidence == {
+        "sample_count": 0,
+        "required_sample_count": 48,
+        "error_sign": "actual_minus_prediction",
+    }
+    assert by_code["STALE_ERROR_HISTORY"].next_step == (
+        "refresh_actuals_before_decision"
+    )
+    assert "BIAS_HISTORY_STALE" in decision.reasons
+    assert by_code["STALE_ERROR_HISTORY"].as_dict()["severity"] == "warning"
+
+
+def test_critic_maintenance_screening_requires_persistent_underperformance():
+    underperformance = [
+        residual(index, actual=0.2, base=0.7, issued=0.7)
+        for index in range(4)
+    ]
+    decision = Critic().review_residuals(
+        underperformance,
+        model_id="curve-v1",
+        as_of=T0,
+        min_drift_samples=3,
+        min_recommendation_samples=3,
+        min_maintenance_samples=3,
+        maintenance_error_threshold=0.25,
+    )
+    maintenance = [
+        item
+        for item in decision.recommendations
+        if item.code == "INSPECT_DATA_AND_ASSET_PERSISTENT_UNDERPERFORMANCE"
+    ]
+    assert len(maintenance) == 1
+    assert maintenance[0].evidence["mean_issued_error"] == pytest.approx(-0.5)
+    assert "Не назначайте ремонт" in maintenance[0].message
+    assert "не доказывают неисправность" in maintenance[0].causal_limitation
+
+    overperformance = [
+        residual(index, actual=0.8, base=0.2, issued=0.2)
+        for index in range(4)
+    ]
+    positive = Critic().review_residuals(
+        overperformance,
+        model_id="curve-v1",
+        as_of=T0,
+        min_drift_samples=3,
+        min_recommendation_samples=3,
+        min_maintenance_samples=3,
+        maintenance_error_threshold=0.25,
+    )
+    assert not any(
+        item.code == "INSPECT_DATA_AND_ASSET_PERSISTENT_UNDERPERFORMANCE"
+        for item in positive.recommendations
+    )
+
+
+def test_critic_recommendation_thresholds_are_validated():
+    critic = Critic()
+    for kwargs in (
+        {"min_recommendation_samples": 0},
+        {"min_maintenance_samples": True},
+        {"maintenance_error_threshold": 0},
+        {"maintenance_error_threshold": -0.1},
+        {"maintenance_error_threshold": 1.1},
+    ):
+        with pytest.raises(ValueError, match="INVALID_CRITIC_THRESHOLDS"):
+            critic.review_residuals(
+                [], model_id="curve-v1", as_of=T0, **kwargs
+            )
 
 
 def test_critic_joins_saved_forecast_to_only_mature_complete_actual():

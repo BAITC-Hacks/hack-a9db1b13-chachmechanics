@@ -4,15 +4,22 @@ from math import sqrt
 import pytest
 
 from windoracle.evaluate import (
+    CapacityFactorSummary,
+    DeviationDiagnostics,
     EvaluationPoint,
     ForecastKey,
     align_forecasts,
     bias,
+    capacity_factor,
+    capacity_factor_summary,
     compare_models,
+    deviation_diagnostics,
     evaluate,
     interval_coverage,
+    kium,
     mae,
     mean_interval_width,
+    normalized_capacity_factor,
     pinball_loss,
     residuals_from_forecasts,
     rmse,
@@ -59,6 +66,123 @@ def test_deterministic_point_metrics_and_explicit_bias_direction():
     # Forecast bias is prediction - actual.  Correction residuals use its negative.
     assert bias(actual, prediction) == pytest.approx(-1 / 15)
     assert mae(iter(actual), iter(prediction)) == pytest.approx(2 / 15)
+
+
+def test_normalized_capacity_factor_is_mean_power_and_has_kium_aliases():
+    values = [0.0, .25, .75, 1.0]
+
+    assert normalized_capacity_factor(values) == pytest.approx(.5)
+    assert capacity_factor(iter(values)) == pytest.approx(.5)
+    assert kium(values) == pytest.approx(.5)
+
+
+def test_capacity_factor_summary_refuses_to_invent_mwh_without_rated_power():
+    summary = capacity_factor_summary([.25, .5, .75], interval_hours=.5)
+
+    assert isinstance(summary, CapacityFactorSummary)
+    assert summary.sample_count == 3
+    assert summary.capacity_factor == pytest.approx(.5)
+    assert summary.equivalent_full_load_hours == pytest.approx(.75)
+    assert summary.rated_power_mw is None
+    assert summary.energy_mwh is None
+    assert summary.energy_mwh_unavailable_reason == "rated_power_mw_required"
+    assert summary.to_dict()["energy_mwh"] is None
+
+
+def test_capacity_factor_summary_derives_mwh_only_from_explicit_rated_power():
+    summary = capacity_factor_summary(
+        (value for value in (.25, .5, .75)),
+        interval_hours=.5,
+        rated_power_mw=4,
+    )
+
+    assert summary.capacity_factor == pytest.approx(.5)
+    assert summary.equivalent_full_load_hours == pytest.approx(.75)
+    assert summary.energy_mwh == pytest.approx(3.0)
+    assert summary.energy_mwh_unavailable_reason is None
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "error", "message"),
+    (
+        ({"power_norm": []}, ValueError, "must not be empty"),
+        ({"power_norm": [float("nan")]}, ValueError, "finite"),
+        ({"power_norm": [-.01]}, ValueError, r"\[0, 1\]"),
+        ({"power_norm": [1.01]}, ValueError, r"\[0, 1\]"),
+        ({"power_norm": [True]}, TypeError, "finite number"),
+        ({"power_norm": [.5], "interval_hours": 0}, ValueError, "positive"),
+        ({"power_norm": [.5], "interval_hours": float("inf")}, ValueError, "finite"),
+        ({"power_norm": [.5], "rated_power_mw": 0}, ValueError, "positive"),
+        ({"power_norm": [.5], "rated_power_mw": float("nan")}, ValueError, "finite"),
+    ),
+)
+def test_capacity_factor_inputs_are_strictly_validated(kwargs, error, message):
+    with pytest.raises(error, match=message):
+        capacity_factor_summary(**kwargs)
+
+
+def test_deviation_diagnostics_report_direction_and_error_magnitudes():
+    diagnostics = deviation_diagnostics(
+        actual=[.5, .5, .5, .5, .5],
+        prediction=[.1, .3, .5, .6, .9],
+        deadband=.1,
+    )
+
+    assert isinstance(diagnostics, DeviationDiagnostics)
+    assert diagnostics.sample_count == 5
+    assert diagnostics.deadband == pytest.approx(.1)
+    assert diagnostics.signed_mean_error == pytest.approx(-.02)
+    assert diagnostics.bias == pytest.approx(-.02)
+    # -0.1 and +0.1 are deadband boundary values and therefore neutral.
+    assert diagnostics.underforecast_rate == pytest.approx(2 / 5)
+    assert diagnostics.overforecast_rate == pytest.approx(1 / 5)
+    assert diagnostics.within_deadband_rate == pytest.approx(2 / 5)
+    assert diagnostics.mae == pytest.approx(.22)
+    assert diagnostics.rmse == pytest.approx(sqrt(.37 / 5))
+    assert diagnostics.max_absolute_error == pytest.approx(.4)
+    assert diagnostics.to_dict() == pytest.approx({
+        "sample_count": 5,
+        "deadband": .1,
+        "signed_mean_error": -.02,
+        "underforecast_rate": .4,
+        "overforecast_rate": .2,
+        "within_deadband_rate": .4,
+        "mae": .22,
+        "rmse": sqrt(.37 / 5),
+        "max_absolute_error": .4,
+    })
+
+
+def test_zero_deadband_direction_rates_treat_only_exact_hits_as_neutral():
+    diagnostics = deviation_diagnostics([.2, .2, .2], [.1, .2, .3])
+
+    assert diagnostics.underforecast_rate == pytest.approx(1 / 3)
+    assert diagnostics.overforecast_rate == pytest.approx(1 / 3)
+    assert diagnostics.within_deadband_rate == pytest.approx(1 / 3)
+    assert sum((
+        diagnostics.underforecast_rate,
+        diagnostics.overforecast_rate,
+        diagnostics.within_deadband_rate,
+    )) == pytest.approx(1.0)
+
+
+@pytest.mark.parametrize(
+    ("actual", "prediction", "deadband", "error", "message"),
+    (
+        ([], [], 0, ValueError, "must not be empty"),
+        ([.1], [.1, .2], 0, ValueError, "equal lengths"),
+        ([float("nan")], [.1], 0, ValueError, "finite"),
+        ([.1], [float("inf")], 0, ValueError, "finite"),
+        ([.1], [.1], -1, ValueError, "nonnegative"),
+        ([.1], [.1], float("nan"), ValueError, "finite"),
+        ([.1], [.1], True, TypeError, "finite number"),
+    ),
+)
+def test_deviation_diagnostics_validate_alignment_and_finite_values(
+    actual, prediction, deadband, error, message,
+):
+    with pytest.raises(error, match=message):
+        deviation_diagnostics(actual, prediction, deadband=deadband)
 
 
 def test_pinball_and_interval_metrics_have_standard_definitions():

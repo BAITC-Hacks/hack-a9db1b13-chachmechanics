@@ -21,6 +21,46 @@ from ..models.bias import (
 from ..schemas import BiasState, utc
 
 
+CAUSAL_LIMITATION = (
+    "Ошибки прогноза показывают статистическое отклонение, но не доказывают "
+    "неисправность или ее причину: возможны ошибка модели погоды, датчика, "
+    "ограничение станции или изменение доступности оборудования."
+)
+
+
+@dataclass(frozen=True)
+class CriticRecommendation:
+    """Conservative, machine-readable next step based on issued errors only.
+
+    Recommendations deliberately concern evidence collection, model review and
+    inspection.  They never prescribe a dispatch set-point and never diagnose
+    a component failure from forecast residuals.
+    """
+
+    code: str
+    category: str
+    severity: str
+    next_step: str
+    message: str
+    turbine_id: str | None
+    evidence: dict
+    causal_limitation: str = CAUSAL_LIMITATION
+
+    def as_dict(self) -> dict:
+        """Return a JSON-friendly representation for service/UI adapters."""
+
+        return {
+            "code": self.code,
+            "category": self.category,
+            "severity": self.severity,
+            "next_step": self.next_step,
+            "message": self.message,
+            "turbine_id": self.turbine_id,
+            "evidence": dict(self.evidence),
+            "causal_limitation": self.causal_limitation,
+        }
+
+
 @dataclass(frozen=True)
 class CriticDecision:
     action: str
@@ -31,6 +71,7 @@ class CriticDecision:
     last_actual_available_at: str | None
     actual_age_hours: float | None
     retrain_recommended: bool
+    recommendations: tuple[CriticRecommendation, ...] = ()
 
 
 class Critic:
@@ -50,6 +91,9 @@ class Critic:
         drift_threshold: float = 0.1,
         min_drift_samples: int = 48,
         interval_fallback: bool = False,
+        min_recommendation_samples: int = 48,
+        maintenance_error_threshold: float = 0.25,
+        min_maintenance_samples: int = 96,
     ) -> CriticDecision:
         as_of = utc(as_of)
         if (
@@ -60,6 +104,16 @@ class Critic:
             or isinstance(min_drift_samples, bool)
             or not isinstance(min_drift_samples, int)
             or min_drift_samples < 1
+            or isinstance(min_recommendation_samples, bool)
+            or not isinstance(min_recommendation_samples, int)
+            or min_recommendation_samples < 1
+            or isinstance(maintenance_error_threshold, bool)
+            or not isinstance(maintenance_error_threshold, (int, float))
+            or not math.isfinite(float(maintenance_error_threshold))
+            or not 0 < float(maintenance_error_threshold) <= 1
+            or isinstance(min_maintenance_samples, bool)
+            or not isinstance(min_maintenance_samples, int)
+            or min_maintenance_samples < 1
         ):
             raise ValueError("INVALID_CRITIC_THRESHOLDS")
 
@@ -133,19 +187,148 @@ class Critic:
             reasons.append("PERSISTENT_SIGNED_ERROR_REVIEW_REQUIRED")
 
         last_actual = effective.last_actual_available_at if effective else None
-        if last_actual is not None and as_of - last_actual > timedelta(days=window_days):
+        mature_model_rows = tuple(
+            row
+            for row in rows
+            if row.model_id == model_id
+            and row.release_kind == "scheduled"
+            and row.actual_available_at <= as_of
+        )
+        evidence_last_actual = (
+            max(row.actual_available_at for row in mature_model_rows)
+            if mature_model_rows
+            else None
+        )
+        freshness_reference = last_actual or evidence_last_actual
+        history_stale = (
+            freshness_reference is not None
+            and as_of - freshness_reference > timedelta(days=window_days)
+        )
+        if history_stale:
             reasons.append("BIAS_HISTORY_STALE")
+
+        evaluation = residual_summary(selected) if selected else None
+        recommendations: list[CriticRecommendation] = []
+        if len(selected) < min_recommendation_samples:
+            recommendations.append(
+                CriticRecommendation(
+                    code="INSUFFICIENT_MATURE_ERROR_EVIDENCE",
+                    category="evidence",
+                    severity="info",
+                    next_step="collect_mature_actuals",
+                    message=(
+                        "Недостаточно зрелых ошибок выпущенных прогнозов для "
+                        "надежной операционной или технической рекомендации."
+                    ),
+                    turbine_id=None,
+                    evidence={
+                        "sample_count": len(selected),
+                        "required_sample_count": min_recommendation_samples,
+                        "error_sign": "actual_minus_prediction",
+                    },
+                )
+            )
+        if history_stale:
+            age_hours = (as_of - freshness_reference).total_seconds() / 3600.0
+            recommendations.append(
+                CriticRecommendation(
+                    code="STALE_ERROR_HISTORY",
+                    category="data_freshness",
+                    severity="warning",
+                    next_step="refresh_actuals_before_decision",
+                    message=(
+                        "История доступного факта устарела; дождитесь или "
+                        "восстановите свежие измерения до принятия решения."
+                    ),
+                    turbine_id=None,
+                    evidence={
+                        "last_actual_available_at": freshness_reference.isoformat(),
+                        "actual_age_hours": age_hours,
+                        "maximum_age_hours": float(window_days) * 24.0,
+                    },
+                )
+            )
+
+        # Use the issued (post-correction) error for operational review.  A
+        # positive value means the model underpredicted actual generation; a
+        # negative value means actual generation was below its prediction.
+        if evaluation is not None:
+            for turbine_id, summary in evaluation["by_turbine"].items():
+                issued = summary["issued"]
+                count = int(issued["sample_count"])
+                mean_error = issued["mean_error"]
+                if mean_error is None:
+                    continue
+                mean_error = float(mean_error)
+                direction = "underprediction" if mean_error > 0 else "overprediction"
+                if count >= min_drift_samples and abs(mean_error) > float(
+                    drift_threshold
+                ):
+                    recommendations.append(
+                        CriticRecommendation(
+                            code="REVIEW_MODEL_PERSISTENT_SIGNED_ERROR",
+                            category="model_quality",
+                            severity="warning",
+                            next_step="review_model_and_inputs",
+                            message=(
+                                f"Для {turbine_id} сохраняется знаковая ошибка; "
+                                "проверьте калибровку модели и входные данные."
+                            ),
+                            turbine_id=turbine_id,
+                            evidence={
+                                "sample_count": count,
+                                "mean_issued_error": mean_error,
+                                "issued_mae": issued["mae"],
+                                "threshold": float(drift_threshold),
+                                "direction": direction,
+                                "error_sign": "actual_minus_prediction",
+                            },
+                        )
+                    )
+
+                # Only persistent *underperformance* can justify an inspection
+                # prompt.  It still cannot justify a repair diagnosis: actual
+                # below prediction may be curtailment, sensor error or weather
+                # mismatch.  Positive error therefore never emits this alert.
+                if (
+                    count >= min_maintenance_samples
+                    and mean_error <= -float(maintenance_error_threshold)
+                ):
+                    recommendations.append(
+                        CriticRecommendation(
+                            code="INSPECT_DATA_AND_ASSET_PERSISTENT_UNDERPERFORMANCE",
+                            category="maintenance_screening",
+                            severity="warning",
+                            next_step="inspect_measurements_availability_and_asset",
+                            message=(
+                                f"Для {turbine_id} факт устойчиво ниже выпущенного "
+                                "прогноза: проверьте датчики, ограничения, журнал "
+                                "доступности и выполните осмотр. Не назначайте "
+                                "ремонт только по этому сигналу."
+                            ),
+                            turbine_id=turbine_id,
+                            evidence={
+                                "sample_count": count,
+                                "mean_issued_error": mean_error,
+                                "issued_mae": issued["mae"],
+                                "threshold": float(maintenance_error_threshold),
+                                "direction": "actual_below_prediction",
+                                "error_sign": "actual_minus_prediction",
+                            },
+                        )
+                    )
         return CriticDecision(
             action="propose_bias" if changed else "skip",
             reasons=tuple(reasons),
             proposed_bias=candidate if changed else None,
-            evaluation=residual_summary(selected) if selected else None,
+            evaluation=evaluation,
             sample_count=len(selected),
             last_actual_available_at=last_actual.isoformat() if last_actual else None,
             actual_age_hours=(as_of - last_actual).total_seconds() / 3600.0
             if last_actual
             else None,
             retrain_recommended=drift,
+            recommendations=tuple(recommendations),
         )
 
     def review(

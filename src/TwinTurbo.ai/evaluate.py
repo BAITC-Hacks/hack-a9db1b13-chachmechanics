@@ -236,6 +236,180 @@ root_mean_squared_error = rmse
 mean_bias = bias
 
 
+def normalized_capacity_factor(power_norm: Iterable[Any]) -> float:
+    """Return normalized capacity factor (KIUM/CF) for equal-duration samples.
+
+    ``power_norm`` is power divided by installed capacity, therefore its
+    arithmetic mean is dimensionless capacity factor.  This function cannot
+    infer physical energy: normalized values contain no rated-power scale.
+    Use :func:`capacity_factor_summary` when an explicit MWh result (or an
+    explicit explanation for its absence) is required.
+    """
+
+    values = tuple(_power(value, "power_norm") for value in power_norm)
+    if not values:
+        raise ValueError("power_norm must not be empty")
+    return fsum(values) / len(values)  # type: ignore[arg-type]
+
+
+# Common terminology used by operators and project documentation.
+capacity_factor = normalized_capacity_factor
+kium = normalized_capacity_factor
+
+
+@dataclass(frozen=True, slots=True)
+class CapacityFactorSummary:
+    """Capacity utilization and energy derivation for equal-duration samples.
+
+    ``energy_mwh`` is deliberately ``None`` when ``rated_power_mw`` was not
+    supplied.  A normalized power series is sufficient for KIUM, but it is not
+    sufficient for a physical MWh total.
+    """
+
+    sample_count: int
+    capacity_factor: float
+    interval_hours: float
+    equivalent_full_load_hours: float
+    rated_power_mw: float | None
+    energy_mwh: float | None
+    energy_mwh_unavailable_reason: str | None
+
+    def to_dict(self) -> dict[str, int | float | str | None]:
+        return {
+            "sample_count": self.sample_count,
+            "capacity_factor": self.capacity_factor,
+            "interval_hours": self.interval_hours,
+            "equivalent_full_load_hours": self.equivalent_full_load_hours,
+            "rated_power_mw": self.rated_power_mw,
+            "energy_mwh": self.energy_mwh,
+            "energy_mwh_unavailable_reason": self.energy_mwh_unavailable_reason,
+        }
+
+
+def capacity_factor_summary(
+    power_norm: Iterable[Any],
+    *,
+    interval_hours: Any = 1.0,
+    rated_power_mw: Any | None = None,
+) -> CapacityFactorSummary:
+    """Summarize KIUM and, only when possible, physical energy in MWh.
+
+    Samples must represent equal-duration intervals of ``interval_hours``.
+    Without a positive finite ``rated_power_mw``, ``energy_mwh`` is ``None``
+    and the result carries a machine-readable reason instead of fabricating a
+    station output from normalized values.
+    """
+
+    values = tuple(_power(value, "power_norm") for value in power_norm)
+    if not values:
+        raise ValueError("power_norm must not be empty")
+    hours = _finite(interval_hours, "interval_hours")
+    if hours <= 0:
+        raise ValueError("interval_hours must be positive")
+
+    factor = fsum(values) / len(values)  # type: ignore[arg-type]
+    full_load_hours = fsum(values) * hours  # type: ignore[arg-type]
+    if rated_power_mw is None:
+        return CapacityFactorSummary(
+            sample_count=len(values),
+            capacity_factor=factor,
+            interval_hours=hours,
+            equivalent_full_load_hours=full_load_hours,
+            rated_power_mw=None,
+            energy_mwh=None,
+            energy_mwh_unavailable_reason="rated_power_mw_required",
+        )
+
+    rated = _finite(rated_power_mw, "rated_power_mw")
+    if rated <= 0:
+        raise ValueError("rated_power_mw must be positive")
+    return CapacityFactorSummary(
+        sample_count=len(values),
+        capacity_factor=factor,
+        interval_hours=hours,
+        equivalent_full_load_hours=full_load_hours,
+        rated_power_mw=rated,
+        energy_mwh=full_load_hours * rated,
+        energy_mwh_unavailable_reason=None,
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class DeviationDiagnostics:
+    """Point-forecast errors and their operational direction.
+
+    Error direction follows the project convention ``prediction - actual``.
+    Errors whose absolute value is at most ``deadband`` are neutral.  Thus an
+    error exactly on a deadband boundary is neither under- nor overforecast.
+    """
+
+    sample_count: int
+    deadband: float
+    signed_mean_error: float
+    underforecast_rate: float
+    overforecast_rate: float
+    within_deadband_rate: float
+    mae: float
+    rmse: float
+    max_absolute_error: float
+
+    @property
+    def bias(self) -> float:
+        """Backward-familiar name for ``signed_mean_error``."""
+
+        return self.signed_mean_error
+
+    def to_dict(self) -> dict[str, int | float]:
+        return {
+            "sample_count": self.sample_count,
+            "deadband": self.deadband,
+            "signed_mean_error": self.signed_mean_error,
+            "underforecast_rate": self.underforecast_rate,
+            "overforecast_rate": self.overforecast_rate,
+            "within_deadband_rate": self.within_deadband_rate,
+            "mae": self.mae,
+            "rmse": self.rmse,
+            "max_absolute_error": self.max_absolute_error,
+        }
+
+
+def deviation_diagnostics(
+    actual: Iterable[Any],
+    prediction: Iterable[Any],
+    *,
+    deadband: Any = 0.0,
+) -> DeviationDiagnostics:
+    """Return deterministic deviation diagnostics for aligned finite pairs.
+
+    ``underforecast_rate`` counts ``prediction - actual < -deadband`` and
+    ``overforecast_rate`` counts ``prediction - actual > deadband``.  Rates use
+    all aligned samples as their denominator so the three direction rates sum
+    to one (up to floating-point representation).
+    """
+
+    threshold = _finite(deadband, "deadband")
+    if threshold < 0:
+        raise ValueError("deadband must be nonnegative")
+    pairs = _pairs(actual, prediction)
+    errors = tuple(predicted - observed for observed, predicted in pairs)
+    count = len(errors)
+    under_count = sum(error < -threshold for error in errors)
+    over_count = sum(error > threshold for error in errors)
+    neutral_count = count - under_count - over_count
+    absolute_errors = tuple(abs(error) for error in errors)
+    return DeviationDiagnostics(
+        sample_count=count,
+        deadband=threshold,
+        signed_mean_error=fsum(errors) / count,
+        underforecast_rate=under_count / count,
+        overforecast_rate=over_count / count,
+        within_deadband_rate=neutral_count / count,
+        mae=fsum(absolute_errors) / count,
+        rmse=sqrt(fsum(error ** 2 for error in errors) / count),
+        max_absolute_error=max(absolute_errors),
+    )
+
+
 def pinball_loss(actual: Iterable[Any], quantile_prediction: Iterable[Any], quantile: float) -> float:
     q = _finite(quantile, "quantile")
     if not 0.0 < q < 1.0:

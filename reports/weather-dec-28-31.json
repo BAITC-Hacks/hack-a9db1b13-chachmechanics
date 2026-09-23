@@ -1,0 +1,58 @@
+[
+  {
+    "run_id": "gfs-20251227T12Z-ed568530c9609237",
+    "required_points": 96,
+    "available_at": "2025-12-27T18:00:00+00:00",
+    "provenance": "operational_archive",
+    "availability_basis": "archive_last_modified_plus_delay",
+    "transfer": {
+      "cache_hits": 0,
+      "network_requests": 288,
+      "reused_bytes": 0,
+      "network_bytes": 205610441,
+      "budget_bytes": 300000000
+    }
+  },
+  {
+    "run_id": "gfs-20251228T12Z-f6b8ae1d51cacfe0",
+    "required_points": 96,
+    "available_at": "2025-12-28T18:00:00+00:00",
+    "provenance": "operational_archive",
+    "availability_basis": "archive_last_modified_plus_delay",
+    "transfer": {
+      "cache_hits": 0,
+      "network_requests": 288,
+      "reused_bytes": 0,
+      "network_bytes": 205610441,
+      "budget_bytes": 300000000
+    }
+  },
+  {
+    "run_id": "gfs-20251229T12Z-fc1c91822ed9b86d",
+    "required_points": 96,
+    "available_at": "2025-12-29T18:00:00+00:00",
+    "provenance": "operational_archive",
+    "availability_basis": "archive_last_modified_plus_delay",
+    "transfer": {
+      "cache_hits": 0,
+      "network_requests": 288,
+      "reused_bytes": 0,
+      "network_bytes": 205610441,
+      "budget_bytes": 300000000
+    }
+  },
+  {
+    "run_id": "gfs-20251230T12Z-719b7d3603de6e04",
+    "required_points": 96,
+    "available_at": "2025-12-30T18:00:00+00:00",
+    "provenance": "operational_archive",
+    "availability_basis": "archive_last_modified_plus_delay",
+    "transfer": {
+      "cache_hits": 0,
+      "network_requests": 288,
+      "reused_bytes": 0,
+      "network_bytes": 205610441,
+      "budget_bytes": 300000000
+    }
+  }
+]

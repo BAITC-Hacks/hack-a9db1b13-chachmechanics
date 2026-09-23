@@ -1,0 +1,164 @@
+{
+  "bias_id": "bias-98b78bffe93ada719979aaaa",
+  "model_id": "twinturbo-forecast-curve-fc2ad4def40ab8d0",
+  "created_as_of": "2026-01-31T18:00:00Z",
+  "last_actual_available_at": "2026-01-31T17:15:00Z",
+  "parameters": {
+    "schema": "rolling-bias-v1",
+    "source_hash": "5adc82dd587f0efe1eb0801b447c5a8dbd8b50eb714b46490ae932b1fea2e3aa",
+    "window_days": 21.0,
+    "shrinkage": 96.0,
+    "estimator": "median",
+    "min_interval_samples": 30,
+    "interval_fallback": false,
+    "status": "calibrated",
+    "turbines": {
+      "turbine_1": {
+        "global_bias": -0.1,
+        "count": 1006,
+        "groups": {
+          "1-6": {
+            "bias": -0.08373427845064203,
+            "count": 126,
+            "status": "calibrated"
+          },
+          "7-12": {
+            "bias": -0.13608760582019527,
+            "count": 126,
+            "status": "calibrated"
+          },
+          "13-24": {
+            "bias": -0.06886184373592934,
+            "count": 251,
+            "status": "calibrated"
+          },
+          "25-48": {
+            "bias": -0.10957431629352697,
+            "count": 503,
+            "status": "calibrated"
+          }
+        }
+      },
+      "turbine_2": {
+        "global_bias": -0.07278635378553361,
+        "count": 1006,
+        "groups": {
+          "1-6": {
+            "bias": -0.06084601579364732,
+            "count": 126,
+            "status": "calibrated"
+          },
+          "7-12": {
+            "bias": -0.118353555914232,
+            "count": 126,
+            "status": "calibrated"
+          },
+          "13-24": {
+            "bias": -0.03208998755355348,
+            "count": 251,
+            "status": "calibrated"
+          },
+          "25-48": {
+            "bias": -0.07898027557604073,
+            "count": 503,
+            "status": "calibrated"
+          }
+        }
+      }
+    },
+    "selection": "latest scheduled origin per target and lead group; latest actual revision available as-of",
+    "intervals": {
+      "schema": "empirical-residual-quantiles-v1",
+      "target_coverage": 0.8,
+      "min_samples": 30,
+      "fallback_enabled": false,
+      "error": "actual_minus_issued_prediction",
+      "turbines": {
+        "turbine_1": {
+          "1-6": {
+            "offsets": [
+              -0.22482518854930128,
+              0.01,
+              0.41125033434504477
+            ],
+            "group_count": 126,
+            "calibration_count": 126,
+            "status": "group"
+          },
+          "7-12": {
+            "offsets": [
+              -0.2864084760860063,
+              -0.051105852503526575,
+              0.30592554843065045
+            ],
+            "group_count": 126,
+            "calibration_count": 126,
+            "status": "group"
+          },
+          "13-24": {
+            "offsets": [
+              -0.272067242824946,
+              0.024516352759140436,
+              0.4224184544337729
+            ],
+            "group_count": 251,
+            "calibration_count": 251,
+            "status": "group"
+          },
+          "25-48": {
+            "offsets": [
+              -0.3246577506790464,
+              0.0026315691703252177,
+              0.4200264111529581
+            ],
+            "group_count": 503,
+            "calibration_count": 503,
+            "status": "group"
+          }
+        },
+        "turbine_2": {
+          "1-6": {
+            "offsets": [
+              -0.20784440642287227,
+              0.01,
+              0.3912543204498512
+            ],
+            "group_count": 126,
+            "calibration_count": 126,
+            "status": "group"
+          },
+          "7-12": {
+            "offsets": [
+              -0.34993070923258107,
+              -0.0459428864218753,
+              0.2205796129944816
+            ],
+            "group_count": 126,
+            "calibration_count": 126,
+            "status": "group"
+          },
+          "13-24": {
+            "offsets": [
+              -0.2578098473251709,
+              0.04,
+              0.40664312216340226
+            ],
+            "group_count": 251,
+            "calibration_count": 251,
+            "status": "group"
+          },
+          "25-48": {
+            "offsets": [
+              -0.31338556397782663,
+              0.00654628478407962,
+              0.4209051731410288
+            ],
+            "group_count": 503,
+            "calibration_count": 503,
+            "status": "group"
+          }
+        }
+      }
+    }
+  }
+}

@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import importlib
+import json
 import os
 from datetime import timedelta
+from pathlib import Path
 
 from frontend.bootstrap import ensure_package
 from frontend.contracts import UIError, utc, wire
@@ -26,6 +28,7 @@ def display_result(native):
 
 class BackendAdapter:
     def __init__(self, service=None):
+        self.bias = None
         if service is None:
             ensure_package()
             factory_name = os.environ.get("TWINTURBO_SERVICE_FACTORY")
@@ -47,6 +50,14 @@ class BackendAdapter:
                     predictor = load_predictor(os.environ["TWINTURBO_PREDICTOR"])
                 service = ForecastService(config, Store(config.storage.database), GFSArchive(config), predictor)
         self.service = service
+        bias_path = os.environ.get("TWINTURBO_BIAS_ARTIFACT")
+        if bias_path:
+            from windoracle.schemas import BiasState
+            document = json.loads(Path(bias_path).read_text(encoding="utf-8"))
+            self.bias = BiasState.model_validate(document)
+            predictor = getattr(self.service, "predictor", None)
+            if predictor is None or self.bias.model_id != predictor.state.model_id:
+                raise UIError("MODEL_UNAVAILABLE")
 
     def get_catalog(self, mode="replay"):
         saved = sorted(self.service.list_forecasts(mode=mode), key=lambda r: (r.origin_time, r.forecast_id))
@@ -75,7 +86,14 @@ class BackendAdapter:
             {"label": "Погода", "state": "unknown", "value": "Есть в выпусках" if weather_evidence else "Не проверена",
              "detail": "Происхождение погоды сохранено в выпусках. Покрытие нового момента проверяется при расчёте; наличие кэша здесь не подтверждается." if weather_evidence else "Для нового расчёта нужен допустимый архивный прогноз погоды. Сервис проверит его для выбранного момента."},
         ]}
-        return {"turbines": [{"id": t, "name": t.replace("turbine_", "Турбина ")} for t in sorted(turbine_ids)],
+        turbine_meta = {t["id"]: t for t in summary.get("turbines", [])}
+        return {"turbines": [{
+                    "id": turbine_id,
+                    "name": turbine_id.replace("turbine_", "Турбина "),
+                    "latitude": turbine_meta.get(turbine_id, {}).get("latitude"),
+                    "longitude": turbine_meta.get(turbine_id, {}).get("longitude"),
+                    "rated_power_mw": turbine_meta.get(turbine_id, {}).get("rated_power_mw"),
+                } for turbine_id in sorted(turbine_ids)],
                 "origins": origins, "timezone": "UTC", "site_name": "Ветровая площадка", "mode": mode,
                 "readiness": readiness}
 
@@ -84,7 +102,9 @@ class BackendAdapter:
             raise UIError("MODEL_UNAVAILABLE")
         from windoracle.schemas import ForecastRequest
         allowed = {k: request[k] for k in ("origin_time", "turbine_ids", "horizon_hours", "mode")}
-        return display_result(self.service.create_forecast(ForecastRequest.model_validate(allowed)))
+        return display_result(self.service.create_forecast(
+            ForecastRequest.model_validate(allowed), bias=self.bias
+        ))
 
     def get_forecast(self, forecast_id, as_of):
         result = self.service.get_forecast(forecast_id)

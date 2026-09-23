@@ -1,0 +1,44 @@
+[
+  {
+    "run_id": "gfs-20260128T12Z-c0280b08423a4b48",
+    "required_points": 96,
+    "available_at": "2026-01-28T18:00:00+00:00",
+    "provenance": "operational_archive",
+    "availability_basis": "archive_last_modified_plus_delay",
+    "transfer": {
+      "cache_hits": 0,
+      "network_requests": 216,
+      "reused_bytes": 0,
+      "network_bytes": 152401810,
+      "budget_bytes": 250000000
+    }
+  },
+  {
+    "run_id": "gfs-20260129T12Z-1b687b11433a26ce",
+    "required_points": 96,
+    "available_at": "2026-01-29T18:00:00+00:00",
+    "provenance": "operational_archive",
+    "availability_basis": "archive_last_modified_plus_delay",
+    "transfer": {
+      "cache_hits": 0,
+      "network_requests": 216,
+      "reused_bytes": 0,
+      "network_bytes": 152401810,
+      "budget_bytes": 250000000
+    }
+  },
+  {
+    "run_id": "gfs-20260130T12Z-216b93bb994b1120",
+    "required_points": 96,
+    "available_at": "2026-01-30T18:00:00+00:00",
+    "provenance": "operational_archive",
+    "availability_basis": "archive_last_modified_plus_delay",
+    "transfer": {
+      "cache_hits": 0,
+      "network_requests": 216,
+      "reused_bytes": 0,
+      "network_bytes": 152401810,
+      "budget_bytes": 250000000
+    }
+  }
+]

@@ -125,8 +125,64 @@ class ForecastService:
                     "power_norm": o.power_norm}
                    for o in self.store.observations_as_of(as_of, turbine_ids)
                    if o.quality_flag == "complete" and (o.turbine_id, o.event_start, o.event_end) in keys]
+        from .evaluate import (
+            capacity_factor_summary,
+            deviation_diagnostics,
+            interval_coverage,
+            mean_interval_width,
+        )
+
+        rated = {t.id: t.rated_power_mw for t in self.config.site.turbines}
+        actual_by_key = {
+            (row["turbine_id"], row["target_start"], row["target_end"]): row
+            for row in actuals
+        }
+        metrics = {}
+        for turbine_id in turbine_ids:
+            predictions = tuple(
+                row for row in result.predictions.rows if row.turbine_id == turbine_id
+            )
+            matched = tuple(
+                (row, actual_by_key[(row.turbine_id, row.target_start, row.target_end)])
+                for row in predictions
+                if (row.turbine_id, row.target_start, row.target_end) in actual_by_key
+            )
+            intervals = tuple(
+                (row, actual)
+                for row, actual in matched
+                if row.q10 is not None and row.q90 is not None
+            )
+            metrics[turbine_id] = {
+                "forecast_kium": capacity_factor_summary(
+                    (row.prediction_norm for row in predictions),
+                    rated_power_mw=rated.get(turbine_id),
+                ).to_dict(),
+                "actual_kium": capacity_factor_summary(
+                    (actual["power_norm"] for _, actual in matched),
+                    rated_power_mw=rated.get(turbine_id),
+                ).to_dict() if matched else None,
+                "accuracy": deviation_diagnostics(
+                    (actual["power_norm"] for _, actual in matched),
+                    (row.prediction_norm for row, _ in matched),
+                    deadband=.05,
+                ).to_dict() if matched else None,
+                "uncertainty": {
+                    "available_count": len(intervals),
+                    "matched_count": len(matched),
+                    "coverage_q10_q90": interval_coverage(
+                        (actual["power_norm"] for _, actual in intervals),
+                        (row.q10 for row, _ in intervals),
+                        (row.q90 for row, _ in intervals),
+                    ) if intervals else None,
+                    "mean_width_q10_q90": mean_interval_width(
+                        (row.q10 for row, _ in intervals),
+                        (row.q90 for row, _ in intervals),
+                    ) if intervals else None,
+                },
+                "unit": "normalized_power",
+            }
         return {"weather": result.manifest.get("weather_values", []),
-                "actuals": actuals, "metrics": None}
+                "actuals": actuals, "metrics": metrics}
 
     def compare_forecasts(self, first_id, second_id):
         a, b = self.get_forecast(first_id), self.get_forecast(second_id)

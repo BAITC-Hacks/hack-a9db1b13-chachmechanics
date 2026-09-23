@@ -16,21 +16,30 @@ htmlcov/
 .env
 .env.*
 !.env.example
-configs/site.yaml
+# The confirmed, secret-free site configuration is part of the reproducible
+# judge bundle. Local secret overrides still belong in .env files above.
 
 # Generated data; retain the directory scaffold
 /data/**
 !/data/**/
-!/data/**/.gitkeep
+!/data/raw/turbine_1.csv
+!/data/raw/turbine_2.csv
 /artifacts/**
 !/artifacts/**/
-!/artifacts/**/.gitkeep
+!/artifacts/models/february-production.json
+!/artifacts/models/forecast-power-curve-prejan-2026.json
+!/artifacts/models/mean-baseline-final-prejan-2026.json
+!/artifacts/models/ridge-prejan-2026.json
+!/artifacts/bias/february-production-bias.json
 /reports/**
 !/reports/**/
-!/reports/**/.gitkeep
+!/reports/ingest-utc-plus05.json
+!/reports/january-model-comparison.json
+!/reports/january-model-comparison.md
+!/reports/weather-*.json
 /outputs/**
 !/outputs/**/
-!/outputs/**/.gitkeep
+!/outputs/replay-february/**
 /outputs/final-env/
 
 # Editor and operating system files

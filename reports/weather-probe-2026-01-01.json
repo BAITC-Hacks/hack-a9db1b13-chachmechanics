@@ -1,0 +1,16 @@
+[
+  {
+    "run_id": "gfs-20260101T12Z-c45cea930e52badc",
+    "required_points": 96,
+    "available_at": "2026-01-01T18:00:00+00:00",
+    "provenance": "operational_archive",
+    "availability_basis": "archive_last_modified_plus_delay",
+    "transfer": {
+      "cache_hits": 2,
+      "network_requests": 70,
+      "reused_bytes": 938509,
+      "network_bytes": 50903383,
+      "budget_bytes": 250000000
+    }
+  }
+]

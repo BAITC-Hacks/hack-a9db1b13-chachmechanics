@@ -1,5 +1,3 @@
-# Confirmed challenge configuration. Etc/GMT-5 is the IANA spelling for a
-# fixed UTC+05 offset (the POSIX sign is intentionally reversed).
 site:
   timezone: Etc/GMT-5
   timestamp_semantics: interval_start
