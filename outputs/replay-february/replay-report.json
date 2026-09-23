@@ -1,0 +1,281 @@
+{
+  "bias": {
+    "bias_id": "bias-98b78bffe93ada719979aaaa",
+    "created_as_of": "2026-01-31T18:00:00+00:00",
+    "expiry_policy": "expired state is retained only to emit expired_history; point correction is zero and quantiles are null",
+    "last_actual_available_at": "2026-01-31T17:15:00+00:00",
+    "lifecycle_counts": {
+      "active": 21,
+      "expired_passthrough": 7
+    },
+    "path": "C:\\Users\\Chach\\Documents\\GitHub\\hack-a9db1b13-chachmechanics\\artifacts\\bias\\february-production-bias.json",
+    "sha256": "de52fc0a845afc39d659c8224c92f8133c5fac1983f69bb8789e7b3c7316656a",
+    "window_days": 21.0
+  },
+  "config": {
+    "config_hash": "fb14057260ed1786d41f8840b06eb71432d572ea1a1bfd87354e022802083547",
+    "path": "C:\\Users\\Chach\\Documents\\GitHub\\hack-a9db1b13-chachmechanics\\configs\\site.yaml",
+    "sha256": "3fb4d9c2045a4446445194fa0eadfcf9a8897ff0da58069e7d2c156a648e0b5f",
+    "source_timezone": "Etc/GMT-5"
+  },
+  "forecast_ids": [
+    "83d2f33dd6d58ae03923908230984d3442d7100f43c62e5cc645790dc3cdf2de",
+    "8759f558678d82e38e7e7a695aa1b08335e4ae82cd16654d51f92d2ed3e5a5b2",
+    "c895014ae7481a5ade8d7c80f190b086ef800ecd7276cbeebfc43f5cf29a3d8c",
+    "63b73dd7cd22ce209a64a3a6faceead547b842d15debb6422e53e555faaeb495",
+    "1110479f9f43c06c4a8127ab4abed16e398be1676cdb500e1b60cb3feb1b365e",
+    "b8074da21c4037557615a79e55495a5ba8c192fd92d13e1d34c2a8b18d793a47",
+    "42693bcbba1870ba85db13da26aaaeddabff08413e3d20ad06c4098f7865df65",
+    "5c5081fbd3c6022160ec565bc8e8c70cf91a2e00fcd01fc3fbedc4d2f17c16e6",
+    "17c3ef025f4d446646b0ca30ab36b5ba00bc96e05fb8f8e1dd9546822d59b9d5",
+    "3b3604f71f534959f3d8b909dee5f3fc5dc1a414f2f802e0cf6d50f53a6e7619",
+    "f8f28da151c0624e632153c878c1d48669f69604fe7814c2dc35dfd4fe5880f5",
+    "3f34bd8980ce9b81374ca7f2b3c8c8af3f46fbfac7bcd38884d87cdc94cf141c",
+    "cf41f54843d5dba0fecd4c69d928005a34285d749dbce195a80ada7b7b893895",
+    "aaa977d1c7f27c8e8253b363b0583d32136f1fc094b10ea4bdec79940d5d825e",
+    "cb169cb2eda569793fcef8c921966c4218070b3f8dbf26531b80bbfd8d26787e",
+    "31e1d0d951b6eb219410bf31f7f2c26347ae34702505fe06b36f9544eee0b2b2",
+    "13a7d9155ddc4744c050c4a6d43004c5a66376f4b7f0b532a361aacf82fc4d9f",
+    "e9e8e71c33c5f09ba56a4958f18b2097903dac1ba73a103478d013d1f7544197",
+    "1afd97f30ccdafc814a96e5143b2d41606cf34a03c4131497d2cd61606a90315",
+    "882e4058684bd90047b31f9f79a7dcbbc2f42709eb1d206afe718f66aae4d47d",
+    "345b5f4f8d47900be5d854322685d76c6ed68f6b1fc3dcf0ab41f10178ab396e",
+    "bad6a7a013264c51d4ac3026562196e15667d085b0ab23a4f6386e110a86fe40",
+    "143196579b1c0d008f954140a5aa2c4f01380b039d9113b24a68d50a9dfe62ca",
+    "21991cd4386bf4d614eeaaed6ffbdcb7004042499a0eb3790ea362338a4553b7",
+    "72cbf9dfba83f9c070890d03bcc8510a0b1b12b489c2804073394b2b07d31538",
+    "3dedffb121cc988f3e93beb03976e262e8f18bce99508b9105242a72e31b7a0d",
+    "992044a5efdac536f190eb381a0502dab304a690d4719e6cbe411b85e8573c81",
+    "d1b22007702058fff13c57389621afdfdecbcef89cc08d75ca1d589753b5c75f"
+  ],
+  "generated_at": "2026-09-23T12:53:45.666919+00:00",
+  "model": {
+    "model_id": "twinturbo-forecast-curve-fc2ad4def40ab8d0",
+    "path": "C:\\Users\\Chach\\Documents\\GitHub\\hack-a9db1b13-chachmechanics\\artifacts\\models\\february-production.json",
+    "sha256": "8069abbf59849a7250c7593dc3a3f128a20abcd723f1d6ca29760750e29d3465",
+    "training_cutoff": "2025-12-31T18:00:00+00:00"
+  },
+  "offline_only": true,
+  "output": "C:\\Users\\Chach\\Documents\\GitHub\\hack-a9db1b13-chachmechanics\\outputs\\replay-february",
+  "period": {
+    "expected_rows": 2688,
+    "first_origin": "2026-01-31T18:00:00+00:00",
+    "horizon_hours": 48,
+    "last_origin": "2026-02-27T18:00:00+00:00",
+    "origin_count": 28,
+    "published_rows": 2688
+  },
+  "raw_csv_read": false,
+  "schema": "twinturbo.february-replay.v1",
+  "status_counts": {
+    "bias:calibrated": 2016,
+    "bias:expired_history": 672,
+    "interval:expired_history": 672,
+    "interval:group": 2016,
+    "ok": 2616,
+    "out_of_domain": 72
+  },
+  "store": "C:\\Users\\Chach\\Documents\\GitHub\\hack-a9db1b13-chachmechanics\\artifacts\\twinturbo.sqlite",
+  "weather": {
+    "cache_path": "C:\\Users\\Chach\\Documents\\GitHub\\hack-a9db1b13-chachmechanics\\data\\weather",
+    "cached_bundle_count": 67,
+    "selected_runs": [
+      {
+        "available_at": "2026-01-31T18:00:00+00:00",
+        "origin_time": "2026-01-31T18:00:00+00:00",
+        "run_id": "gfs-20260131T12Z-3e2c330401615b1c",
+        "run_init_time": "2026-01-31T12:00:00+00:00",
+        "sha256": "58c012d7cf46ae222c13eeab25099ef12b01b83b5cf0e80dddf5502a287dcae9"
+      },
+      {
+        "available_at": "2026-02-01T18:00:00+00:00",
+        "origin_time": "2026-02-01T18:00:00+00:00",
+        "run_id": "gfs-20260201T12Z-b38ab8bb5f772345",
+        "run_init_time": "2026-02-01T12:00:00+00:00",
+        "sha256": "b93ac47275619c6ac1b24ca0b9f400a34d42a81d8fe43d07cf15e5360c5b1bc5"
+      },
+      {
+        "available_at": "2026-02-02T18:00:00+00:00",
+        "origin_time": "2026-02-02T18:00:00+00:00",
+        "run_id": "gfs-20260202T12Z-b582cef064771e33",
+        "run_init_time": "2026-02-02T12:00:00+00:00",
+        "sha256": "e00dd79fcb1784f84d32f023b8039c040aa3f7d67ea520d09465bbbda59e5583"
+      },
+      {
+        "available_at": "2026-02-03T18:00:00+00:00",
+        "origin_time": "2026-02-03T18:00:00+00:00",
+        "run_id": "gfs-20260203T12Z-af5bd7734ffdb084",
+        "run_init_time": "2026-02-03T12:00:00+00:00",
+        "sha256": "0f875fbb1c0f78dffa890aed8e61c8c4bd89b95507e746492b92a2898ba17392"
+      },
+      {
+        "available_at": "2026-02-04T18:00:00+00:00",
+        "origin_time": "2026-02-04T18:00:00+00:00",
+        "run_id": "gfs-20260204T12Z-c655d7b08f35764b",
+        "run_init_time": "2026-02-04T12:00:00+00:00",
+        "sha256": "aedde70c7972055a5122364f99bdbf4b1ab1292b8b60851744215fcf4370aaa2"
+      },
+      {
+        "available_at": "2026-02-05T18:00:00+00:00",
+        "origin_time": "2026-02-05T18:00:00+00:00",
+        "run_id": "gfs-20260205T12Z-4f1fba3f079de5b0",
+        "run_init_time": "2026-02-05T12:00:00+00:00",
+        "sha256": "7076cfafb28ef71e858aad09a2bf8154070a7f2c2c2eb2265d167a54f7023fee"
+      },
+      {
+        "available_at": "2026-02-06T18:00:00+00:00",
+        "origin_time": "2026-02-06T18:00:00+00:00",
+        "run_id": "gfs-20260206T12Z-c5dd349bf7df2b1a",
+        "run_init_time": "2026-02-06T12:00:00+00:00",
+        "sha256": "fe7b709ffa3cb6e7600940df3c25592bd5129265e5d00ba61c5cbac901cb63eb"
+      },
+      {
+        "available_at": "2026-02-07T18:00:00+00:00",
+        "origin_time": "2026-02-07T18:00:00+00:00",
+        "run_id": "gfs-20260207T12Z-272aafb8624eb1cf",
+        "run_init_time": "2026-02-07T12:00:00+00:00",
+        "sha256": "009d2dcc8b49b35bf09ea552688b8fe044a0b788bd3f0e4360abbb431fc7eb4c"
+      },
+      {
+        "available_at": "2026-02-08T18:00:00+00:00",
+        "origin_time": "2026-02-08T18:00:00+00:00",
+        "run_id": "gfs-20260208T12Z-eae602403efcfb1f",
+        "run_init_time": "2026-02-08T12:00:00+00:00",
+        "sha256": "0c31746a12b21debfcb2bd31d798e0e94b2846910c8bfe823e5dfc4906c83538"
+      },
+      {
+        "available_at": "2026-02-09T18:00:00+00:00",
+        "origin_time": "2026-02-09T18:00:00+00:00",
+        "run_id": "gfs-20260209T12Z-5c87a319dfc86766",
+        "run_init_time": "2026-02-09T12:00:00+00:00",
+        "sha256": "2632ef2e6487fa87a7ce8fe5bc202f644edb56fa222df0bbcddfa81b4f53a202"
+      },
+      {
+        "available_at": "2026-02-10T18:00:00+00:00",
+        "origin_time": "2026-02-10T18:00:00+00:00",
+        "run_id": "gfs-20260210T12Z-1161be613eaf3c45",
+        "run_init_time": "2026-02-10T12:00:00+00:00",
+        "sha256": "5c89bd182fd8a0e306dff7873454b4973acb5ccdbaad7d281552c4cdaa5d6c56"
+      },
+      {
+        "available_at": "2026-02-11T18:00:00+00:00",
+        "origin_time": "2026-02-11T18:00:00+00:00",
+        "run_id": "gfs-20260211T12Z-1736105b3301354a",
+        "run_init_time": "2026-02-11T12:00:00+00:00",
+        "sha256": "b338e9ad0bfcf5e7638b872367456044290bed45ac203028b252da839909344f"
+      },
+      {
+        "available_at": "2026-02-12T18:00:00+00:00",
+        "origin_time": "2026-02-12T18:00:00+00:00",
+        "run_id": "gfs-20260212T12Z-afae011b28582cea",
+        "run_init_time": "2026-02-12T12:00:00+00:00",
+        "sha256": "2c23a7cf60a9de378dd64e90ab99a99245d625fe87d9b55bd4b9cd7ea3cac8bc"
+      },
+      {
+        "available_at": "2026-02-13T18:00:00+00:00",
+        "origin_time": "2026-02-13T18:00:00+00:00",
+        "run_id": "gfs-20260213T12Z-0f1602a5fe9cb10e",
+        "run_init_time": "2026-02-13T12:00:00+00:00",
+        "sha256": "8f1838edf591ee78ffa7606fdabf3307a52e988cb044d0138da694be3e38fead"
+      },
+      {
+        "available_at": "2026-02-14T18:00:00+00:00",
+        "origin_time": "2026-02-14T18:00:00+00:00",
+        "run_id": "gfs-20260214T12Z-f0f2db07cf62d5ec",
+        "run_init_time": "2026-02-14T12:00:00+00:00",
+        "sha256": "8c340b0098b98e9f2746246501629fc86729c0225e4b5b1fa2ac105a474d4356"
+      },
+      {
+        "available_at": "2026-02-15T18:00:00+00:00",
+        "origin_time": "2026-02-15T18:00:00+00:00",
+        "run_id": "gfs-20260215T12Z-75d7cfeced179159",
+        "run_init_time": "2026-02-15T12:00:00+00:00",
+        "sha256": "f406b263d52e478d6e4730061886c13c5c3b60c3b6f3fec49ef0e03699abfe4a"
+      },
+      {
+        "available_at": "2026-02-16T18:00:00+00:00",
+        "origin_time": "2026-02-16T18:00:00+00:00",
+        "run_id": "gfs-20260216T12Z-c39620dcd56637a9",
+        "run_init_time": "2026-02-16T12:00:00+00:00",
+        "sha256": "6b48c627dc3b93fe9207a63b354961b7c2b377aa7b797444322693978f421da0"
+      },
+      {
+        "available_at": "2026-02-17T18:00:00+00:00",
+        "origin_time": "2026-02-17T18:00:00+00:00",
+        "run_id": "gfs-20260217T12Z-66079e00c897dfbf",
+        "run_init_time": "2026-02-17T12:00:00+00:00",
+        "sha256": "8838781125f97a6a6369fc4607a74d09bc116632adbee22eccd6fa995cef4fae"
+      },
+      {
+        "available_at": "2026-02-18T18:00:00+00:00",
+        "origin_time": "2026-02-18T18:00:00+00:00",
+        "run_id": "gfs-20260218T12Z-639bcdc05acf790c",
+        "run_init_time": "2026-02-18T12:00:00+00:00",
+        "sha256": "d2215bd8e0c4253ac667a942d446019a90432d150a271a67546fa54fde3e452c"
+      },
+      {
+        "available_at": "2026-02-19T18:00:00+00:00",
+        "origin_time": "2026-02-19T18:00:00+00:00",
+        "run_id": "gfs-20260219T12Z-562fde743dafcd6f",
+        "run_init_time": "2026-02-19T12:00:00+00:00",
+        "sha256": "28f0b78a839a4a57d64284750c1c23676d1e228efc127b9086a745bc0934c4eb"
+      },
+      {
+        "available_at": "2026-02-20T18:00:00+00:00",
+        "origin_time": "2026-02-20T18:00:00+00:00",
+        "run_id": "gfs-20260220T12Z-34a3b5abe3c30825",
+        "run_init_time": "2026-02-20T12:00:00+00:00",
+        "sha256": "44fddb384ac2d818df8b5f13c706d8034dbb8329b01872056c895c075e69c512"
+      },
+      {
+        "available_at": "2026-02-21T18:00:00+00:00",
+        "origin_time": "2026-02-21T18:00:00+00:00",
+        "run_id": "gfs-20260221T12Z-cb471b7dc1475810",
+        "run_init_time": "2026-02-21T12:00:00+00:00",
+        "sha256": "46e15ce60032a7023bb8fbe35fbaf734bb199f496cb7bbaf7bf11931bde3db2a"
+      },
+      {
+        "available_at": "2026-02-22T18:00:00+00:00",
+        "origin_time": "2026-02-22T18:00:00+00:00",
+        "run_id": "gfs-20260222T12Z-187007279a136a74",
+        "run_init_time": "2026-02-22T12:00:00+00:00",
+        "sha256": "827f3bbafa0b78d3748d39a1abb8aa173b89be7333bcc8759ff951e9df466280"
+      },
+      {
+        "available_at": "2026-02-23T18:00:00+00:00",
+        "origin_time": "2026-02-23T18:00:00+00:00",
+        "run_id": "gfs-20260223T12Z-a71de9f92997f36f",
+        "run_init_time": "2026-02-23T12:00:00+00:00",
+        "sha256": "89631d0414113347bded287c13dadaff76a05a48b46bfd9e832052266eca3b37"
+      },
+      {
+        "available_at": "2026-02-24T18:00:00+00:00",
+        "origin_time": "2026-02-24T18:00:00+00:00",
+        "run_id": "gfs-20260224T12Z-e4ed5d92162454dc",
+        "run_init_time": "2026-02-24T12:00:00+00:00",
+        "sha256": "d14ee2ad1b53319661f1924ff2928c2e9dd0d0fbdc860fec05c37d47b678c335"
+      },
+      {
+        "available_at": "2026-02-25T18:00:00+00:00",
+        "origin_time": "2026-02-25T18:00:00+00:00",
+        "run_id": "gfs-20260225T12Z-e6c3918188b62b38",
+        "run_init_time": "2026-02-25T12:00:00+00:00",
+        "sha256": "b81a8baf4ee89ac1f552c5da38dc1d620075430b0851fe65c68a03aff7c3b681"
+      },
+      {
+        "available_at": "2026-02-26T18:00:00+00:00",
+        "origin_time": "2026-02-26T18:00:00+00:00",
+        "run_id": "gfs-20260226T12Z-2cf63bd4fb5308ff",
+        "run_init_time": "2026-02-26T12:00:00+00:00",
+        "sha256": "7c7f42aa04ffad128a1297104607485c02f99dfff0ffd239bddcf98c5e2c3731"
+      },
+      {
+        "available_at": "2026-02-27T18:00:00+00:00",
+        "origin_time": "2026-02-27T18:00:00+00:00",
+        "run_id": "gfs-20260227T12Z-a655a336c70fba12",
+        "run_init_time": "2026-02-27T12:00:00+00:00",
+        "sha256": "f9b25ed70d28481c1a98f4be7be979582abe21c09742dba7c51b1de8768d6b14"
+      }
+    ]
+  }
+}

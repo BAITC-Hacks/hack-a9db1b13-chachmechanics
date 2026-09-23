@@ -1,0 +1,3873 @@
+{
+  "forecast_id": "f8f28da151c0624e632153c878c1d48669f69604fe7814c2dc35dfd4fe5880f5",
+  "origin_time": "2026-02-10T18:00:00Z",
+  "predictions": {
+    "rows": [
+      {
+        "target_start": "2026-02-10T19:00:00Z",
+        "target_end": "2026-02-10T20:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.8958284331930111,
+        "q10": 0.6710032446437098,
+        "q50": 0.9058284331930111,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-10T20:00:00Z",
+        "target_end": "2026-02-10T21:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.8351118604324903,
+        "q10": 0.610286671883189,
+        "q50": 0.8451118604324903,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-10T21:00:00Z",
+        "target_end": "2026-02-10T22:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.46879083074063904,
+        "q10": 0.24396564219133776,
+        "q50": 0.47879083074063905,
+        "q90": 0.8800411650856839,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-10T22:00:00Z",
+        "target_end": "2026-02-10T23:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.279968116423937,
+        "q10": 0.055142927874635705,
+        "q50": 0.289968116423937,
+        "q90": 0.6912184507689818,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-10T23:00:00Z",
+        "target_end": "2026-02-11T00:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.10702312920890915,
+        "q10": 0.0,
+        "q50": 0.11702312920890914,
+        "q90": 0.5182734635539539,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T00:00:00Z",
+        "target_end": "2026-02-11T01:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.12763865532445,
+        "q10": 0.0,
+        "q50": 0.13763865532445002,
+        "q90": 0.5388889896694948,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T01:00:00Z",
+        "target_end": "2026-02-11T02:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.07468618385171388,
+        "q10": 0.0,
+        "q50": 0.02358033134818731,
+        "q90": 0.38061173228236433,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T02:00:00Z",
+        "target_end": "2026-02-11T03:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.05303250204552523,
+        "q10": 0.0,
+        "q50": 0.0019266495419986568,
+        "q90": 0.3589580504761757,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T03:00:00Z",
+        "target_end": "2026-02-11T04:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.041397311513269586,
+        "q10": 0.0,
+        "q50": 0.0,
+        "q90": 0.34732285994392004,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T04:00:00Z",
+        "target_end": "2026-02-11T05:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.2034524477399581,
+        "q10": 0.0,
+        "q50": 0.15234659523643151,
+        "q90": 0.5093779961706085,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T05:00:00Z",
+        "target_end": "2026-02-11T06:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.30116284414071304,
+        "q10": 0.014754368054706757,
+        "q50": 0.2500569916371865,
+        "q90": 0.6070883925713635,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T06:00:00Z",
+        "target_end": "2026-02-11T07:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.5218954719101573,
+        "q10": 0.235486995824151,
+        "q50": 0.4707896194066307,
+        "q90": 0.8278210203408077,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T07:00:00Z",
+        "target_end": "2026-02-11T08:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.6173760519544118,
+        "q10": 0.3453088091294658,
+        "q50": 0.6418924047135522,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T08:00:00Z",
+        "target_end": "2026-02-11T09:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.6448541657335978,
+        "q10": 0.3727869229086518,
+        "q50": 0.6693705184927382,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T09:00:00Z",
+        "target_end": "2026-02-11T10:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.6634376635120611,
+        "q10": 0.39137042068711514,
+        "q50": 0.6879540162712016,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T10:00:00Z",
+        "target_end": "2026-02-11T11:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.05937794995488567,
+        "q10": 0.0,
+        "q50": 0.0838943027140261,
+        "q90": 0.48179640438865856,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T11:00:00Z",
+        "target_end": "2026-02-11T12:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.015742331210971308,
+        "q10": 0.0,
+        "q50": 0.040258683970111744,
+        "q90": 0.4381607856447442,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T12:00:00Z",
+        "target_end": "2026-02-11T13:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.1188431970265759,
+        "q10": 0.0,
+        "q50": 0.14335954978571636,
+        "q90": 0.5412616514603488,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T13:00:00Z",
+        "target_end": "2026-02-11T14:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.28568655312084446,
+        "q10": 0.013619310295898468,
+        "q50": 0.3102029058799849,
+        "q90": 0.7081050075546174,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T14:00:00Z",
+        "target_end": "2026-02-11T15:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.637471346967299,
+        "q10": 0.365404104142353,
+        "q50": 0.6619876997264394,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T15:00:00Z",
+        "target_end": "2026-02-11T16:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.7617249187850142,
+        "q10": 0.48965767596006826,
+        "q50": 0.7862412715441547,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T16:00:00Z",
+        "target_end": "2026-02-11T17:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.5933655729689113,
+        "q10": 0.32129833014396536,
+        "q50": 0.6178819257280518,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T17:00:00Z",
+        "target_end": "2026-02-11T18:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.6795441987196958,
+        "q10": 0.40747695589474986,
+        "q50": 0.7040605514788363,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T18:00:00Z",
+        "target_end": "2026-02-11T19:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.2805525967277144,
+        "q10": 0.008485353902768389,
+        "q50": 0.3050689494868548,
+        "q90": 0.7029710511614873,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T19:00:00Z",
+        "target_end": "2026-02-11T20:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.4958611020903987,
+        "q10": 0.1712033514113523,
+        "q50": 0.4984926712607239,
+        "q90": 0.9158875132433568,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T20:00:00Z",
+        "target_end": "2026-02-11T21:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.613419435366806,
+        "q10": 0.2887616846877596,
+        "q50": 0.6160510045371312,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T21:00:00Z",
+        "target_end": "2026-02-11T22:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.6306535559028107,
+        "q10": 0.3059958052237643,
+        "q50": 0.633285125073136,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T22:00:00Z",
+        "target_end": "2026-02-11T23:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.5771106969619568,
+        "q10": 0.25245294628291043,
+        "q50": 0.5797422661322821,
+        "q90": 0.997137108114915,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T23:00:00Z",
+        "target_end": "2026-02-12T00:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.24241580716878536,
+        "q10": 0.0,
+        "q50": 0.24504737633911058,
+        "q90": 0.6624422183217434,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T00:00:00Z",
+        "target_end": "2026-02-12T01:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.4364889113903603,
+        "q10": 0.11183116071131388,
+        "q50": 0.4391204805606855,
+        "q90": 0.8565153225433184,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T01:00:00Z",
+        "target_end": "2026-02-12T02:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.25573818184241237,
+        "q10": 0.0,
+        "q50": 0.25836975101273757,
+        "q90": 0.6757645929953704,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T02:00:00Z",
+        "target_end": "2026-02-12T03:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.1288369886121392,
+        "q10": 0.0,
+        "q50": 0.13146855778246444,
+        "q90": 0.5488633997650973,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T03:00:00Z",
+        "target_end": "2026-02-12T04:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.023255820846899464,
+        "q10": 0.0,
+        "q50": 0.025887390017224683,
+        "q90": 0.44328223199985756,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T04:00:00Z",
+        "target_end": "2026-02-12T05:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.03643423064378466,
+        "q10": 0.0,
+        "q50": 0.03906579981410988,
+        "q90": 0.4564606417967427,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T05:00:00Z",
+        "target_end": "2026-02-12T06:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.0771550725376892,
+        "q10": 0.0,
+        "q50": 0.07978664170801442,
+        "q90": 0.4971814836906473,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T06:00:00Z",
+        "target_end": "2026-02-12T07:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.07856699045506439,
+        "q10": 0.0,
+        "q50": 0.0811985596253896,
+        "q90": 0.49859340160802246,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T07:00:00Z",
+        "target_end": "2026-02-12T08:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.10473687099673772,
+        "q10": 0.0,
+        "q50": 0.10736844016706293,
+        "q90": 0.5247632821496958,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T08:00:00Z",
+        "target_end": "2026-02-12T09:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.07157804392175197,
+        "q10": 0.0,
+        "q50": 0.07420961309207719,
+        "q90": 0.49160445507471007,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T09:00:00Z",
+        "target_end": "2026-02-12T10:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.0,
+        "q10": 0.0,
+        "q50": 0.0026315691703252177,
+        "q90": 0.4200264111529581,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T10:00:00Z",
+        "target_end": "2026-02-12T11:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.0695384631695818,
+        "q10": 0.0,
+        "q50": 0.07217003233990701,
+        "q90": 0.48956487432253987,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T11:00:00Z",
+        "target_end": "2026-02-12T12:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.10150132822262393,
+        "q10": 0.0,
+        "q50": 0.10413289739294915,
+        "q90": 0.5215277393755821,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T12:00:00Z",
+        "target_end": "2026-02-12T13:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.0794458444078922,
+        "q10": 0.0,
+        "q50": 0.0820774135782174,
+        "q90": 0.4994722555608503,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T13:00:00Z",
+        "target_end": "2026-02-12T14:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.046762868217269174,
+        "q10": 0.0,
+        "q50": 0.04939443738759439,
+        "q90": 0.46678927937022724,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T14:00:00Z",
+        "target_end": "2026-02-12T15:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.06566323673366418,
+        "q10": 0.0,
+        "q50": 0.0682948059039894,
+        "q90": 0.4856896478866223,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T15:00:00Z",
+        "target_end": "2026-02-12T16:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.22485725241568694,
+        "q10": 0.0,
+        "q50": 0.22748882158601216,
+        "q90": 0.644883663568645,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T16:00:00Z",
+        "target_end": "2026-02-12T17:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.07955276498326071,
+        "q10": 0.0,
+        "q50": 0.08218433415358592,
+        "q90": 0.49957917613621877,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T17:00:00Z",
+        "target_end": "2026-02-12T18:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.017612722153737784,
+        "q10": 0.0,
+        "q50": 0.020244291324063003,
+        "q90": 0.43763913330669585,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T18:00:00Z",
+        "target_end": "2026-02-12T19:00:00Z",
+        "turbine_id": "turbine_1",
+        "prediction_norm": 0.07811068726092839,
+        "q10": 0.0,
+        "q50": 0.0807422564312536,
+        "q90": 0.4981370984138865,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-10T19:00:00Z",
+        "target_end": "2026-02-10T20:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.9079198032130347,
+        "q10": 0.7000753967901624,
+        "q50": 0.9179198032130347,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-10T20:00:00Z",
+        "target_end": "2026-02-10T21:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.8555784728845764,
+        "q10": 0.6477340664617042,
+        "q50": 0.8655784728845765,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-10T21:00:00Z",
+        "target_end": "2026-02-10T22:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.53750405700054,
+        "q10": 0.3296596505776678,
+        "q50": 0.5475040570005401,
+        "q90": 0.9287583774503912,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-10T22:00:00Z",
+        "target_end": "2026-02-10T23:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.2784080895246773,
+        "q10": 0.07056368310180505,
+        "q50": 0.28840808952467734,
+        "q90": 0.6696624099745285,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-10T23:00:00Z",
+        "target_end": "2026-02-11T00:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.13237019627551025,
+        "q10": 0.0,
+        "q50": 0.14237019627551026,
+        "q90": 0.5236245167253615,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T00:00:00Z",
+        "target_end": "2026-02-11T01:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.0811564148111659,
+        "q10": 0.0,
+        "q50": 0.09115641481116589,
+        "q90": 0.47241073526101707,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T01:00:00Z",
+        "target_end": "2026-02-11T02:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.08938453451128134,
+        "q10": 0.0,
+        "q50": 0.04344164808940604,
+        "q90": 0.30996414750576295,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T02:00:00Z",
+        "target_end": "2026-02-11T03:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.08366533647599086,
+        "q10": 0.0,
+        "q50": 0.037722450054115564,
+        "q90": 0.3042449494704724,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T03:00:00Z",
+        "target_end": "2026-02-11T04:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.05114686737042351,
+        "q10": 0.0,
+        "q50": 0.005203980948548209,
+        "q90": 0.2717264803649051,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T04:00:00Z",
+        "target_end": "2026-02-11T05:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.21214811582411033,
+        "q10": 0.0,
+        "q50": 0.16620522940223503,
+        "q90": 0.4327277288185919,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T05:00:00Z",
+        "target_end": "2026-02-11T06:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.2718443857253574,
+        "q10": 0.0,
+        "q50": 0.2259014993034821,
+        "q90": 0.492423998719839,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T06:00:00Z",
+        "target_end": "2026-02-11T07:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.548048586324596,
+        "q10": 0.1981178770920149,
+        "q50": 0.5021056999027207,
+        "q90": 0.7686281993190776,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T07:00:00Z",
+        "target_end": "2026-02-11T08:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.6503786197997777,
+        "q10": 0.3925687724746068,
+        "q50": 0.6903786197997778,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T08:00:00Z",
+        "target_end": "2026-02-11T09:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.6660034295957854,
+        "q10": 0.4081935822706145,
+        "q50": 0.7060034295957854,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T09:00:00Z",
+        "target_end": "2026-02-11T10:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.6823886658297699,
+        "q10": 0.42457881850459894,
+        "q50": 0.7223886658297699,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T10:00:00Z",
+        "target_end": "2026-02-11T11:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.100802211036999,
+        "q10": 0.0,
+        "q50": 0.140802211036999,
+        "q90": 0.5074453332004013,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T11:00:00Z",
+        "target_end": "2026-02-11T12:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.05025823737817593,
+        "q10": 0.0,
+        "q50": 0.09025823737817593,
+        "q90": 0.4569013595415782,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T12:00:00Z",
+        "target_end": "2026-02-11T13:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.15530654477011174,
+        "q10": 0.0,
+        "q50": 0.19530654477011175,
+        "q90": 0.561949666933514,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T13:00:00Z",
+        "target_end": "2026-02-11T14:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.31122368455995264,
+        "q10": 0.053413837234781714,
+        "q50": 0.3512236845599526,
+        "q90": 0.7178668067233549,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T14:00:00Z",
+        "target_end": "2026-02-11T15:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.6056692947041634,
+        "q10": 0.3478594473789925,
+        "q50": 0.6456692947041635,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T15:00:00Z",
+        "target_end": "2026-02-11T16:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.8091505879272501,
+        "q10": 0.5513407406020792,
+        "q50": 0.8491505879272502,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T16:00:00Z",
+        "target_end": "2026-02-11T17:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.6367256023374342,
+        "q10": 0.3789157550122633,
+        "q50": 0.6767256023374343,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T17:00:00Z",
+        "target_end": "2026-02-11T18:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.6884355604465836,
+        "q10": 0.4306257131214127,
+        "q50": 0.7284355604465836,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T18:00:00Z",
+        "target_end": "2026-02-11T19:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.2972674153975637,
+        "q10": 0.03945756807239276,
+        "q50": 0.33726741539756366,
+        "q90": 0.703910537560966,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T19:00:00Z",
+        "target_end": "2026-02-11T20:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.42771275887031757,
+        "q10": 0.11432719489249094,
+        "q50": 0.43425904365439716,
+        "q90": 0.8486179320113464,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T20:00:00Z",
+        "target_end": "2026-02-11T21:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.5915538806956526,
+        "q10": 0.278168316717826,
+        "q50": 0.5981001654797322,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T21:00:00Z",
+        "target_end": "2026-02-11T22:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.6437570912951444,
+        "q10": 0.3303715273173177,
+        "q50": 0.650303376079224,
+        "q90": 1.0,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T22:00:00Z",
+        "target_end": "2026-02-11T23:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.5201268543254576,
+        "q10": 0.20674129034763095,
+        "q50": 0.5266731391095372,
+        "q90": 0.9410320274664864,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-11T23:00:00Z",
+        "target_end": "2026-02-12T00:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.25216120137874143,
+        "q10": 0.0,
+        "q50": 0.258707486162821,
+        "q90": 0.6730663745197702,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T00:00:00Z",
+        "target_end": "2026-02-12T01:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.4424329296315417,
+        "q10": 0.12904736565371505,
+        "q50": 0.4489792144156213,
+        "q90": 0.8633381027725705,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T01:00:00Z",
+        "target_end": "2026-02-12T02:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.2735222634830945,
+        "q10": 0.0,
+        "q50": 0.2800685482671741,
+        "q90": 0.6944274366241233,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T02:00:00Z",
+        "target_end": "2026-02-12T03:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.15919784966505476,
+        "q10": 0.0,
+        "q50": 0.16574413444913438,
+        "q90": 0.5801030228060836,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T03:00:00Z",
+        "target_end": "2026-02-12T04:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.0583412017816807,
+        "q10": 0.0,
+        "q50": 0.06488748656576032,
+        "q90": 0.4792463749227095,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T04:00:00Z",
+        "target_end": "2026-02-12T05:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.06595322447259272,
+        "q10": 0.0,
+        "q50": 0.07249950925667234,
+        "q90": 0.48685839761362154,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T05:00:00Z",
+        "target_end": "2026-02-12T06:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.0983345201243041,
+        "q10": 0.0,
+        "q50": 0.10488080490838372,
+        "q90": 0.5192396932653329,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T06:00:00Z",
+        "target_end": "2026-02-12T07:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.11292433860384771,
+        "q10": 0.0,
+        "q50": 0.11947062338792733,
+        "q90": 0.5338295117448766,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T07:00:00Z",
+        "target_end": "2026-02-12T08:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.10030124650252573,
+        "q10": 0.0,
+        "q50": 0.10684753128660535,
+        "q90": 0.5212064196435545,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T08:00:00Z",
+        "target_end": "2026-02-12T09:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.0,
+        "q10": 0.0,
+        "q50": 0.00654628478407962,
+        "q90": 0.4209051731410288,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T09:00:00Z",
+        "target_end": "2026-02-12T10:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.0,
+        "q10": 0.0,
+        "q50": 0.00654628478407962,
+        "q90": 0.4209051731410288,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T10:00:00Z",
+        "target_end": "2026-02-12T11:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.00029629826756667754,
+        "q10": 0.0,
+        "q50": 0.006842583051646298,
+        "q90": 0.4212014714085955,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T11:00:00Z",
+        "target_end": "2026-02-12T12:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.05925029755595729,
+        "q10": 0.0,
+        "q50": 0.06579658234003691,
+        "q90": 0.4801554706969861,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T12:00:00Z",
+        "target_end": "2026-02-12T13:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.12200582944973506,
+        "q10": 0.0,
+        "q50": 0.12855211423381468,
+        "q90": 0.5429110025907639,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T13:00:00Z",
+        "target_end": "2026-02-12T14:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.0740146001397026,
+        "q10": 0.0,
+        "q50": 0.08056088492378222,
+        "q90": 0.49491977328073145,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T14:00:00Z",
+        "target_end": "2026-02-12T15:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.09926063816364664,
+        "q10": 0.0,
+        "q50": 0.10580692294772626,
+        "q90": 0.5201658113046754,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T15:00:00Z",
+        "target_end": "2026-02-12T16:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.24716049446028007,
+        "q10": 0.0,
+        "q50": 0.2537067792443597,
+        "q90": 0.6680656676013089,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T16:00:00Z",
+        "target_end": "2026-02-12T17:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.11266281454483626,
+        "q10": 0.0,
+        "q50": 0.11920909932891588,
+        "q90": 0.5335679876858651,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T17:00:00Z",
+        "target_end": "2026-02-12T18:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.0512632666267025,
+        "q10": 0.0,
+        "q50": 0.05780955141078212,
+        "q90": 0.4721684397677313,
+        "status": "ok|bias:calibrated|interval:group"
+      },
+      {
+        "target_start": "2026-02-12T18:00:00Z",
+        "target_end": "2026-02-12T19:00:00Z",
+        "turbine_id": "turbine_2",
+        "prediction_norm": 0.10820920559777572,
+        "q10": 0.0,
+        "q50": 0.11475549038185534,
+        "q90": 0.5291143787388045,
+        "status": "ok|bias:calibrated|interval:group"
+      }
+    ]
+  },
+  "run_id": "gfs-20260210T12Z-1161be613eaf3c45",
+  "model_id": "twinturbo-forecast-curve-fc2ad4def40ab8d0",
+  "bias_id": "bias-98b78bffe93ada719979aaaa",
+  "parent_forecast_id": null,
+  "warnings": [
+    "INCOMPLETE_OBSERVATIONS",
+    "STALE_ACTUALS:turbine_1",
+    "STALE_ACTUALS:turbine_2"
+  ],
+  "provenance": "operational_archive",
+  "mode": "replay",
+  "release_kind": "scheduled",
+  "manifest": {
+    "request": {
+      "origin_time": "2026-02-10T18:00:00Z",
+      "turbine_ids": [
+        "turbine_1",
+        "turbine_2"
+      ],
+      "horizon_hours": 48,
+      "mode": "replay",
+      "release_kind": "scheduled",
+      "target_start": null
+    },
+    "model": {
+      "model_id": "twinturbo-forecast-curve-fc2ad4def40ab8d0",
+      "training_cutoff": "2025-12-31T18:00:00Z",
+      "max_label_available_at": "2025-12-31T17:15:00Z",
+      "activated_at": "2025-12-31T18:00:00Z",
+      "artifact_ref": "artifacts/models/forecast-power-curve-prejan-2026.json",
+      "feature_schema_version": "1",
+      "provenance": "trained"
+    },
+    "bias": {
+      "bias_id": "bias-98b78bffe93ada719979aaaa",
+      "model_id": "twinturbo-forecast-curve-fc2ad4def40ab8d0",
+      "created_as_of": "2026-01-31T18:00:00Z",
+      "last_actual_available_at": "2026-01-31T17:15:00Z",
+      "parameters": {
+        "schema": "rolling-bias-v1",
+        "source_hash": "5adc82dd587f0efe1eb0801b447c5a8dbd8b50eb714b46490ae932b1fea2e3aa",
+        "window_days": 21.0,
+        "shrinkage": 96.0,
+        "estimator": "median",
+        "min_interval_samples": 30,
+        "interval_fallback": false,
+        "status": "calibrated",
+        "turbines": {
+          "turbine_1": {
+            "global_bias": -0.1,
+            "count": 1006,
+            "groups": {
+              "1-6": {
+                "bias": -0.08373427845064203,
+                "count": 126,
+                "status": "calibrated"
+              },
+              "7-12": {
+                "bias": -0.13608760582019527,
+                "count": 126,
+                "status": "calibrated"
+              },
+              "13-24": {
+                "bias": -0.06886184373592934,
+                "count": 251,
+                "status": "calibrated"
+              },
+              "25-48": {
+                "bias": -0.10957431629352697,
+                "count": 503,
+                "status": "calibrated"
+              }
+            }
+          },
+          "turbine_2": {
+            "global_bias": -0.07278635378553361,
+            "count": 1006,
+            "groups": {
+              "1-6": {
+                "bias": -0.06084601579364732,
+                "count": 126,
+                "status": "calibrated"
+              },
+              "7-12": {
+                "bias": -0.118353555914232,
+                "count": 126,
+                "status": "calibrated"
+              },
+              "13-24": {
+                "bias": -0.03208998755355348,
+                "count": 251,
+                "status": "calibrated"
+              },
+              "25-48": {
+                "bias": -0.07898027557604073,
+                "count": 503,
+                "status": "calibrated"
+              }
+            }
+          }
+        },
+        "selection": "latest scheduled origin per target and lead group; latest actual revision available as-of",
+        "intervals": {
+          "schema": "empirical-residual-quantiles-v1",
+          "target_coverage": 0.8,
+          "min_samples": 30,
+          "fallback_enabled": false,
+          "error": "actual_minus_issued_prediction",
+          "turbines": {
+            "turbine_1": {
+              "1-6": {
+                "offsets": [
+                  -0.22482518854930128,
+                  0.01,
+                  0.41125033434504477
+                ],
+                "group_count": 126,
+                "calibration_count": 126,
+                "status": "group"
+              },
+              "7-12": {
+                "offsets": [
+                  -0.2864084760860063,
+                  -0.051105852503526575,
+                  0.30592554843065045
+                ],
+                "group_count": 126,
+                "calibration_count": 126,
+                "status": "group"
+              },
+              "13-24": {
+                "offsets": [
+                  -0.272067242824946,
+                  0.024516352759140436,
+                  0.4224184544337729
+                ],
+                "group_count": 251,
+                "calibration_count": 251,
+                "status": "group"
+              },
+              "25-48": {
+                "offsets": [
+                  -0.3246577506790464,
+                  0.0026315691703252177,
+                  0.4200264111529581
+                ],
+                "group_count": 503,
+                "calibration_count": 503,
+                "status": "group"
+              }
+            },
+            "turbine_2": {
+              "1-6": {
+                "offsets": [
+                  -0.20784440642287227,
+                  0.01,
+                  0.3912543204498512
+                ],
+                "group_count": 126,
+                "calibration_count": 126,
+                "status": "group"
+              },
+              "7-12": {
+                "offsets": [
+                  -0.34993070923258107,
+                  -0.0459428864218753,
+                  0.2205796129944816
+                ],
+                "group_count": 126,
+                "calibration_count": 126,
+                "status": "group"
+              },
+              "13-24": {
+                "offsets": [
+                  -0.2578098473251709,
+                  0.04,
+                  0.40664312216340226
+                ],
+                "group_count": 251,
+                "calibration_count": 251,
+                "status": "group"
+              },
+              "25-48": {
+                "offsets": [
+                  -0.31338556397782663,
+                  0.00654628478407962,
+                  0.4209051731410288
+                ],
+                "group_count": 503,
+                "calibration_count": 503,
+                "status": "group"
+              }
+            }
+          }
+        }
+      }
+    },
+    "snapshot_hash": "ca0eb3d79447eae17109a203f5ebfc7290bff9e6248e965c70fd236bbff91fd7",
+    "config_hash": "fb14057260ed1786d41f8840b06eb71432d572ea1a1bfd87354e022802083547",
+    "parent_forecast_id": null,
+    "weather": {
+      "run_id": "gfs-20260210T12Z-1161be613eaf3c45",
+      "provider": "NOAA GFS on AWS",
+      "model": "gfs_0p25",
+      "run_init_time": "2026-02-10T12:00:00Z",
+      "available_at": "2026-02-10T18:00:00Z",
+      "availability_basis": "archive_last_modified_plus_delay",
+      "provenance": "operational_archive",
+      "retrieved_at": "2026-09-23T12:44:22.224387Z",
+      "sha256": "5c89bd182fd8a0e306dff7873454b4973acb5ccdbaad7d281552c4cdaa5d6c56",
+      "source_urls": [
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f006",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f006.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f009",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f009.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f012",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f012.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f015",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f015.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f018",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f018.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f021",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f024",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f027",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f027.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f030",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f030.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f033",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f033.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f036",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f036.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f039",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f039.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f042",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f042.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f045",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f045.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f048",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f048.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f051",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f051.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f054",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f054.idx",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f057",
+        "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f057.idx"
+      ],
+      "wind_height_m": 100,
+      "interpolation": "linear u/v and temperature within a single run; nearest grid point",
+      "evidence": {
+        "files": [
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f006.idx",
+            "sha256": "d58bc77bdb5b6e5370e949a57fcf3e617d5cd4cb992e14f1e6474ed45744bbf3",
+            "bytes": 40472
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f006",
+            "range": [
+              411999041,
+              412886563
+            ],
+            "variable": "TMP",
+            "sha256": "0881cc01f963bac1439c20bcab203c2028fbd5eff11b2b5358942960808437ec",
+            "bytes": 887523,
+            "last_modified": "Tue, 10 Feb 2026 15:48:29 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f006",
+            "range": [
+              493301866,
+              494284179
+            ],
+            "variable": "UGRD",
+            "sha256": "84cff4ce1aa2c6fbe38195c3867ad66ba67a1c5a522d40a53962cb0d6875183e",
+            "bytes": 982314,
+            "last_modified": "Tue, 10 Feb 2026 15:48:29 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f006",
+            "range": [
+              494284180,
+              495253596
+            ],
+            "variable": "VGRD",
+            "sha256": "ca560c321c8cdd2fad9f153a51cb0705f8fb0457476ac4625bb73bf44712e9b6",
+            "bytes": 969417,
+            "last_modified": "Tue, 10 Feb 2026 15:48:29 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f009.idx",
+            "sha256": "beaf23f3f53adee331917fb5047f13bc64270c7b781362d77a572c9502bccab9",
+            "bytes": 40473
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f009",
+            "range": [
+              414764776,
+              415654495
+            ],
+            "variable": "TMP",
+            "sha256": "fcc4087c6dc0c939e7a671dc11036d2b3a6520ea1849dc1a3a02c8e4523252c1",
+            "bytes": 889720,
+            "last_modified": "Tue, 10 Feb 2026 15:34:50 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f009",
+            "range": [
+              494641095,
+              495622656
+            ],
+            "variable": "UGRD",
+            "sha256": "adb2e9115667e347ef8ffb4aab0411900d8c9a854846491375bb83763f218709",
+            "bytes": 981562,
+            "last_modified": "Tue, 10 Feb 2026 15:34:50 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f009",
+            "range": [
+              495622657,
+              496590833
+            ],
+            "variable": "VGRD",
+            "sha256": "3396c3c07c34ed24be5d94616c0bd9e9ef5052ca2d62b0396e07b84aef9277bd",
+            "bytes": 968177,
+            "last_modified": "Tue, 10 Feb 2026 15:34:50 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f012.idx",
+            "sha256": "12d26b94da57c935406ad33aa39e944b7aa28c159f3670ef4563f46eb2be6eb8",
+            "bytes": 41221
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f012",
+            "range": [
+              416950942,
+              417834759
+            ],
+            "variable": "TMP",
+            "sha256": "64822ec9b1dad51c0e552fe788502465cc46b1a130121374f8dd48dad0ec3c51",
+            "bytes": 883818,
+            "last_modified": "Tue, 10 Feb 2026 15:50:03 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f012",
+            "range": [
+              499773772,
+              500753394
+            ],
+            "variable": "UGRD",
+            "sha256": "4e78da1dcfc81679d068bdd6e95c0f0e304e9344a6351623cce98800d4492aa0",
+            "bytes": 979623,
+            "last_modified": "Tue, 10 Feb 2026 15:50:03 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f012",
+            "range": [
+              500753395,
+              501719092
+            ],
+            "variable": "VGRD",
+            "sha256": "4a5cba6d9bb9ef13c0e5a5750317335f49fb843594b75fdebf8d5d80984bb44c",
+            "bytes": 965698,
+            "last_modified": "Tue, 10 Feb 2026 15:50:03 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f015.idx",
+            "sha256": "5b2fea2b15e8bfc8d6141ca2c89d4632122c8c9da571fe9aaa849b6aa31a6358",
+            "bytes": 41261
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f015",
+            "range": [
+              418339697,
+              419222713
+            ],
+            "variable": "TMP",
+            "sha256": "30cb3992a0f0ac4781e15ea7c42d1e6d557b74be0b32ebcc2de6c670346b6896",
+            "bytes": 883017,
+            "last_modified": "Tue, 10 Feb 2026 15:50:54 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f015",
+            "range": [
+              499448480,
+              500426376
+            ],
+            "variable": "UGRD",
+            "sha256": "0427f7c627f9124e5cbec1a6402663fa0a6d82fd8d5d5e27f4dcb86e4b5bd704",
+            "bytes": 977897,
+            "last_modified": "Tue, 10 Feb 2026 15:50:54 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f015",
+            "range": [
+              500426377,
+              501389601
+            ],
+            "variable": "VGRD",
+            "sha256": "1264e5783836842b3cd428c830302c04d603b127a5ddd73607b0667709172bde",
+            "bytes": 963225,
+            "last_modified": "Tue, 10 Feb 2026 15:50:54 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f018.idx",
+            "sha256": "059cec4e308ea5a2b457973cf91c4930e4fbdda44246861e718bb54c30623f78",
+            "bytes": 41261
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f018",
+            "range": [
+              416182735,
+              417065179
+            ],
+            "variable": "TMP",
+            "sha256": "0787feefa60bebb44b7235f82696ad9ffca5529876b964287dab225c392c8516",
+            "bytes": 882445,
+            "last_modified": "Tue, 10 Feb 2026 15:51:26 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f018",
+            "range": [
+              498970967,
+              499949231
+            ],
+            "variable": "UGRD",
+            "sha256": "feb7324d3b2a54494a261ee68cf69cd1b9f03ed15080def8692604fb5cf816ad",
+            "bytes": 978265,
+            "last_modified": "Tue, 10 Feb 2026 15:51:26 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f018",
+            "range": [
+              499949232,
+              500912904
+            ],
+            "variable": "VGRD",
+            "sha256": "251907b14da3275a8107ed60c0aef1d8f96f43be3140a470e52c3064278a2198",
+            "bytes": 963673,
+            "last_modified": "Tue, 10 Feb 2026 15:51:26 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f021.idx",
+            "sha256": "529aef7632100de2171433e378d875754ff0469318bafae16919b0a29cdb1b8a",
+            "bytes": 41260
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f021",
+            "range": [
+              415613023,
+              416497317
+            ],
+            "variable": "TMP",
+            "sha256": "d80709197904eac10e9cd7fcef6cca87e096bf02f86ff66bb82643c4fa455e9d",
+            "bytes": 884295,
+            "last_modified": "Tue, 10 Feb 2026 15:52:55 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f021",
+            "range": [
+              497081884,
+              498058949
+            ],
+            "variable": "UGRD",
+            "sha256": "fa97bff12d8fff9a347e78ad2bfed5856979f0eecf0486d8a1c7e9b8cccb3083",
+            "bytes": 977066,
+            "last_modified": "Tue, 10 Feb 2026 15:52:55 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f021",
+            "range": [
+              498058950,
+              499021383
+            ],
+            "variable": "VGRD",
+            "sha256": "689673ce04f879a849a90084268937e92e2bcca7ac108accd10fb283814b4313",
+            "bytes": 962434,
+            "last_modified": "Tue, 10 Feb 2026 15:52:55 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f024.idx",
+            "sha256": "30db707579e523b73118c21ffffdb636ad8e6c84b90bea73c0b4aaf018686320",
+            "bytes": 41258
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f024",
+            "range": [
+              417757934,
+              418646077
+            ],
+            "variable": "TMP",
+            "sha256": "22203ab0974ed811c7ccdb614af222c03052122c663239371036043ed83bd323",
+            "bytes": 888144,
+            "last_modified": "Tue, 10 Feb 2026 15:38:34 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f024",
+            "range": [
+              500837066,
+              501815366
+            ],
+            "variable": "UGRD",
+            "sha256": "8c13c7e3349016265334b90c4ccfda34cbf8934651c4f931b5641167b79124c5",
+            "bytes": 978301,
+            "last_modified": "Tue, 10 Feb 2026 15:38:34 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f024",
+            "range": [
+              501815367,
+              502778953
+            ],
+            "variable": "VGRD",
+            "sha256": "1712cc93f6c82ce9ce0ec27bc834872994bbb9f76bb452340b337a1ee098d014",
+            "bytes": 963587,
+            "last_modified": "Tue, 10 Feb 2026 15:38:34 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f027.idx",
+            "sha256": "d244dee77452ea22256b875862ac2f1319cb07b74780281d67f03c495587f9c2",
+            "bytes": 41262
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f027",
+            "range": [
+              417971222,
+              418866494
+            ],
+            "variable": "TMP",
+            "sha256": "6d59e49be19510b1d272d9e489c5cfa8b740bbe1f9ef45009925fa1147a24f7b",
+            "bytes": 895273,
+            "last_modified": "Tue, 10 Feb 2026 15:54:12 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f027",
+            "range": [
+              499695035,
+              500675729
+            ],
+            "variable": "UGRD",
+            "sha256": "c48f4343f85d9f39a3930d46521ae816eac071d60831d3b09517e2d4ba49c658",
+            "bytes": 980695,
+            "last_modified": "Tue, 10 Feb 2026 15:54:12 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f027",
+            "range": [
+              500675730,
+              501642654
+            ],
+            "variable": "VGRD",
+            "sha256": "15206f98492902ae412866db59fa24f1ee1ea324b54448f6c3ae444c4530cc74",
+            "bytes": 966925,
+            "last_modified": "Tue, 10 Feb 2026 15:54:12 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f030.idx",
+            "sha256": "8e9c4c83c3edaa6ed835740df12d04046c3775aa7ca85bdb84bb7e7a664935f1",
+            "bytes": 41262
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f030",
+            "range": [
+              418440080,
+              419330522
+            ],
+            "variable": "TMP",
+            "sha256": "74991aba3cbb44676821456f8b91ca61fdae3e1c20d59c8c9ab447b18f3bc80e",
+            "bytes": 890443,
+            "last_modified": "Tue, 10 Feb 2026 15:54:54 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f030",
+            "range": [
+              501787669,
+              502769355
+            ],
+            "variable": "UGRD",
+            "sha256": "b9b689443f603cc83bb8222e152eb0330b80a4b02cebc68dccbff72c1a6df766",
+            "bytes": 981687,
+            "last_modified": "Tue, 10 Feb 2026 15:54:54 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f030",
+            "range": [
+              502769356,
+              503737236
+            ],
+            "variable": "VGRD",
+            "sha256": "2bbc283c6a3d4a31c89d0fa5c1fd6f9249cb1f78ae6566931fd3e1863190d407",
+            "bytes": 967881,
+            "last_modified": "Tue, 10 Feb 2026 15:54:54 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f033.idx",
+            "sha256": "5b575c8cd04d928f634fd42c3367e42a9c2006d2fea6630afb138e87d2255173",
+            "bytes": 41258
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f033",
+            "range": [
+              414798388,
+              415690594
+            ],
+            "variable": "TMP",
+            "sha256": "eb2b3bb0f21f1ecdd3e45b384fa042a1b76161968be89546491dffc531843d35",
+            "bytes": 892207,
+            "last_modified": "Tue, 10 Feb 2026 15:55:45 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f033",
+            "range": [
+              496249265,
+              497231746
+            ],
+            "variable": "UGRD",
+            "sha256": "4d4b6a2261a7a8c348b8ba304e3ebc9ab914a922256141b44c7361dc14002580",
+            "bytes": 982482,
+            "last_modified": "Tue, 10 Feb 2026 15:55:45 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f033",
+            "range": [
+              497231747,
+              498199595
+            ],
+            "variable": "VGRD",
+            "sha256": "df2200c610b4c8679c7eac48d5d1f000997c90d439f0696d8cce0c2fbd461f35",
+            "bytes": 967849,
+            "last_modified": "Tue, 10 Feb 2026 15:55:45 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f036.idx",
+            "sha256": "84f1142aa15567f40c4aa3cf1dd911772eac330dd2f1ff400e19eea39edbe799",
+            "bytes": 41258
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f036",
+            "range": [
+              415959557,
+              416844041
+            ],
+            "variable": "TMP",
+            "sha256": "808c69cc1fd1b9cf9b81ac1c6705b079a3cb5aa4a56fbeb0c13df4a46daeaa8f",
+            "bytes": 884485,
+            "last_modified": "Tue, 10 Feb 2026 15:56:30 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f036",
+            "range": [
+              499229810,
+              500210966
+            ],
+            "variable": "UGRD",
+            "sha256": "5b56811935e8b961ba25753b40a1bd645246e5e8a9cfdf595db0e3ac4daaf28d",
+            "bytes": 981157,
+            "last_modified": "Tue, 10 Feb 2026 15:56:30 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f036",
+            "range": [
+              500210967,
+              501177121
+            ],
+            "variable": "VGRD",
+            "sha256": "44bba8b67597f5383b8dfca4806fa7c868cb9edf9fabfa19ac3445cccec54eb7",
+            "bytes": 966155,
+            "last_modified": "Tue, 10 Feb 2026 15:56:30 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f039.idx",
+            "sha256": "053820d608991ff9d184eb096716249db5ffcaec07a1182b3b424c1ec703bce3",
+            "bytes": 41258
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f039",
+            "range": [
+              415643275,
+              416526637
+            ],
+            "variable": "TMP",
+            "sha256": "bbb8aeda54f701a2397a56839f495b6f91a224aa84fca35837370ef7c5ac2c72",
+            "bytes": 883363,
+            "last_modified": "Tue, 10 Feb 2026 15:57:37 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f039",
+            "range": [
+              497384988,
+              498359370
+            ],
+            "variable": "UGRD",
+            "sha256": "9a8f47c298cb1a8fc5e706cc9924249c56472dd2002db01cd265999cfc8b394f",
+            "bytes": 974383,
+            "last_modified": "Tue, 10 Feb 2026 15:57:37 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f039",
+            "range": [
+              498359371,
+              499323368
+            ],
+            "variable": "VGRD",
+            "sha256": "89c8afb189905f62ab299c0457690432df7625d6f67dca2369ad2788a16fc77b",
+            "bytes": 963998,
+            "last_modified": "Tue, 10 Feb 2026 15:57:37 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f042.idx",
+            "sha256": "4c4917265a40f7346bb0c78ec6469bcaa567b02081e59130b5022fc95d1eadfc",
+            "bytes": 41261
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f042",
+            "range": [
+              415018736,
+              415901083
+            ],
+            "variable": "TMP",
+            "sha256": "66fa058f7b0e91d36751ff818531bce45e609451779af41ab47b9cd5df691ac4",
+            "bytes": 882348,
+            "last_modified": "Tue, 10 Feb 2026 15:58:07 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f042",
+            "range": [
+              497710503,
+              498684072
+            ],
+            "variable": "UGRD",
+            "sha256": "27c480ec6f5a96162a789f2688a1bc7d1c148483af821e25c5c535253f6b6345",
+            "bytes": 973570,
+            "last_modified": "Tue, 10 Feb 2026 15:58:07 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f042",
+            "range": [
+              498684073,
+              499647755
+            ],
+            "variable": "VGRD",
+            "sha256": "0cb0f78963abe5640ae9ef32f3f74ac53e3109e18af8b8fff4b3e77379115f69",
+            "bytes": 963683,
+            "last_modified": "Tue, 10 Feb 2026 15:58:07 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f045.idx",
+            "sha256": "1134b74a19a2e3f387a4363b5c85a6cc53935875e07509bd69351bcc9b97b405",
+            "bytes": 41262
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f045",
+            "range": [
+              413830918,
+              414720467
+            ],
+            "variable": "TMP",
+            "sha256": "68dac19eb9a3ba7fd6c17330bd77ff06641f0eb32eed4bc6afff968cbcf4eb1a",
+            "bytes": 889550,
+            "last_modified": "Tue, 10 Feb 2026 15:58:39 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f045",
+            "range": [
+              495188729,
+              496162481
+            ],
+            "variable": "UGRD",
+            "sha256": "a3dc77a60dba95e2cb12a49dc664a88070ce9cf44c9f8ffa530e510da6a64867",
+            "bytes": 973753,
+            "last_modified": "Tue, 10 Feb 2026 15:58:39 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f045",
+            "range": [
+              496162482,
+              497125154
+            ],
+            "variable": "VGRD",
+            "sha256": "7c27b1d8120d97a96e90cfcb6830f8032d5b1b897f0ea4e66a48b0e58cbe9b59",
+            "bytes": 962673,
+            "last_modified": "Tue, 10 Feb 2026 15:58:39 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f048.idx",
+            "sha256": "cd2139ba23eb8d592c77e213579de73691bde3c73e596c3ef70fba25ee453e3c",
+            "bytes": 41258
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f048",
+            "range": [
+              415273391,
+              416162164
+            ],
+            "variable": "TMP",
+            "sha256": "cc8e8d0e0c6857839342a1512941eb62a7016db6926476980506821e1e8f5816",
+            "bytes": 888774,
+            "last_modified": "Tue, 10 Feb 2026 15:59:52 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f048",
+            "range": [
+              498452046,
+              499429610
+            ],
+            "variable": "UGRD",
+            "sha256": "ec3b47232694554a0d89f866112abd7467f2b96e4192f23ff4ee4acf641b4bfd",
+            "bytes": 977565,
+            "last_modified": "Tue, 10 Feb 2026 15:59:52 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f048",
+            "range": [
+              499429611,
+              500392880
+            ],
+            "variable": "VGRD",
+            "sha256": "b86ff5a1fd16b2002f06357cedf317d89aac41484b30d17f172f07f7c25ecd92",
+            "bytes": 963270,
+            "last_modified": "Tue, 10 Feb 2026 15:59:52 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f051.idx",
+            "sha256": "88f79144198aaa62428ea71eeb09701f5093a536794246c7939b59447239b4e4",
+            "bytes": 41259
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f051",
+            "range": [
+              415720217,
+              416615471
+            ],
+            "variable": "TMP",
+            "sha256": "c71586b11ed3fe46c7f7a4ea3241f81fc8e14c208beb1cf484a1ef38eca522fa",
+            "bytes": 895255,
+            "last_modified": "Tue, 10 Feb 2026 16:00:35 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f051",
+            "range": [
+              496988860,
+              497969533
+            ],
+            "variable": "UGRD",
+            "sha256": "fd93f2dd2c9c60ce38fe9f39915db4a34ffa75f8567f39a789780febcaa6e636",
+            "bytes": 980674,
+            "last_modified": "Tue, 10 Feb 2026 16:00:35 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f051",
+            "range": [
+              497969534,
+              498935128
+            ],
+            "variable": "VGRD",
+            "sha256": "0cc8c4d428b434c8d9873990e693f6f27a3dddb68c1418caea42afe5bf3fdb98",
+            "bytes": 965595,
+            "last_modified": "Tue, 10 Feb 2026 16:00:35 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f054.idx",
+            "sha256": "d4a65af5e52cb8def9746616922167087f71ce5e69c1e8958a8ef26cb11409ca",
+            "bytes": 41261
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f054",
+            "range": [
+              415015916,
+              415534702
+            ],
+            "variable": "TMP",
+            "sha256": "dc6fe4311ff2e7387813fd0f30cc5539e98e6d577c0f0a13863419ddc07f95e1",
+            "bytes": 518787,
+            "last_modified": "Tue, 10 Feb 2026 16:01:28 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f054",
+            "range": [
+              497967807,
+              498949923
+            ],
+            "variable": "UGRD",
+            "sha256": "19975a32708c0acab1cdee641183c734c42fce2a1f791ee15c340a3d3a1e86b7",
+            "bytes": 982117,
+            "last_modified": "Tue, 10 Feb 2026 16:01:28 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f054",
+            "range": [
+              498949924,
+              499916674
+            ],
+            "variable": "VGRD",
+            "sha256": "4a85790d8c0265af809271ee7de163d9408f523c135ae182e6c7032389dfba87",
+            "bytes": 966751,
+            "last_modified": "Tue, 10 Feb 2026 16:01:28 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f057.idx",
+            "sha256": "96a46e6e028c8dbe9d788dc512e1210c09372d100373e4b1a0b1532661e25e60",
+            "bytes": 41262
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f057",
+            "range": [
+              417377498,
+              418264573
+            ],
+            "variable": "TMP",
+            "sha256": "7bab674867ebf32ddebaa11cad946ca60abb715b0882dbd72eee1d2e041ac830",
+            "bytes": 887076,
+            "last_modified": "Tue, 10 Feb 2026 16:02:00 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f057",
+            "range": [
+              499041889,
+              500023752
+            ],
+            "variable": "UGRD",
+            "sha256": "b1b8a013194f289a97f9255dc09ceeb643b6bb604b9548b65db9e06a153b4105",
+            "bytes": 981864,
+            "last_modified": "Tue, 10 Feb 2026 16:02:00 GMT"
+          },
+          {
+            "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260210/12/atmos/gfs.t12z.pgrb2.0p25.f057",
+            "range": [
+              500023753,
+              500990459
+            ],
+            "variable": "VGRD",
+            "sha256": "be48db2021e83148edc18e2ff4773ec3f62a0094fd554e764c751ee5f1320799",
+            "bytes": 966707,
+            "last_modified": "Tue, 10 Feb 2026 16:02:00 GMT"
+          }
+        ],
+        "download_bytes": 51350263,
+        "context": {
+          "init": "2026-02-10T12:00:00+00:00",
+          "turbines": [
+            {
+              "id": "turbine_1",
+              "latitude": 43.64515,
+              "longitude": 78.535604,
+              "rated_power_mw": null
+            },
+            {
+              "id": "turbine_2",
+              "latitude": 43.643198,
+              "longitude": 78.538828,
+              "rated_power_mw": null
+            }
+          ],
+          "first": 6,
+          "last": 57,
+          "weather": {
+            "provider": "noaa_gfs_s3",
+            "publication_delay_hours": 6,
+            "max_run_age_hours": 24,
+            "wind_height_m": 100,
+            "sample_step_hours": 3,
+            "max_download_mb_per_run": 250,
+            "cache_dir": "data/weather"
+          },
+          "adapter": 1
+        },
+        "publication_delay_hours": 6,
+        "availability_note": "max(archive Last-Modified, initialization + configured delay); not an original publication log",
+        "provider_documentation": "https://registry.opendata.aws/noaa-gfs-bdp-pds/"
+      }
+    },
+    "weather_values": [
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-10T19:00:00Z",
+        "wind_ms": 15.354926266331821,
+        "temperature_c": 1.1053515625000045,
+        "u_ms": -13.806652018229167,
+        "v_ms": -6.719383951822917,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-10T19:00:00Z",
+        "wind_ms": 15.354926266331821,
+        "temperature_c": 1.1053515625000045,
+        "u_ms": -13.806652018229167,
+        "v_ms": -6.719383951822917,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-10T20:00:00Z",
+        "wind_ms": 14.441409071496457,
+        "temperature_c": 0.7133593750000387,
+        "u_ms": -12.678745930989583,
+        "v_ms": -6.914021809895833,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-10T20:00:00Z",
+        "wind_ms": 14.441409071496457,
+        "temperature_c": 0.7133593750000387,
+        "u_ms": -12.678745930989583,
+        "v_ms": -6.914021809895833,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-10T21:00:00Z",
+        "wind_ms": 13.562999055185696,
+        "temperature_c": 0.3213671875000159,
+        "u_ms": -11.55083984375,
+        "v_ms": -7.10865966796875,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-10T21:00:00Z",
+        "wind_ms": 13.562999055185696,
+        "temperature_c": 0.3213671875000159,
+        "u_ms": -11.55083984375,
+        "v_ms": -7.10865966796875,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-10T22:00:00Z",
+        "wind_ms": 10.301971829346662,
+        "temperature_c": 0.4438606770833644,
+        "u_ms": -8.67088134765625,
+        "v_ms": -5.562952473958333,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-10T22:00:00Z",
+        "wind_ms": 10.301971829346662,
+        "temperature_c": 0.4438606770833644,
+        "u_ms": -8.67088134765625,
+        "v_ms": -5.562952473958333,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-10T23:00:00Z",
+        "wind_ms": 7.047910833148541,
+        "temperature_c": 0.5663541666666561,
+        "u_ms": -5.7909228515625,
+        "v_ms": -4.017245279947916,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-10T23:00:00Z",
+        "wind_ms": 7.047910833148541,
+        "temperature_c": 0.5663541666666561,
+        "u_ms": -5.7909228515625,
+        "v_ms": -4.017245279947916,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T00:00:00Z",
+        "wind_ms": 3.8186665197486405,
+        "temperature_c": 0.6888476562500045,
+        "u_ms": -2.91096435546875,
+        "v_ms": -2.4715380859375,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T00:00:00Z",
+        "wind_ms": 3.8186665197486405,
+        "temperature_c": 0.6888476562500045,
+        "u_ms": -2.91096435546875,
+        "v_ms": -2.4715380859375,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T01:00:00Z",
+        "wind_ms": 4.232514616046045,
+        "temperature_c": 1.4678580729166697,
+        "u_ms": -3.8129687499999996,
+        "v_ms": -1.8372395833333335,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T01:00:00Z",
+        "wind_ms": 4.232514616046045,
+        "temperature_c": 1.4678580729166697,
+        "u_ms": -3.8129687499999996,
+        "v_ms": -1.8372395833333335,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T02:00:00Z",
+        "wind_ms": 4.86600852828648,
+        "temperature_c": 2.2468684895833917,
+        "u_ms": -4.71497314453125,
+        "v_ms": -1.2029410807291667,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T02:00:00Z",
+        "wind_ms": 4.86600852828648,
+        "temperature_c": 2.2468684895833917,
+        "u_ms": -4.71497314453125,
+        "v_ms": -1.2029410807291667,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T03:00:00Z",
+        "wind_ms": 5.645687828421729,
+        "temperature_c": 3.025878906250057,
+        "u_ms": -5.6169775390625,
+        "v_ms": -0.568642578125,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T03:00:00Z",
+        "wind_ms": 5.645687828421729,
+        "temperature_c": 3.025878906250057,
+        "u_ms": -5.6169775390625,
+        "v_ms": -0.568642578125,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T04:00:00Z",
+        "wind_ms": 8.008104225450124,
+        "temperature_c": 4.52259114583336,
+        "u_ms": -7.775332845052083,
+        "v_ms": -1.9167504882812498,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T04:00:00Z",
+        "wind_ms": 8.008104225450124,
+        "temperature_c": 4.52259114583336,
+        "u_ms": -7.775332845052083,
+        "v_ms": -1.9167504882812498,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T05:00:00Z",
+        "wind_ms": 10.456455453163537,
+        "temperature_c": 6.01930338541672,
+        "u_ms": -9.933688151041666,
+        "v_ms": -3.2648583984374997,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T05:00:00Z",
+        "wind_ms": 10.456455453163537,
+        "temperature_c": 6.01930338541672,
+        "u_ms": -9.933688151041666,
+        "v_ms": -3.2648583984374997,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T06:00:00Z",
+        "wind_ms": 12.94206216686326,
+        "temperature_c": 7.516015625000023,
+        "u_ms": -12.09204345703125,
+        "v_ms": -4.61296630859375,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T06:00:00Z",
+        "wind_ms": 12.94206216686326,
+        "temperature_c": 7.516015625000023,
+        "u_ms": -12.09204345703125,
+        "v_ms": -4.61296630859375,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T07:00:00Z",
+        "wind_ms": 12.655038022704705,
+        "temperature_c": 7.688111979166706,
+        "u_ms": -11.710235188802084,
+        "v_ms": -4.797955729166667,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T07:00:00Z",
+        "wind_ms": 12.655038022704705,
+        "temperature_c": 7.688111979166706,
+        "u_ms": -11.710235188802084,
+        "v_ms": -4.797955729166667,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T08:00:00Z",
+        "wind_ms": 12.375903961330437,
+        "temperature_c": 7.860208333333333,
+        "u_ms": -11.328426920572916,
+        "v_ms": -4.982945149739583,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T08:00:00Z",
+        "wind_ms": 12.375903961330437,
+        "temperature_c": 7.860208333333333,
+        "u_ms": -11.328426920572916,
+        "v_ms": -4.982945149739583,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T09:00:00Z",
+        "wind_ms": 12.105205807538802,
+        "temperature_c": 8.032304687500016,
+        "u_ms": -10.94661865234375,
+        "v_ms": -5.1679345703125,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T09:00:00Z",
+        "wind_ms": 12.105205807538802,
+        "temperature_c": 8.032304687500016,
+        "u_ms": -10.94661865234375,
+        "v_ms": -5.1679345703125,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T10:00:00Z",
+        "wind_ms": 6.341527410358051,
+        "temperature_c": 7.418867187500041,
+        "u_ms": -5.615966796875,
+        "v_ms": -2.9454858398437502,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T10:00:00Z",
+        "wind_ms": 6.341527410358051,
+        "temperature_c": 7.418867187500041,
+        "u_ms": -5.615966796875,
+        "v_ms": -2.9454858398437502,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T11:00:00Z",
+        "wind_ms": 0.7772948458101393,
+        "temperature_c": 6.805429687500009,
+        "u_ms": -0.28531494140625036,
+        "v_ms": -0.7230371093750003,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T11:00:00Z",
+        "wind_ms": 0.7772948458101393,
+        "temperature_c": 6.805429687500009,
+        "u_ms": -0.28531494140625036,
+        "v_ms": -0.7230371093750003,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T12:00:00Z",
+        "wind_ms": 5.263426620166059,
+        "temperature_c": 6.191992187500034,
+        "u_ms": 5.0453369140625,
+        "v_ms": 1.49941162109375,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T12:00:00Z",
+        "wind_ms": 5.263426620166059,
+        "temperature_c": 6.191992187500034,
+        "u_ms": 5.0453369140625,
+        "v_ms": 1.49941162109375,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T13:00:00Z",
+        "wind_ms": 8.248783035135133,
+        "temperature_c": 5.147076822916688,
+        "u_ms": 7.688111979166667,
+        "v_ms": 2.9892065429687498,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T13:00:00Z",
+        "wind_ms": 8.248783035135133,
+        "temperature_c": 5.147076822916688,
+        "u_ms": 7.688111979166667,
+        "v_ms": 2.9892065429687498,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T14:00:00Z",
+        "wind_ms": 11.260048012488909,
+        "temperature_c": 4.1021614583333985,
+        "u_ms": 10.330887044270835,
+        "v_ms": 4.4790014648437495,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T14:00:00Z",
+        "wind_ms": 11.260048012488909,
+        "temperature_c": 4.1021614583333985,
+        "u_ms": 10.330887044270835,
+        "v_ms": 4.4790014648437495,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T15:00:00Z",
+        "wind_ms": 14.280841671075953,
+        "temperature_c": 3.0572460937500523,
+        "u_ms": 12.973662109375,
+        "v_ms": 5.96879638671875,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T15:00:00Z",
+        "wind_ms": 14.280841671075953,
+        "temperature_c": 3.0572460937500523,
+        "u_ms": 12.973662109375,
+        "v_ms": 5.96879638671875,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T16:00:00Z",
+        "wind_ms": 12.89894641352886,
+        "temperature_c": 2.723085937500059,
+        "u_ms": 11.974327799479168,
+        "v_ms": 4.7956534830729165,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T16:00:00Z",
+        "wind_ms": 12.89894641352886,
+        "temperature_c": 2.723085937500059,
+        "u_ms": 11.974327799479168,
+        "v_ms": 4.7956534830729165,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T17:00:00Z",
+        "wind_ms": 11.557381407328291,
+        "temperature_c": 2.388925781250009,
+        "u_ms": 10.974993489583333,
+        "v_ms": 3.6225105794270833,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T17:00:00Z",
+        "wind_ms": 11.557381407328291,
+        "temperature_c": 2.388925781250009,
+        "u_ms": 10.974993489583333,
+        "v_ms": 3.6225105794270833,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T18:00:00Z",
+        "wind_ms": 10.271960770974816,
+        "temperature_c": 2.054765625000016,
+        "u_ms": 9.9756591796875,
+        "v_ms": 2.44936767578125,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T18:00:00Z",
+        "wind_ms": 10.271960770974816,
+        "temperature_c": 2.054765625000016,
+        "u_ms": 9.9756591796875,
+        "v_ms": 2.44936767578125,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T19:00:00Z",
+        "wind_ms": 10.8097186817155,
+        "temperature_c": 1.6797721354166697,
+        "u_ms": 10.338116861979167,
+        "v_ms": 3.158062337239583,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T19:00:00Z",
+        "wind_ms": 10.8097186817155,
+        "temperature_c": 1.6797721354166697,
+        "u_ms": 10.338116861979167,
+        "v_ms": 3.158062337239583,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T20:00:00Z",
+        "wind_ms": 11.377789999137631,
+        "temperature_c": 1.3047786458333803,
+        "u_ms": 10.700574544270834,
+        "v_ms": 3.8667569986979164,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T20:00:00Z",
+        "wind_ms": 11.377789999137631,
+        "temperature_c": 1.3047786458333803,
+        "u_ms": 10.700574544270834,
+        "v_ms": 3.8667569986979164,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T21:00:00Z",
+        "wind_ms": 11.97186033749087,
+        "temperature_c": 0.9297851562500341,
+        "u_ms": 11.0630322265625,
+        "v_ms": 4.57545166015625,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T21:00:00Z",
+        "wind_ms": 11.97186033749087,
+        "temperature_c": 0.9297851562500341,
+        "u_ms": 11.0630322265625,
+        "v_ms": 4.57545166015625,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T22:00:00Z",
+        "wind_ms": 11.121192216895931,
+        "temperature_c": 0.9149023437500432,
+        "u_ms": 10.37191650390625,
+        "v_ms": 4.013011881510416,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T22:00:00Z",
+        "wind_ms": 11.121192216895931,
+        "temperature_c": 0.9149023437500432,
+        "u_ms": 10.37191650390625,
+        "v_ms": 4.013011881510416,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-11T23:00:00Z",
+        "wind_ms": 10.277370850724319,
+        "temperature_c": 0.9000195312499955,
+        "u_ms": 9.68080078125,
+        "v_ms": 3.4505721028645837,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-11T23:00:00Z",
+        "wind_ms": 10.277370850724319,
+        "temperature_c": 0.9000195312499955,
+        "u_ms": 9.68080078125,
+        "v_ms": 3.4505721028645837,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T00:00:00Z",
+        "wind_ms": 9.44223203352369,
+        "temperature_c": 0.8851367187500045,
+        "u_ms": 8.98968505859375,
+        "v_ms": 2.88813232421875,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T00:00:00Z",
+        "wind_ms": 9.44223203352369,
+        "temperature_c": 0.8851367187500045,
+        "u_ms": 8.98968505859375,
+        "v_ms": 2.88813232421875,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T01:00:00Z",
+        "wind_ms": 8.421399761178561,
+        "temperature_c": 0.9609049479166742,
+        "u_ms": 8.065568033854166,
+        "v_ms": 2.422103678385417,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T01:00:00Z",
+        "wind_ms": 8.421399761178561,
+        "temperature_c": 0.9609049479166742,
+        "u_ms": 8.065568033854166,
+        "v_ms": 2.422103678385417,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T02:00:00Z",
+        "wind_ms": 7.4044953945935665,
+        "temperature_c": 1.036673177083344,
+        "u_ms": 7.141451009114584,
+        "v_ms": 1.9560750325520835,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T02:00:00Z",
+        "wind_ms": 7.4044953945935665,
+        "temperature_c": 1.036673177083344,
+        "u_ms": 7.141451009114584,
+        "v_ms": 1.9560750325520835,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T03:00:00Z",
+        "wind_ms": 6.393393473566125,
+        "temperature_c": 1.1124414062500136,
+        "u_ms": 6.217333984375,
+        "v_ms": 1.4900463867187501,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T03:00:00Z",
+        "wind_ms": 6.393393473566125,
+        "temperature_c": 1.1124414062500136,
+        "u_ms": 6.217333984375,
+        "v_ms": 1.4900463867187501,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T04:00:00Z",
+        "wind_ms": 5.956402623318532,
+        "temperature_c": 1.5889518229166697,
+        "u_ms": 5.8557861328125,
+        "v_ms": 1.0901839192708334,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T04:00:00Z",
+        "wind_ms": 5.956402623318532,
+        "temperature_c": 1.5889518229166697,
+        "u_ms": 5.8557861328125,
+        "v_ms": 1.0901839192708334,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T05:00:00Z",
+        "wind_ms": 5.537436049111525,
+        "temperature_c": 2.0654622395833826,
+        "u_ms": 5.49423828125,
+        "v_ms": 0.6903214518229168,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T05:00:00Z",
+        "wind_ms": 5.537436049111525,
+        "temperature_c": 2.0654622395833826,
+        "u_ms": 5.49423828125,
+        "v_ms": 0.6903214518229168,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T06:00:00Z",
+        "wind_ms": 5.140902398276961,
+        "temperature_c": 2.5419726562500387,
+        "u_ms": 5.1326904296875,
+        "v_ms": 0.290458984375,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T06:00:00Z",
+        "wind_ms": 5.140902398276961,
+        "temperature_c": 2.5419726562500387,
+        "u_ms": 5.1326904296875,
+        "v_ms": 0.290458984375,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T07:00:00Z",
+        "wind_ms": 3.95445379826098,
+        "temperature_c": 2.9358463541666993,
+        "u_ms": 3.9543961588541667,
+        "v_ms": 0.021350911458333344,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T07:00:00Z",
+        "wind_ms": 3.95445379826098,
+        "temperature_c": 2.9358463541666993,
+        "u_ms": 3.9543961588541667,
+        "v_ms": 0.021350911458333344,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T08:00:00Z",
+        "wind_ms": 2.7871356808965593,
+        "temperature_c": 3.32972005208336,
+        "u_ms": 2.7761018880208335,
+        "v_ms": -0.24775716145833332,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T08:00:00Z",
+        "wind_ms": 2.7871356808965593,
+        "temperature_c": 3.32972005208336,
+        "u_ms": 2.7761018880208335,
+        "v_ms": -0.24775716145833332,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T09:00:00Z",
+        "wind_ms": 1.6793269044614036,
+        "temperature_c": 3.7235937500000205,
+        "u_ms": 1.5978076171875,
+        "v_ms": -0.516865234375,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T09:00:00Z",
+        "wind_ms": 1.6793269044614036,
+        "temperature_c": 3.7235937500000205,
+        "u_ms": 1.5978076171875,
+        "v_ms": -0.516865234375,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T10:00:00Z",
+        "wind_ms": 2.726448223314565,
+        "temperature_c": 2.8283398437500296,
+        "u_ms": 2.695182291666667,
+        "v_ms": -0.41171875,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T10:00:00Z",
+        "wind_ms": 2.726448223314565,
+        "temperature_c": 2.8283398437500296,
+        "u_ms": 2.695182291666667,
+        "v_ms": -0.41171875,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T11:00:00Z",
+        "wind_ms": 3.804927712258372,
+        "temperature_c": 1.9330859375000387,
+        "u_ms": 3.792556966145833,
+        "v_ms": -0.306572265625,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T11:00:00Z",
+        "wind_ms": 3.804927712258372,
+        "temperature_c": 1.9330859375000387,
+        "u_ms": 3.792556966145833,
+        "v_ms": -0.306572265625,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T12:00:00Z",
+        "wind_ms": 4.894078441886448,
+        "temperature_c": 1.0378320312500477,
+        "u_ms": 4.889931640625,
+        "v_ms": -0.20142578125,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T12:00:00Z",
+        "wind_ms": 4.894078441886448,
+        "temperature_c": 1.0378320312500477,
+        "u_ms": 4.889931640625,
+        "v_ms": -0.20142578125,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T13:00:00Z",
+        "wind_ms": 5.854444854210539,
+        "temperature_c": 0.9534114583333917,
+        "u_ms": 5.83739501953125,
+        "v_ms": 0.44647949218749994,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T13:00:00Z",
+        "wind_ms": 5.854444854210539,
+        "temperature_c": 0.9534114583333917,
+        "u_ms": 5.83739501953125,
+        "v_ms": 0.44647949218749994,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T14:00:00Z",
+        "wind_ms": 6.872552764590459,
+        "temperature_c": 0.8689908854166788,
+        "u_ms": 6.7848583984375,
+        "v_ms": 1.0943847656249999,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T14:00:00Z",
+        "wind_ms": 6.872552764590459,
+        "temperature_c": 0.8689908854166788,
+        "u_ms": 6.7848583984375,
+        "v_ms": 1.0943847656249999,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T15:00:00Z",
+        "wind_ms": 7.9261828548552185,
+        "temperature_c": 0.7845703125000227,
+        "u_ms": 7.73232177734375,
+        "v_ms": 1.7422900390625,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T15:00:00Z",
+        "wind_ms": 7.9261828548552185,
+        "temperature_c": 0.7845703125000227,
+        "u_ms": 7.73232177734375,
+        "v_ms": 1.7422900390625,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T16:00:00Z",
+        "wind_ms": 7.0294898561244015,
+        "temperature_c": 0.4523274739583485,
+        "u_ms": 6.9037247721354165,
+        "v_ms": 1.3237491861979167,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T16:00:00Z",
+        "wind_ms": 7.0294898561244015,
+        "temperature_c": 0.4523274739583485,
+        "u_ms": 6.9037247721354165,
+        "v_ms": 1.3237491861979167,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T17:00:00Z",
+        "wind_ms": 6.14219663566908,
+        "temperature_c": 0.12008463541673109,
+        "u_ms": 6.075127766927084,
+        "v_ms": 0.9052083333333334,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T17:00:00Z",
+        "wind_ms": 6.14219663566908,
+        "temperature_c": 0.12008463541673109,
+        "u_ms": 6.075127766927084,
+        "v_ms": 0.9052083333333334,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_1",
+        "valid_time": "2026-02-12T18:00:00Z",
+        "wind_ms": 5.269054020429752,
+        "temperature_c": -0.21215820312494316,
+        "u_ms": 5.24653076171875,
+        "v_ms": 0.48666748046875,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      },
+      {
+        "turbine_id": "turbine_2",
+        "valid_time": "2026-02-12T18:00:00Z",
+        "wind_ms": 5.269054020429752,
+        "temperature_c": -0.21215820312494316,
+        "u_ms": 5.24653076171875,
+        "v_ms": 0.48666748046875,
+        "grid_latitude": 43.75,
+        "grid_longitude": 78.5
+      }
+    ],
+    "base_predictions": {
+      "rows": [
+        {
+          "target_start": "2026-02-10T19:00:00Z",
+          "target_end": "2026-02-10T20:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.9795627116436532,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-10T20:00:00Z",
+          "target_end": "2026-02-10T21:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.9188461388831324,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-10T21:00:00Z",
+          "target_end": "2026-02-10T22:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.5525251091912811,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-10T22:00:00Z",
+          "target_end": "2026-02-10T23:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.363702394874579,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-10T23:00:00Z",
+          "target_end": "2026-02-11T00:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.19075740765955118,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T00:00:00Z",
+          "target_end": "2026-02-11T01:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.21137293377509203,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T01:00:00Z",
+          "target_end": "2026-02-11T02:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.21077378967190916,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T02:00:00Z",
+          "target_end": "2026-02-11T03:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.1891201078657205,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T03:00:00Z",
+          "target_end": "2026-02-11T04:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.17748491733346486,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T04:00:00Z",
+          "target_end": "2026-02-11T05:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.3395400535601534,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T05:00:00Z",
+          "target_end": "2026-02-11T06:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.4372504499609083,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T06:00:00Z",
+          "target_end": "2026-02-11T07:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.6579830777303526,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T07:00:00Z",
+          "target_end": "2026-02-11T08:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.6862378956903411,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T08:00:00Z",
+          "target_end": "2026-02-11T09:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.7137160094695271,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T09:00:00Z",
+          "target_end": "2026-02-11T10:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.7322995072479904,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T10:00:00Z",
+          "target_end": "2026-02-11T11:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.128239793690815,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T11:00:00Z",
+          "target_end": "2026-02-11T12:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.08460417494690065,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T12:00:00Z",
+          "target_end": "2026-02-11T13:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.18770504076250524,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T13:00:00Z",
+          "target_end": "2026-02-11T14:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.3545483968567738,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T14:00:00Z",
+          "target_end": "2026-02-11T15:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.7063331907032283,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T15:00:00Z",
+          "target_end": "2026-02-11T16:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.8305867625209435,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T16:00:00Z",
+          "target_end": "2026-02-11T17:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.6622274167048406,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T17:00:00Z",
+          "target_end": "2026-02-11T18:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.7484060424556251,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T18:00:00Z",
+          "target_end": "2026-02-11T19:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.3494144404636437,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T19:00:00Z",
+          "target_end": "2026-02-11T20:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.6054354183839257,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T20:00:00Z",
+          "target_end": "2026-02-11T21:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.722993751660333,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T21:00:00Z",
+          "target_end": "2026-02-11T22:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.7402278721963377,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T22:00:00Z",
+          "target_end": "2026-02-11T23:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.6866850132554838,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T23:00:00Z",
+          "target_end": "2026-02-12T00:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.35199012346231234,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T00:00:00Z",
+          "target_end": "2026-02-12T01:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.5460632276838873,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T01:00:00Z",
+          "target_end": "2026-02-12T02:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.36531249813593936,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T02:00:00Z",
+          "target_end": "2026-02-12T03:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.23841130490566617,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T03:00:00Z",
+          "target_end": "2026-02-12T04:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.13283013714042644,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T04:00:00Z",
+          "target_end": "2026-02-12T05:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.14600854693731163,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T05:00:00Z",
+          "target_end": "2026-02-12T06:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.18672938883121618,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T06:00:00Z",
+          "target_end": "2026-02-12T07:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.18814130674859136,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T07:00:00Z",
+          "target_end": "2026-02-12T08:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.2143111872902647,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T08:00:00Z",
+          "target_end": "2026-02-12T09:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.18115236021527895,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T09:00:00Z",
+          "target_end": "2026-02-12T10:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.0763995982771591,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T10:00:00Z",
+          "target_end": "2026-02-12T11:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.17911277946310877,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T11:00:00Z",
+          "target_end": "2026-02-12T12:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.2110756445161509,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T12:00:00Z",
+          "target_end": "2026-02-12T13:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.18902016070141917,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T13:00:00Z",
+          "target_end": "2026-02-12T14:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.15633718451079615,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T14:00:00Z",
+          "target_end": "2026-02-12T15:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.17523755302719116,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T15:00:00Z",
+          "target_end": "2026-02-12T16:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.3344315687092139,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T16:00:00Z",
+          "target_end": "2026-02-12T17:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.18912708127678768,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T17:00:00Z",
+          "target_end": "2026-02-12T18:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.12718703844726476,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T18:00:00Z",
+          "target_end": "2026-02-12T19:00:00Z",
+          "turbine_id": "turbine_1",
+          "prediction_norm": 0.18768500355445536,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-10T19:00:00Z",
+          "target_end": "2026-02-10T20:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.968765819006682,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-10T20:00:00Z",
+          "target_end": "2026-02-10T21:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.9164244886782238,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-10T21:00:00Z",
+          "target_end": "2026-02-10T22:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.5983500727941874,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-10T22:00:00Z",
+          "target_end": "2026-02-10T23:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.3392541053183246,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-10T23:00:00Z",
+          "target_end": "2026-02-11T00:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.19321621206915757,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T00:00:00Z",
+          "target_end": "2026-02-11T01:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.1420024306048132,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T01:00:00Z",
+          "target_end": "2026-02-11T02:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.20773809042551333,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T02:00:00Z",
+          "target_end": "2026-02-11T03:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.20201889239022286,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T03:00:00Z",
+          "target_end": "2026-02-11T04:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.1695004232846555,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T04:00:00Z",
+          "target_end": "2026-02-11T05:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.33050167173834233,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T05:00:00Z",
+          "target_end": "2026-02-11T06:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.39019794163958943,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T06:00:00Z",
+          "target_end": "2026-02-11T07:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.666402142238828,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T07:00:00Z",
+          "target_end": "2026-02-11T08:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.6824686073533313,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T08:00:00Z",
+          "target_end": "2026-02-11T09:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.6980934171493389,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T09:00:00Z",
+          "target_end": "2026-02-11T10:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.7144786533833234,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T10:00:00Z",
+          "target_end": "2026-02-11T11:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.13289219859055248,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T11:00:00Z",
+          "target_end": "2026-02-11T12:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.08234822493172941,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T12:00:00Z",
+          "target_end": "2026-02-11T13:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.1873965323236652,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T13:00:00Z",
+          "target_end": "2026-02-11T14:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.3433136721135061,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T14:00:00Z",
+          "target_end": "2026-02-11T15:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.6377592822577169,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T15:00:00Z",
+          "target_end": "2026-02-11T16:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.8412405754808037,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T16:00:00Z",
+          "target_end": "2026-02-11T17:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.6688155898909878,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T17:00:00Z",
+          "target_end": "2026-02-11T18:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.7205255480001371,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T18:00:00Z",
+          "target_end": "2026-02-11T19:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.32935740295111715,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T19:00:00Z",
+          "target_end": "2026-02-11T20:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.5066930344463583,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T20:00:00Z",
+          "target_end": "2026-02-11T21:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.6705341562716933,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T21:00:00Z",
+          "target_end": "2026-02-11T22:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.7227373668711851,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T22:00:00Z",
+          "target_end": "2026-02-11T23:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.5991071299014983,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-11T23:00:00Z",
+          "target_end": "2026-02-12T00:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.33114147695478213,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T00:00:00Z",
+          "target_end": "2026-02-12T01:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.5214132052075824,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T01:00:00Z",
+          "target_end": "2026-02-12T02:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.3525025390591352,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T02:00:00Z",
+          "target_end": "2026-02-12T03:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.2381781252410955,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T03:00:00Z",
+          "target_end": "2026-02-12T04:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.13732147735772143,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T04:00:00Z",
+          "target_end": "2026-02-12T05:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.14493350004863345,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T05:00:00Z",
+          "target_end": "2026-02-12T06:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.17731479570034483,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T06:00:00Z",
+          "target_end": "2026-02-12T07:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.19190461417988844,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T07:00:00Z",
+          "target_end": "2026-02-12T08:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.17928152207856646,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T08:00:00Z",
+          "target_end": "2026-02-12T09:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.07596914559684498,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T09:00:00Z",
+          "target_end": "2026-02-12T10:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.019763965045960737,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T10:00:00Z",
+          "target_end": "2026-02-12T11:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.07927657384360741,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T11:00:00Z",
+          "target_end": "2026-02-12T12:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.13823057313199802,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T12:00:00Z",
+          "target_end": "2026-02-12T13:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.2009861050257758,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T13:00:00Z",
+          "target_end": "2026-02-12T14:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.15299487571574333,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T14:00:00Z",
+          "target_end": "2026-02-12T15:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.17824091373968737,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T15:00:00Z",
+          "target_end": "2026-02-12T16:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.3261407700363208,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T16:00:00Z",
+          "target_end": "2026-02-12T17:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.191643090120877,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T17:00:00Z",
+          "target_end": "2026-02-12T18:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.13024354220274323,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        },
+        {
+          "target_start": "2026-02-12T18:00:00Z",
+          "target_end": "2026-02-12T19:00:00Z",
+          "turbine_id": "turbine_2",
+          "prediction_norm": 0.18718948117381645,
+          "q10": null,
+          "q50": null,
+          "q90": null,
+          "status": "ok"
+        }
+      ]
+    },
+    "source_revisions": [
+      "a311224d83a183e6d17184719ed1e0638cfcd1836b6b95d7b39ab57000ec7684",
+      "a6f333eddae9617c2b2215804df45e27802649f65c509b379feab23db00e5e73"
+    ],
+    "observation_count": 50784,
+    "last_actual_available_at": "2026-01-31T19:15:00+00:00"
+  }
+}

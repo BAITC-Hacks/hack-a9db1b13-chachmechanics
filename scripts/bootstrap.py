@@ -175,7 +175,13 @@ def _verify_selection_report(report_path: Path, config, model_id: str) -> dict[s
     }
 
 
-def _load_replay_seed(directory: Path, model_id: str, read_outputs):
+def _load_replay_seed(
+    directory: Path,
+    model_id: str,
+    bias_id: str | None,
+    config,
+    read_outputs,
+):
     """Load only the checksummed, non-fixture replay shipped by the team."""
     if not directory.exists():
         return (), {"status": "not_present", "path": _relative_or_absolute(directory)}
@@ -191,21 +197,93 @@ def _load_replay_seed(directory: Path, model_id: str, read_outputs):
         raise BootstrapError(f"Replay seed failed checksum/contract validation: {exc}") from exc
     if not results:
         raise BootstrapError("Replay seed index contains no forecasts.")
+    if bias_id is None:
+        raise BootstrapError("A production bias artifact is required for the real replay seed.")
+    expected_origins = {
+        datetime(2026, 1, 31, 18, tzinfo=timezone.utc) + timedelta(days=index)
+        for index in range(28)
+    }
+    actual_origins = [result.origin_time for result in results]
+    if len(results) != 28 or len(set(actual_origins)) != 28 or set(actual_origins) != expected_origins:
+        raise BootstrapError(
+            "Replay seed must contain exactly one daily forecast for each origin from "
+            "2026-01-31T18:00:00Z through 2026-02-27T18:00:00Z."
+        )
+    turbine_ids = tuple(turbine.id for turbine in config.site.turbines)
     for result in results:
-        if result.mode == "fixture" or result.provenance == "synthetic":
+        if result.mode != "replay" or result.provenance != "operational_archive":
             raise BootstrapError(
-                f"Fixture/synthetic forecast is forbidden in the real replay seed: {result.forecast_id}"
+                f"Replay seed forecast is not a real operational-archive replay: {result.forecast_id}"
+            )
+        if result.release_kind != "scheduled" or result.parent_forecast_id is not None:
+            raise BootstrapError(
+                f"Replay seed must contain scheduled releases only: {result.forecast_id}"
             )
         if result.model_id != model_id:
             raise BootstrapError(
                 f"Replay seed forecast {result.forecast_id} uses model {result.model_id}, "
                 f"not deployment model {model_id}."
             )
+        if result.bias_id != bias_id:
+            raise BootstrapError(
+                f"Replay seed forecast {result.forecast_id} does not use production bias {bias_id}."
+            )
+        manifest = result.manifest
+        if manifest.get("config_hash") != config.config_hash:
+            raise BootstrapError(
+                f"Replay seed forecast {result.forecast_id} has a different config hash."
+            )
+        request = manifest.get("request", {})
+        if (
+            request.get("horizon_hours") != 48
+            or request.get("mode") != "replay"
+            or tuple(request.get("turbine_ids", ())) != turbine_ids
+        ):
+            raise BootstrapError(
+                f"Replay seed forecast {result.forecast_id} has an unexpected request contract."
+            )
+        if manifest.get("model", {}).get("model_id") != model_id:
+            raise BootstrapError(
+                f"Replay seed manifest model differs from its result: {result.forecast_id}"
+            )
+        if manifest.get("bias", {}).get("bias_id") != bias_id:
+            raise BootstrapError(
+                f"Replay seed manifest bias differs from its result: {result.forecast_id}"
+            )
+        rows = result.predictions.rows
+        if len(rows) != 96:
+            raise BootstrapError(
+                f"Replay seed forecast {result.forecast_id} has {len(rows)} rows, expected 96."
+            )
+        expected_targets = {
+            result.origin_time + timedelta(hours=lead) for lead in range(1, 49)
+        }
+        keys = {(row.turbine_id, row.target_start) for row in rows}
+        expected_keys = {
+            (turbine_id, target)
+            for turbine_id in turbine_ids
+            for target in expected_targets
+        }
+        if keys != expected_keys or len(keys) != len(rows):
+            raise BootstrapError(
+                f"Replay seed forecast {result.forecast_id} does not have complete unique 48h coverage."
+            )
+        if any(row.target_end != row.target_start + timedelta(hours=1) for row in rows):
+            raise BootstrapError(
+                f"Replay seed forecast {result.forecast_id} contains a non-hourly interval."
+            )
+    prediction_rows = sum(len(result.predictions.rows) for result in results)
+    if prediction_rows != 2688:
+        raise BootstrapError(
+            f"Replay seed has {prediction_rows} prediction rows, expected exactly 2688."
+        )
     return results, {
         "status": "validated",
         "path": _relative_or_absolute(directory),
         "forecast_count": len(results),
-        "prediction_rows": sum(len(result.predictions.rows) for result in results),
+        "prediction_rows": prediction_rows,
+        "first_origin": min(actual_origins).isoformat(),
+        "last_origin": max(actual_origins).isoformat(),
     }
 
 
@@ -532,8 +610,13 @@ def bootstrap(args: argparse.Namespace) -> dict[str, object]:
 
     config = _verify_config(config_path, load_config)
     predictor = _verify_model(model_path, load_predictor)
+    bias_summary = _verify_bias(bias_path, predictor.state.model_id, BiasState)
     replay_seed, replay_summary = _load_replay_seed(
-        (ROOT / REPLAY_SEED).resolve(), predictor.state.model_id, read_outputs
+        (ROOT / REPLAY_SEED).resolve(),
+        predictor.state.model_id,
+        bias_summary.get("bias_id"),
+        config,
+        read_outputs,
     )
     turbine_ids = tuple(turbine.id for turbine in config.site.turbines)
     if len(turbine_ids) != 2:
@@ -568,7 +651,7 @@ def bootstrap(args: argparse.Namespace) -> dict[str, object]:
             "model_id": predictor.state.model_id,
             "training_cutoff": predictor.state.training_cutoff.isoformat(),
         },
-        "bias": _verify_bias(bias_path, predictor.state.model_id, BiasState),
+        "bias": bias_summary,
         "report": _verify_selection_report(
             report_path, config, predictor.state.model_id
         ),
