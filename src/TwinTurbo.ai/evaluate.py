@@ -484,6 +484,7 @@ class ModelComparison:
     expected_keys: tuple[ForecastKey, ...] = ()
     evaluation_as_of: datetime | None = None
     lead_groups: tuple[tuple[str, int, int], ...] = DEFAULT_LEAD_GROUPS
+    selection: ModelSelectionSummary | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "common_keys", tuple(sorted(self.common_keys)))
@@ -525,6 +526,9 @@ class ModelComparison:
             "lead_groups": [list(group) for group in self.lead_groups],
             "baseline": self.baseline.model_dump(mode="json"),
             "candidate": self.candidate.model_dump(mode="json"),
+            "selection": (
+                self.selection.to_dict() if self.selection is not None else None
+            ),
         }
 
     def to_json(self, *, indent: int | None = 2) -> str:
@@ -539,6 +543,260 @@ class ModelComparison:
         )
 
 
+@dataclass(frozen=True, slots=True)
+class MAEComparisonSummary:
+    """MAE comparison on one explicitly shared set of scored forecast keys.
+
+    ``delta_candidate_minus_baseline`` is negative when the candidate is
+    better.  ``skill_vs_baseline`` is the fractional MAE reduction and is
+    undefined when the baseline has zero error.
+    """
+
+    sample_count: int
+    baseline_mae: float | None
+    candidate_mae: float | None
+    delta_candidate_minus_baseline: float | None
+    skill_vs_baseline: float | None
+
+    def __post_init__(self) -> None:
+        if self.sample_count < 0:
+            raise ValueError("sample_count cannot be negative")
+        required = (
+            self.baseline_mae,
+            self.candidate_mae,
+            self.delta_candidate_minus_baseline,
+        )
+        if self.sample_count == 0:
+            if any(value is not None for value in (*required, self.skill_vs_baseline)):
+                raise ValueError("empty MAE comparison cannot contain metrics")
+            return
+        if any(value is None or not isfinite(value) for value in required):
+            raise ValueError("non-empty MAE comparison requires finite metrics")
+        if self.baseline_mae < 0 or self.candidate_mae < 0:
+            raise ValueError("MAE cannot be negative")
+        if self.skill_vs_baseline is not None and not isfinite(
+            self.skill_vs_baseline
+        ):
+            raise ValueError("skill_vs_baseline must be finite or null")
+
+    def to_dict(self) -> dict[str, int | float | None]:
+        return {
+            "sample_count": self.sample_count,
+            "baseline_mae": self.baseline_mae,
+            "candidate_mae": self.candidate_mae,
+            "delta_candidate_minus_baseline": self.delta_candidate_minus_baseline,
+            "skill_vs_baseline": self.skill_vs_baseline,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class ModelSelectionSummary:
+    """Deterministic model choice guarded against sparse candidate forecasts.
+
+    The candidate is selected only when all three gates pass: it has no lower
+    forecast coverage than the baseline, enough common mature samples exist,
+    and its MAE improvement is strictly greater than ``mae_tolerance``.  A
+    strict comparison makes the simpler baseline win exact ties, including an
+    improvement exactly equal to the configured tolerance.
+    """
+
+    selected_model: str | None
+    selection_rule: str
+    overall: MAEComparisonSummary
+    peak_period: MAEComparisonSummary
+    peak_actual_threshold: float
+    baseline_forecast_coverage: float = 1.0
+    candidate_forecast_coverage: float = 1.0
+    min_selection_samples: int = 1
+    mae_tolerance: float = 0.0
+    peak_definition: str = "actual_norm >= peak_actual_threshold"
+
+    def __post_init__(self) -> None:
+        if self.selected_model not in {None, "baseline", "candidate"}:
+            raise ValueError("selected_model must be baseline, candidate or null")
+        threshold = _power(self.peak_actual_threshold, "peak_actual_threshold")
+        object.__setattr__(self, "peak_actual_threshold", threshold)
+        baseline_coverage = _power(
+            self.baseline_forecast_coverage,
+            "baseline_forecast_coverage",
+        )
+        candidate_coverage = _power(
+            self.candidate_forecast_coverage,
+            "candidate_forecast_coverage",
+        )
+        object.__setattr__(
+            self, "baseline_forecast_coverage", baseline_coverage
+        )
+        object.__setattr__(
+            self, "candidate_forecast_coverage", candidate_coverage
+        )
+        if isinstance(self.min_selection_samples, bool) or not isinstance(
+            self.min_selection_samples, int
+        ):
+            raise TypeError("min_selection_samples must be an integer")
+        if self.min_selection_samples < 1:
+            raise ValueError("min_selection_samples must be at least 1")
+        tolerance = _finite(self.mae_tolerance, "mae_tolerance")
+        if tolerance < 0:
+            raise ValueError("mae_tolerance must be nonnegative")
+        object.__setattr__(self, "mae_tolerance", tolerance)
+
+        expected = (
+            "candidate"
+            if (
+                self.coverage_gate_passed
+                and self.sample_count_gate_passed
+                and self.mae_gate_passed
+            )
+            else "baseline"
+        )
+        if self.selected_model != expected:
+            raise ValueError("selected_model does not follow the selection gates")
+
+    @property
+    def coverage_gate_passed(self) -> bool:
+        return (
+            self.candidate_forecast_coverage
+            >= self.baseline_forecast_coverage
+        )
+
+    @property
+    def sample_count_gate_passed(self) -> bool:
+        return self.overall.sample_count >= self.min_selection_samples
+
+    @property
+    def mae_improvement(self) -> float | None:
+        if not self.overall.sample_count:
+            return None
+        return self.overall.baseline_mae - self.overall.candidate_mae
+
+    @property
+    def mae_gate_passed(self) -> bool:
+        improvement = self.mae_improvement
+        return improvement is not None and improvement > self.mae_tolerance
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "selected_model": self.selected_model,
+            "selection_rule": self.selection_rule,
+            "overall": self.overall.to_dict(),
+            "peak_period": self.peak_period.to_dict(),
+            "peak_actual_threshold": self.peak_actual_threshold,
+            "peak_definition": self.peak_definition,
+            "gates": {
+                "coverage": {
+                    "passed": self.coverage_gate_passed,
+                    "baseline_forecast_coverage": self.baseline_forecast_coverage,
+                    "candidate_forecast_coverage": self.candidate_forecast_coverage,
+                    "requirement": "candidate >= baseline",
+                },
+                "sample_count": {
+                    "passed": self.sample_count_gate_passed,
+                    "actual": self.overall.sample_count,
+                    "minimum": self.min_selection_samples,
+                },
+                "mae_improvement": {
+                    "passed": self.mae_gate_passed,
+                    "actual": self.mae_improvement,
+                    "required_strictly_greater_than": self.mae_tolerance,
+                },
+            },
+        }
+
+
+def _mae_comparison(
+    pairs: Sequence[tuple[EvaluationPoint, EvaluationPoint]],
+) -> MAEComparisonSummary:
+    if not pairs:
+        return MAEComparisonSummary(0, None, None, None, None)
+    actual = [baseline.actual_norm for baseline, _ in pairs]
+    baseline_prediction = [baseline.prediction_norm for baseline, _ in pairs]
+    candidate_prediction = [candidate.prediction_norm for _, candidate in pairs]
+    baseline_mae = mae(actual, baseline_prediction)
+    candidate_mae = mae(actual, candidate_prediction)
+    delta = candidate_mae - baseline_mae
+    skill = None if baseline_mae == 0 else (baseline_mae - candidate_mae) / baseline_mae
+    return MAEComparisonSummary(
+        sample_count=len(pairs),
+        baseline_mae=baseline_mae,
+        candidate_mae=candidate_mae,
+        delta_candidate_minus_baseline=delta,
+        skill_vs_baseline=skill,
+    )
+
+
+def _selection_summary(
+    baseline: Sequence[EvaluationPoint],
+    candidate: Sequence[EvaluationPoint],
+    *,
+    period: tuple[datetime, datetime],
+    evaluation_as_of: datetime | None,
+    peak_actual_threshold: float,
+    baseline_forecast_coverage: float,
+    candidate_forecast_coverage: float,
+    min_selection_samples: int,
+    mae_tolerance: float,
+) -> ModelSelectionSummary:
+    """Score both models on exactly the same mature, non-null forecast rows."""
+
+    threshold = _power(peak_actual_threshold, "peak_actual_threshold")
+    period_start = _as_utc(period[0], "period start")
+    period_end = _as_utc(period[1], "period end")
+    as_of = (
+        None
+        if evaluation_as_of is None
+        else _as_utc(evaluation_as_of, "evaluation_as_of")
+    )
+    if len(baseline) != len(candidate):
+        raise ValueError("comparison inputs are not aligned")
+    pairs = []
+    for baseline_point, candidate_point in zip(baseline, candidate):
+        if baseline_point.key != candidate_point.key:
+            raise ValueError("comparison inputs are not aligned")
+        if not period_start <= baseline_point.target_start < period_end:
+            continue
+        if (
+            baseline_point.prediction_norm is None
+            or candidate_point.prediction_norm is None
+            or baseline_point.actual_norm is None
+            or (as_of is not None and baseline_point.actual_available_at > as_of)
+        ):
+            continue
+        pairs.append((baseline_point, candidate_point))
+    overall = _mae_comparison(pairs)
+    peak_pairs = [
+        pair for pair in pairs if pair[0].actual_norm >= threshold
+    ]
+    peak_period = _mae_comparison(peak_pairs)
+    selected = "baseline"
+    if overall.sample_count:
+        improvement = overall.baseline_mae - overall.candidate_mae
+        candidate_passes = (
+            candidate_forecast_coverage >= baseline_forecast_coverage
+            and overall.sample_count >= min_selection_samples
+            and improvement > mae_tolerance
+        )
+        # The simpler baseline wins every failed gate and exact threshold tie.
+        # Peak performance remains diagnostic and cannot override overall MAE.
+        selected = "candidate" if candidate_passes else "baseline"
+    return ModelSelectionSummary(
+        selected_model=selected,
+        selection_rule=(
+            "candidate coverage must be at least baseline coverage, common mature "
+            "sample count must meet the configured minimum, and MAE improvement "
+            "must be strictly greater than the configured tolerance; baseline "
+            "wins otherwise and on ties"
+        ),
+        overall=overall,
+        peak_period=peak_period,
+        peak_actual_threshold=threshold,
+        baseline_forecast_coverage=baseline_forecast_coverage,
+        candidate_forecast_coverage=candidate_forecast_coverage,
+        min_selection_samples=min_selection_samples,
+        mae_tolerance=mae_tolerance,
+    )
+
+
 def compare_models(
     baseline: Iterable[EvaluationPoint | Mapping[str, Any] | Any],
     candidate: Iterable[EvaluationPoint | Mapping[str, Any] | Any],
@@ -547,8 +805,30 @@ def compare_models(
     period: tuple[datetime, datetime] | None = None,
     evaluation_as_of: datetime | None = None,
     lead_groups: Sequence[tuple[str, int, int]] = DEFAULT_LEAD_GROUPS,
+    peak_actual_threshold: float = 0.8,
+    min_selection_samples: int = 1,
+    mae_tolerance: float = 0.0,
 ) -> ModelComparison:
-    """Compare metrics on common keys while retaining per-model coverage."""
+    """Compare models fairly and select via coverage, sample and MAE gates.
+
+    Peak-period MAE is a secondary diagnostic over hours whose actual
+    normalized power is at least ``peak_actual_threshold``.  It never changes
+    the primary selection.  The candidate cannot trade missing forecasts for a
+    better common-key MAE: its coverage must be at least the baseline's.  It
+    also needs at least ``min_selection_samples`` mature common rows and an MAE
+    improvement strictly greater than ``mae_tolerance``.  The simpler baseline
+    wins whenever a gate fails or the improvement is exactly on the threshold.
+    """
+
+    if isinstance(min_selection_samples, bool) or not isinstance(
+        min_selection_samples, int
+    ):
+        raise TypeError("min_selection_samples must be an integer")
+    if min_selection_samples < 1:
+        raise ValueError("min_selection_samples must be at least 1")
+    tolerance = _finite(mae_tolerance, "mae_tolerance")
+    if tolerance < 0:
+        raise ValueError("mae_tolerance must be nonnegative")
 
     base_all = tuple(as_evaluation_point(value) for value in baseline)
     candidate_all = tuple(as_evaluation_point(value) for value in candidate)
@@ -582,6 +862,17 @@ def compare_models(
     candidate_report = candidate_report.model_copy(update={
         "forecast_coverage": forecast_coverage(candidate_in_period, expected_in_period),
     })
+    selection = _selection_summary(
+        base_common,
+        candidate_common,
+        period=period,
+        evaluation_as_of=evaluation_as_of,
+        peak_actual_threshold=peak_actual_threshold,
+        baseline_forecast_coverage=baseline_report.forecast_coverage,
+        candidate_forecast_coverage=candidate_report.forecast_coverage,
+        min_selection_samples=min_selection_samples,
+        mae_tolerance=tolerance,
+    )
     return ModelComparison(
         common_keys=tuple(point.key for point in base_common),
         baseline=baseline_report,
@@ -589,6 +880,7 @@ def compare_models(
         expected_keys=tuple(sorted(_as_key(key) for key in expected)),
         evaluation_as_of=evaluation_as_of,
         lead_groups=tuple(lead_groups),
+        selection=selection,
     )
 
 

@@ -153,8 +153,197 @@ def test_models_are_scored_only_on_common_keys_but_keep_separate_coverage():
     assert document["schema"] == "twinturbo.model-comparison.v1"
     assert len(document["expected_keys"]) == 3
     assert document["lead_groups"][0] == ["lead_01_06", 1, 6]
+    assert document["selection"]["selected_model"] == "candidate"
+    assert document["selection"]["overall"] == pytest.approx({
+        "sample_count": 1,
+        "baseline_mae": .2,
+        "candidate_mae": .1,
+        "delta_candidate_minus_baseline": -.1,
+        "skill_vs_baseline": .5,
+    })
+    assert document["selection"]["peak_period"]["sample_count"] == 0
+    assert document["selection"]["peak_period"]["baseline_mae"] is None
     assert comparison.to_json() == comparison.to_json()
     assert '"baseline"' in comparison.to_json()
+
+
+def test_model_selection_prioritizes_overall_mae_and_reports_peak_mae():
+    actuals = (.1, .2, .3, .9)
+    baseline_predictions = (.3, .4, .5, .85)
+    candidate_predictions = (.1, .2, .3, .6)
+    baseline = tuple(
+        point(
+            lead=index,
+            turbine="turbine_1" if index % 2 else "turbine_2",
+            prediction=prediction,
+            actual=actual,
+        )
+        for index, (prediction, actual) in enumerate(
+            zip(baseline_predictions, actuals), start=1
+        )
+    )
+    candidate = tuple(
+        point(
+            lead=index,
+            turbine="turbine_1" if index % 2 else "turbine_2",
+            prediction=prediction,
+            actual=actual,
+        )
+        for index, (prediction, actual) in enumerate(
+            zip(candidate_predictions, actuals), start=1
+        )
+    )
+
+    comparison = compare_models(
+        baseline,
+        candidate,
+        peak_actual_threshold=.8,
+    )
+    selection = comparison.selection
+
+    assert selection.selected_model == "candidate"
+    assert selection.overall.sample_count == 4
+    assert selection.overall.baseline_mae == pytest.approx(.1625)
+    assert selection.overall.candidate_mae == pytest.approx(.075)
+    assert selection.overall.delta_candidate_minus_baseline == pytest.approx(-.0875)
+    assert selection.overall.skill_vs_baseline == pytest.approx(7 / 13)
+    # The candidate wins the user's primary overall-MAE objective even though
+    # it is worse on the separately disclosed high-output hour.
+    assert selection.peak_period.sample_count == 1
+    assert selection.peak_period.baseline_mae == pytest.approx(.05)
+    assert selection.peak_period.candidate_mae == pytest.approx(.3)
+    assert selection.peak_period.delta_candidate_minus_baseline == pytest.approx(.25)
+    assert selection.peak_period.skill_vs_baseline == pytest.approx(-5)
+    assert comparison.to_dict()["selection"]["peak_definition"] == (
+        "actual_norm >= peak_actual_threshold"
+    )
+
+
+def test_model_selection_uses_only_mature_pairs_and_baseline_wins_ties():
+    mature = point(lead=1, prediction=.5, actual=.5)
+    late = point(
+        lead=2,
+        prediction=.4,
+        actual=.5,
+        available=ORIGIN + timedelta(days=2),
+    )
+    cutoff = ORIGIN + timedelta(hours=4)
+    comparison = compare_models(
+        (mature, late),
+        (
+            point(lead=1, prediction=.5, actual=.5),
+            point(
+                lead=2,
+                prediction=.5,
+                actual=.5,
+                available=ORIGIN + timedelta(days=2),
+            ),
+        ),
+        evaluation_as_of=cutoff,
+    )
+
+    assert comparison.selection.overall.sample_count == 1
+    assert comparison.selection.overall.baseline_mae == 0
+    assert comparison.selection.overall.candidate_mae == 0
+    assert comparison.selection.overall.skill_vs_baseline is None
+    assert comparison.selection.selected_model == "baseline"
+
+    no_mature_samples = compare_models(
+        (late,),
+        (late,),
+        evaluation_as_of=cutoff,
+    )
+    assert no_mature_samples.selection.overall.sample_count == 0
+    assert no_mature_samples.selection.selected_model == "baseline"
+    assert no_mature_samples.selection.sample_count_gate_passed is False
+
+    with pytest.raises(ValueError, match="peak_actual_threshold"):
+        compare_models((mature,), (mature,), peak_actual_threshold=1.1)
+
+
+def test_model_selection_rejects_better_mae_from_lower_forecast_coverage():
+    baseline = tuple(
+        point(lead=lead, prediction=.8, actual=.5)
+        for lead in range(1, 5)
+    )
+    # Perfect on its one forecast, but absent for three of the four planned
+    # keys.  Comparing only the common row must not reward that sparsity.
+    candidate = (point(lead=1, prediction=.5, actual=.5),)
+
+    comparison = compare_models(baseline, candidate)
+    selection = comparison.selection
+    gates = comparison.to_dict()["selection"]["gates"]
+
+    assert comparison.baseline.forecast_coverage == 1.0
+    assert comparison.candidate.forecast_coverage == .25
+    assert selection.overall.baseline_mae == pytest.approx(.3)
+    assert selection.overall.candidate_mae == 0
+    assert selection.selected_model == "baseline"
+    assert gates["coverage"] == {
+        "passed": False,
+        "baseline_forecast_coverage": 1.0,
+        "candidate_forecast_coverage": .25,
+        "requirement": "candidate >= baseline",
+    }
+    assert gates["sample_count"]["passed"] is True
+    assert gates["mae_improvement"]["passed"] is True
+
+
+def test_model_selection_requires_minimum_samples_and_mae_beyond_tolerance():
+    baseline = tuple(
+        point(lead=lead, prediction=.75, actual=.5)
+        for lead in range(1, 5)
+    )
+    candidate = tuple(
+        point(lead=lead, prediction=.625, actual=.5)
+        for lead in range(1, 5)
+    )
+
+    too_few = compare_models(
+        baseline,
+        candidate,
+        min_selection_samples=5,
+    )
+    assert too_few.selection.selected_model == "baseline"
+    assert too_few.selection.sample_count_gate_passed is False
+    assert too_few.to_dict()["selection"]["gates"]["sample_count"] == {
+        "passed": False,
+        "actual": 4,
+        "minimum": 5,
+    }
+
+    exact_threshold = compare_models(
+        baseline,
+        candidate,
+        mae_tolerance=.125,
+    )
+    assert exact_threshold.selection.mae_improvement == pytest.approx(.125)
+    assert exact_threshold.selection.mae_gate_passed is False
+    assert exact_threshold.selection.selected_model == "baseline"
+
+    beyond_threshold = compare_models(
+        baseline,
+        candidate,
+        mae_tolerance=.124,
+    )
+    assert beyond_threshold.selection.mae_gate_passed is True
+    assert beyond_threshold.selection.selected_model == "candidate"
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "error", "message"),
+    (
+        ({"min_selection_samples": 0}, ValueError, "at least 1"),
+        ({"min_selection_samples": True}, TypeError, "integer"),
+        ({"min_selection_samples": 1.5}, TypeError, "integer"),
+        ({"mae_tolerance": -0.01}, ValueError, "nonnegative"),
+        ({"mae_tolerance": float("nan")}, ValueError, "finite"),
+    ),
+)
+def test_model_selection_gate_arguments_are_validated(kwargs, error, message):
+    sample = point(lead=1)
+    with pytest.raises(error, match=message):
+        compare_models((sample,), (sample,), **kwargs)
 
 
 def test_alignment_rejects_different_actual_revisions_for_same_key():

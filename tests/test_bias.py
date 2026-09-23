@@ -75,6 +75,83 @@ def test_bias_uses_base_error_and_documented_shrinkage():
     assert rows[0].issued_error == pytest.approx(0.2)
 
 
+def test_bias_estimator_supports_mae_aligned_median_and_keeps_mean_default():
+    rows = [
+        residual(0, actual=0.5, base=0.5),
+        residual(1, actual=0.5, base=0.5),
+        residual(2, actual=1.0, base=0.4),
+    ]
+    default = update_bias(
+        rows, model_id="curve-v1", as_of=T0, shrinkage=0
+    )
+    explicit_mean = update_bias(
+        rows,
+        model_id="curve-v1",
+        as_of=T0,
+        shrinkage=0,
+        estimator="mean",
+    )
+    median = update_bias(
+        rows,
+        model_id="curve-v1",
+        as_of=T0,
+        shrinkage=0,
+        estimator="median",
+    )
+
+    assert default == explicit_mean
+    assert default.parameters["estimator"] == "mean"
+    assert median.parameters["estimator"] == "median"
+    assert default.parameters["source_hash"] != median.parameters["source_hash"]
+    assert default.bias_id != median.bias_id
+    mean_group = default.parameters["turbines"]["turbine_1"]["groups"]["1-6"]
+    median_group = median.parameters["turbines"]["turbine_1"]["groups"]["1-6"]
+    assert mean_group["bias"] == pytest.approx(.2)
+    assert median_group["bias"] == pytest.approx(0)
+
+
+def test_bias_estimator_change_is_versioned_and_legacy_state_defaults_to_mean():
+    rows = [
+        residual(0, actual=.5, base=.5),
+        residual(1, actual=.5, base=.5),
+        residual(2, actual=1, base=.4),
+    ]
+    mean_state = update_bias(
+        rows, model_id="curve-v1", as_of=T0, shrinkage=0
+    )
+    decision = Critic().review_residuals(
+        rows,
+        model_id="curve-v1",
+        as_of=T0 + timedelta(hours=1),
+        previous=mean_state,
+        shrinkage=0,
+        estimator="median",
+    )
+    assert decision.action == "propose_bias"
+    assert "BIAS_ESTIMATOR_CHANGED" in decision.reasons
+    assert decision.proposed_bias.parameters["estimator"] == "median"
+    assert decision.proposed_bias.bias_id != mean_state.bias_id
+
+    legacy_parameters = dict(mean_state.parameters)
+    legacy_parameters.pop("estimator")
+    legacy_parameters["source_hash"] = "legacy-source-hash"
+    legacy = mean_state.model_copy(update={"parameters": legacy_parameters})
+    assert update_bias(
+        rows,
+        model_id="curve-v1",
+        as_of=T0 + timedelta(hours=1),
+        previous=legacy,
+        shrinkage=0,
+    ) == legacy
+
+    with pytest.raises(ValueError, match="INVALID_BIAS_ESTIMATOR"):
+        update_bias(rows, model_id="curve-v1", as_of=T0, estimator="mode")
+    with pytest.raises(ValueError, match="INVALID_BIAS_ESTIMATOR"):
+        Critic().review_residuals(
+            rows, model_id="curve-v1", as_of=T0, estimator="mode"
+        )
+
+
 def test_bias_is_order_independent_and_exact_retries_are_idempotent():
     rows = [residual(index) for index in range(10)]
     state = update_bias(rows, model_id="curve-v1", as_of=T0)
@@ -91,6 +168,54 @@ def test_bias_is_order_independent_and_exact_retries_are_idempotent():
         )
         == state
     )
+
+
+def test_same_timestamp_new_row_mints_a_new_bias_state():
+    first_row = residual(turbine="turbine_1")
+    first = update_bias([first_row], model_id="curve-v1", as_of=T0)
+    same_timestamp_row = residual(turbine="turbine_2")
+
+    updated = update_bias(
+        [first_row, same_timestamp_row],
+        model_id="curve-v1",
+        as_of=T0 + timedelta(hours=1),
+        previous=first,
+    )
+
+    assert updated is not first
+    assert updated.bias_id != first.bias_id
+    assert updated.parameters["source_hash"] != first.parameters["source_hash"]
+    assert updated.last_actual_available_at == first.last_actual_available_at
+    assert set(updated.parameters["turbines"]) == {"turbine_1", "turbine_2"}
+
+
+def test_nonempty_rolling_window_eviction_mints_a_new_bias_state():
+    newest = residual(0, actual=0.8, base=0.4)
+    expiring = residual(20, actual=0.2, base=0.4)
+    first = update_bias(
+        [newest, expiring],
+        model_id="curve-v1",
+        as_of=T0,
+        window_days=1,
+        shrinkage=0,
+    )
+
+    updated = update_bias(
+        [newest, expiring],
+        model_id="curve-v1",
+        as_of=T0 + timedelta(hours=4),
+        previous=first,
+        window_days=1,
+        shrinkage=0,
+    )
+
+    assert updated is not first
+    assert updated.bias_id != first.bias_id
+    assert updated.parameters["source_hash"] != first.parameters["source_hash"]
+    assert updated.last_actual_available_at == first.last_actual_available_at
+    turbine = updated.parameters["turbines"]["turbine_1"]
+    assert turbine["count"] == 1
+    assert turbine["global_bias"] == pytest.approx(0.4)
 
 
 def test_future_actual_and_other_model_do_not_change_state():

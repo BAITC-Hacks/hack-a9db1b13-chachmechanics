@@ -12,7 +12,7 @@ from .baseline import (
     fit_mean_baseline,
     fit_turbine_means,
 )
-from .bias import Residual, apply_bias, update_bias
+from .bias import BiasEstimator, Residual, apply_bias, update_bias
 from .ensemble import (
     EnsembleExample,
     EnsemblePredictor,
@@ -28,12 +28,15 @@ from .power_curve import (
     PowerCurve,
     PowerCurvePredictor,
     TurbinePowerCurve,
+    fit_forecast_power_curve_predictor,
+    fit_forecast_power_curves,
     fit_power_curve,
     fit_power_curves,
 )
 
 __all__ = [
     "BinnedPowerCurve",
+    "BiasEstimator",
     "ConstantBaselinePredictor",
     "EnsembleExample",
     "EnsemblePredictor",
@@ -51,6 +54,8 @@ __all__ = [
     "apply_intervals",
     "build_ensemble_predictor",
     "fit_constant_baseline",
+    "fit_forecast_power_curve_predictor",
+    "fit_forecast_power_curves",
     "fit_intervals",
     "fit_mean_baseline",
     "fit_ml_predictor",

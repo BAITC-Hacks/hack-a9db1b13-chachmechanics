@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -8,7 +9,9 @@ from windoracle.features import (
     LEAD_GROUPS,
     TrainingExample,
     build_features,
+    build_training_examples,
     feature_vector,
+    select_training_examples,
 )
 from windoracle.models.baseline import fit_turbine_means
 from windoracle.models.ensemble import (
@@ -17,7 +20,11 @@ from windoracle.models.ensemble import (
     select_lead_weights,
 )
 from windoracle.models.ml import fit_ridge_predictor
-from windoracle.models.power_curve import fit_power_curve, fit_power_curves
+from windoracle.models.power_curve import (
+    fit_forecast_power_curve_predictor,
+    fit_power_curve,
+    fit_power_curves,
+)
 from windoracle.models.registry import load_predictor, save_predictor
 from windoracle.schemas import (
     AsOfSnapshot,
@@ -115,6 +122,85 @@ def test_features_are_pure_sorted_and_require_exact_weather_grid():
     duplicated = source.model_copy(update={"weather_values": source.weather_values + source.weather_values[:1]})
     with pytest.raises(ValueError, match="duplicate"):
         build_features(duplicated)
+
+
+def test_training_examples_join_historical_forecast_weather_to_mature_labels():
+    source = snapshot()
+    actuals = tuple(
+        Observation(
+            turbine_id=turbine,
+            event_start=ORIGIN + timedelta(hours=lead),
+            event_end=ORIGIN + timedelta(hours=lead + 1),
+            available_at=ORIGIN + timedelta(hours=lead + 1, minutes=15),
+            power_norm=.1 * lead,
+            wind_ms=5,
+            temperature_c=10,
+            n_samples=6,
+            coverage=1,
+            quality_flag="complete",
+            revision="actual",
+        )
+        for turbine in ("turbine_1", "turbine_2")
+        for lead in (1, 2)
+    )
+    examples = build_training_examples(
+        (source,),
+        actuals,
+        label_as_of=ORIGIN + timedelta(hours=3, minutes=15),
+    )
+
+    assert len(examples) == 4
+    assert all(example.wind_ms == 100 for example in examples)
+    assert all(example.actual_available_at <= ORIGIN + timedelta(hours=3, minutes=15)
+               for example in examples)
+    early = build_training_examples(
+        (source,),
+        actuals,
+        label_as_of=ORIGIN + timedelta(hours=2),
+    )
+    assert not early
+
+
+def test_training_examples_select_revision_visible_at_each_cutoff():
+    source = snapshot()
+    target_start = ORIGIN + timedelta(hours=1)
+    common = {
+        "turbine_id": "turbine_1",
+        "event_start": target_start,
+        "event_end": target_start + timedelta(hours=1),
+        "wind_ms": 5,
+        "temperature_c": 10,
+        "n_samples": 6,
+        "coverage": 1,
+        "quality_flag": "complete",
+    }
+    first = Observation(
+        **common,
+        available_at=ORIGIN + timedelta(hours=2, minutes=15),
+        power_norm=.2,
+        revision="v1",
+    )
+    revised = Observation(
+        **common,
+        available_at=ORIGIN + timedelta(hours=3, minutes=15),
+        power_norm=.8,
+        revision="v2",
+    )
+    examples = build_training_examples(
+        (source,),
+        (first, revised),
+        label_as_of=ORIGIN + timedelta(hours=4),
+    )
+
+    early = select_training_examples(
+        examples, ORIGIN + timedelta(hours=2, minutes=30)
+    )
+    late = select_training_examples(
+        examples, ORIGIN + timedelta(hours=3, minutes=30)
+    )
+    assert len(early) == len(late) == 1
+    assert (early[0].actual_norm, early[0].actual_revision) == (.2, "v1")
+    assert (late[0].actual_norm, late[0].actual_revision) == (.8, "v2")
 
 
 def test_power_curves_are_per_turbine_binned_medians_and_clamp_domain():
@@ -276,6 +362,125 @@ def test_ridge_ml_is_per_turbine_deterministic_and_leakage_safe():
     assert by_turbine["turbine_1"] > by_turbine["turbine_2"]
 
 
+def test_forecast_space_curve_uses_only_mature_historical_origin_examples():
+    examples = training_examples() + (
+        TrainingExample(
+            turbine_id="turbine_1",
+            origin_time=ORIGIN - timedelta(hours=3),
+            target_start=ORIGIN - timedelta(hours=1),
+            weather_run_init_time=ORIGIN - timedelta(hours=9),
+            wind_ms=20,
+            temperature_c=0,
+            u_ms=20,
+            v_ms=0,
+            actual_norm=1,
+            actual_available_at=ORIGIN + timedelta(minutes=15),
+        ),
+    )
+    predictor = fit_forecast_power_curve_predictor(
+        examples,
+        training_cutoff=ORIGIN,
+        activated_at=ORIGIN,
+        artifact_ref="inline:test-forecast-curve",
+        bin_width=1,
+        min_samples_per_bin=1,
+        provenance="synthetic",
+    )
+
+    assert predictor.state.max_label_available_at < ORIGIN
+    assert predictor.state.model_id.startswith("twinturbo-forecast-curve-")
+    assert all(curve.domain_max_wind_ms < 20 for curve in predictor.curves)
+    assert {curve.turbine_id for curve in predictor.curves} == {
+        "turbine_1",
+        "turbine_2",
+    }
+    assert predictor.predict(snapshot()).rows
+
+
+def test_forecast_curve_model_id_covers_immutable_state_metadata():
+    examples = training_examples()
+    common = {
+        "training_cutoff": ORIGIN,
+        "activated_at": ORIGIN,
+        "artifact_ref": "inline:test-forecast-curve",
+        "bin_width": 1,
+        "min_samples_per_bin": 1,
+        "provenance": "synthetic",
+    }
+    base = fit_forecast_power_curve_predictor(examples, **common)
+    repeated = fit_forecast_power_curve_predictor(examples, **common)
+    later_activation = fit_forecast_power_curve_predictor(
+        examples, **(common | {"activated_at": ORIGIN + timedelta(hours=1)})
+    )
+    other_artifact = fit_forecast_power_curve_predictor(
+        examples, **(common | {"artifact_ref": "inline:other-forecast-curve"})
+    )
+    other_provenance = fit_forecast_power_curve_predictor(
+        examples, **(common | {"provenance": "trained"})
+    )
+    shifted_examples = tuple(
+        replace(
+            example,
+            actual_available_at=example.actual_available_at - timedelta(minutes=1),
+        )
+        for example in examples
+    )
+    other_max_label = fit_forecast_power_curve_predictor(
+        shifted_examples, **common
+    )
+
+    assert repeated.state.model_id == base.state.model_id
+    assert other_max_label.curves == base.curves
+    assert other_max_label.state.max_label_available_at != base.state.max_label_available_at
+    assert len({
+        base.state.model_id,
+        later_activation.state.model_id,
+        other_artifact.state.model_id,
+        other_provenance.state.model_id,
+        other_max_label.state.model_id,
+    }) == 5
+
+
+def test_ridge_model_id_covers_immutable_state_metadata():
+    examples = training_examples()
+    common = {
+        "training_cutoff": ORIGIN,
+        "activated_at": ORIGIN,
+        "artifact_ref": "inline:test-ridge",
+        "provenance": "synthetic",
+    }
+    base = fit_ridge_predictor(examples, **common)
+    repeated = fit_ridge_predictor(examples, **common)
+    later_activation = fit_ridge_predictor(
+        examples, **(common | {"activated_at": ORIGIN + timedelta(hours=1)})
+    )
+    other_artifact = fit_ridge_predictor(
+        examples, **(common | {"artifact_ref": "inline:other-ridge"})
+    )
+    other_provenance = fit_ridge_predictor(
+        examples, **(common | {"provenance": "trained"})
+    )
+    shifted_examples = tuple(
+        replace(
+            example,
+            actual_available_at=example.actual_available_at - timedelta(minutes=1),
+        )
+        for example in examples
+    )
+    other_max_label = fit_ridge_predictor(shifted_examples, **common)
+
+    assert repeated.state.model_id == base.state.model_id
+    assert other_max_label.models == base.models
+    assert other_max_label.state.max_label_available_at != base.state.max_label_available_at
+    assert len({
+        base.state.model_id,
+        later_activation.state.model_id,
+        other_artifact.state.model_id,
+        other_provenance.state.model_id,
+        other_max_label.state.model_id,
+    }) == 5
+
+
 def test_ensemble_weights_use_only_available_validation_labels():
     validation = tuple(
         EnsembleExample(
@@ -317,6 +522,75 @@ def test_ensemble_weights_use_only_available_validation_labels():
     ensemble_values = [row.prediction_norm for row in ensemble.predict_base(snapshot()).rows]
     ml_values = [row.prediction_norm for row in ml.predict_base(snapshot()).rows]
     assert ensemble_values == ml_values
+
+
+def test_ensemble_model_id_covers_immutable_state_metadata():
+    validation = tuple(
+        EnsembleExample(
+            turbine_id="turbine_1",
+            origin_time=ORIGIN - timedelta(days=3),
+            target_start=ORIGIN - timedelta(days=3) + timedelta(hours=lead),
+            actual_available_at=ORIGIN - timedelta(hours=12),
+            actual_norm=.8,
+            twin_prediction=.2,
+            ml_prediction=.8,
+        )
+        for lead in (1, 7, 13, 25)
+    )
+    selection = select_lead_weights(validation, as_of=ORIGIN)
+    twin = TwinBuilder(provenance="synthetic").build(
+        snapshot(), cutoff=ORIGIN - timedelta(hours=3)
+    )
+    ml = fit_ridge_predictor(
+        training_examples(),
+        training_cutoff=ORIGIN,
+        activated_at=ORIGIN,
+        artifact_ref="inline:test-ridge",
+        provenance="synthetic",
+    )
+    common = {
+        "activated_at": ORIGIN,
+        "artifact_ref": "inline:test-ensemble",
+    }
+    base = build_ensemble_predictor(twin, ml, selection, **common)
+    repeated = build_ensemble_predictor(twin, ml, selection, **common)
+    later_activation = build_ensemble_predictor(
+        twin, ml, selection,
+        **(common | {"activated_at": ORIGIN + timedelta(hours=1)}),
+    )
+    other_artifact = build_ensemble_predictor(
+        twin, ml, selection,
+        **(common | {"artifact_ref": "inline:other-ensemble"}),
+    )
+    later_label_selection = replace(
+        selection,
+        max_label_available_at=ORIGIN - timedelta(minutes=1),
+    )
+    other_max_label = build_ensemble_predictor(
+        twin, ml, later_label_selection, **common
+    )
+    trained_twin = replace(
+        twin,
+        state=twin.state.model_copy(update={"provenance": "trained"}),
+    )
+    trained_ml = replace(
+        ml,
+        state=ml.state.model_copy(update={"provenance": "trained"}),
+    )
+    other_provenance = build_ensemble_predictor(
+        trained_twin, trained_ml, selection, **common
+    )
+
+    assert repeated.state.model_id == base.state.model_id
+    assert other_max_label.state.max_label_available_at != base.state.max_label_available_at
+    assert other_provenance.state.provenance != base.state.provenance
+    assert len({
+        base.state.model_id,
+        later_activation.state.model_id,
+        other_artifact.state.model_id,
+        other_provenance.state.model_id,
+        other_max_label.state.model_id,
+    }) == 5
 
 
 def test_json_registry_round_trip_and_zero_arg_factory(tmp_path, monkeypatch):

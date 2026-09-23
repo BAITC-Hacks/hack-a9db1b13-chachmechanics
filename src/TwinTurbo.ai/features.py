@@ -92,6 +92,7 @@ class TrainingExample:
     v_ms: float
     actual_norm: float
     actual_available_at: datetime
+    actual_revision: str = ""
 
     def __post_init__(self) -> None:
         if not self.turbine_id:
@@ -216,6 +217,91 @@ def build_features(snapshot: AsOfSnapshot) -> tuple[FeatureRow, ...]:
     )
 
 
+def build_training_examples(
+    snapshots: Iterable[AsOfSnapshot],
+    actuals: Iterable[Observation],
+    *,
+    label_as_of: datetime,
+) -> tuple[TrainingExample, ...]:
+    """Join historical as-of weather features to later, mature power labels.
+
+    The integration layer still owns data access and weather-run selection.
+    This pure join receives only validated snapshots and observations, then
+    rejects facts that were not available by ``label_as_of``.
+    """
+
+    cutoff = _aware_utc(label_as_of, "label_as_of")
+    facts: dict[tuple[str, datetime, datetime], list[Observation]] = {}
+    for raw in actuals:
+        observation = Observation.model_validate(
+            raw.model_dump() if hasattr(raw, "model_dump") else raw
+        )
+        if (
+            observation.available_at > cutoff
+            or observation.quality_flag != "complete"
+            or observation.power_norm is None
+        ):
+            continue
+        key = (
+            observation.turbine_id,
+            observation.event_start,
+            observation.event_end,
+        )
+        revisions = facts.setdefault(key, [])
+        previous = next(
+            (
+                value
+                for value in revisions
+                if value.available_at == observation.available_at
+            ),
+            None,
+        )
+        if previous is not None and previous != observation:
+            raise ValueError("AMBIGUOUS_TRAINING_LABEL_REVISION")
+        if previous is None:
+            revisions.append(observation)
+
+    # Preserve every admissible fact revision.  The latest revision must be
+    # selected at each *training cutoff*, not once at the later label_as_of;
+    # otherwise an early fold can lose the revision that was actually visible
+    # then (hindsight-dependent training selection).
+    result: dict[
+        tuple[str, datetime, datetime, datetime, str], TrainingExample
+    ] = {}
+    for raw_snapshot in snapshots:
+        snapshot = AsOfSnapshot.model_validate(raw_snapshot.model_dump())
+        for row in build_features(snapshot):
+            revisions = facts.get(
+                (row.turbine_id, row.target_start, row.target_end), ()
+            )
+            for actual in revisions:
+                key = (
+                    row.turbine_id,
+                    row.origin_time,
+                    row.target_start,
+                    actual.available_at,
+                    actual.revision,
+                )
+                example = TrainingExample(
+                    turbine_id=row.turbine_id,
+                    origin_time=row.origin_time,
+                    target_start=row.target_start,
+                    weather_run_init_time=row.weather_run_init_time,
+                    wind_ms=row.wind_ms,
+                    temperature_c=row.temperature_c,
+                    u_ms=row.u_ms,
+                    v_ms=row.v_ms,
+                    actual_norm=actual.power_norm,
+                    actual_available_at=actual.available_at,
+                    actual_revision=actual.revision,
+                )
+                previous = result.get(key)
+                if previous is not None and previous != example:
+                    raise ValueError("DUPLICATE_TRAINING_FORECAST_KEY")
+                result[key] = example
+    return tuple(result[key] for key in sorted(result))
+
+
 def eligible_observations(snapshot: AsOfSnapshot, cutoff: datetime) -> tuple[Observation, ...]:
     """Return complete labels that were actually available by ``cutoff``."""
 
@@ -238,10 +324,19 @@ def eligible_observations(snapshot: AsOfSnapshot, cutoff: datetime) -> tuple[Obs
 def select_training_examples(
     examples: Iterable[TrainingExample], cutoff: datetime
 ) -> tuple[TrainingExample, ...]:
-    """Select labels available by a sequential-training cutoff."""
+    """Select the latest label revision visible at a training cutoff."""
 
     cutoff = utc(cutoff)
-    return tuple(sorted(
-        (example for example in examples if example.actual_available_at <= cutoff),
-        key=lambda value: (value.turbine_id, value.origin_time, value.target_start),
-    ))
+    selected: dict[tuple[str, datetime, datetime], TrainingExample] = {}
+    for example in examples:
+        if example.actual_available_at > cutoff:
+            continue
+        key = (example.turbine_id, example.origin_time, example.target_start)
+        previous = selected.get(key)
+        if previous is not None and previous.actual_available_at == example.actual_available_at:
+            if previous != example:
+                raise ValueError("AMBIGUOUS_TRAINING_LABEL_REVISION")
+            continue
+        if previous is None or example.actual_available_at > previous.actual_available_at:
+            selected[key] = example
+    return tuple(selected[key] for key in sorted(selected))

@@ -261,17 +261,22 @@ def fit_ridge_predictor(
         _fit_one(turbine_id, grouped[turbine_id], alpha=alpha)
         for turbine_id in sorted(requested)
     )
+    max_label_available_at = max(item.actual_available_at for item in selected)
     content = {
         "algorithm": "per_turbine_standardized_ridge_v1",
         "feature_schema_version": FEATURE_SCHEMA_VERSION,
         "training_cutoff": cutoff.isoformat(),
+        "max_label_available_at": max_label_available_at.isoformat(),
+        "activated_at": activation.isoformat(),
+        "artifact_ref": artifact_ref,
+        "provenance": provenance,
         "alpha": alpha,
         "models": [model.to_dict() for model in models],
     }
     state = ModelState(
         model_id="twinturbo-ridge-" + digest(content)[:16],
         training_cutoff=cutoff,
-        max_label_available_at=max(item.actual_available_at for item in selected),
+        max_label_available_at=max_label_available_at,
         activated_at=activation,
         artifact_ref=artifact_ref,
         feature_schema_version=FEATURE_SCHEMA_VERSION,

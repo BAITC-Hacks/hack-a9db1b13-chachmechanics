@@ -11,6 +11,7 @@ from datetime import timedelta
 import math
 
 from ..models.bias import (
+    BiasEstimator,
     Residual,
     drift_signal,
     residual_summary,
@@ -44,6 +45,7 @@ class Critic:
         previous: BiasState | None = None,
         window_days: float = 21,
         shrinkage: float = 48.0,
+        estimator: BiasEstimator = "mean",
         min_interval_samples: int = 30,
         drift_threshold: float = 0.1,
         min_drift_samples: int = 48,
@@ -77,6 +79,7 @@ class Critic:
             previous=previous,
             window_days=window_days,
             shrinkage=shrinkage,
+            estimator=estimator,
             min_interval_samples=min_interval_samples,
             interval_fallback=interval_fallback,
         )
@@ -89,8 +92,15 @@ class Critic:
         reasons = []
         if previous is not None and previous.model_id != model_id:
             reasons.append("MODEL_CHANGED_RESET")
+        estimator_changed = (
+            compatible_previous is not None
+            and compatible_previous.parameters.get("estimator", "mean")
+            != estimator
+        )
         if not selected:
             reasons.append("NO_MATURE_ERRORS")
+        elif changed and estimator_changed:
+            reasons.append("BIAS_ESTIMATOR_CHANGED")
         elif changed:
             reasons.append("MATURE_OUT_OF_SAMPLE_ERRORS")
         else:

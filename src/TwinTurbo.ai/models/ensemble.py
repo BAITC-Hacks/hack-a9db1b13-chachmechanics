@@ -284,6 +284,11 @@ def build_ensemble_predictor(
     )
     if activation < training_cutoff:
         raise ValueError("activated_at cannot precede ensemble selection")
+    provenance = (
+        "trained"
+        if twin.state.provenance == ml.state.provenance == "trained"
+        else "synthetic"
+    )
     weights_payload = [
         (item.lead_group, item.ml_weight, item.sample_count, item.validation_mae)
         for item in selection.weights
@@ -294,6 +299,12 @@ def build_ensemble_predictor(
         "ml_model_id": ml.state.model_id,
         "weights": weights_payload,
         "selection_as_of": selection.selected_as_of.isoformat(),
+        "training_cutoff": training_cutoff.isoformat(),
+        "max_label_available_at": max_label.isoformat(),
+        "activated_at": activation.isoformat(),
+        "artifact_ref": artifact_ref,
+        "feature_schema_version": FEATURE_SCHEMA_VERSION,
+        "provenance": provenance,
     }
     state = ModelState(
         model_id="twinturbo-ensemble-" + digest(content)[:16],
@@ -302,11 +313,7 @@ def build_ensemble_predictor(
         activated_at=activation,
         artifact_ref=artifact_ref,
         feature_schema_version=FEATURE_SCHEMA_VERSION,
-        provenance=(
-            "trained"
-            if twin.state.provenance == ml.state.provenance == "trained"
-            else "synthetic"
-        ),
+        provenance=provenance,
     )
     return EnsemblePredictor(state=state, twin=twin, ml=ml, selection=selection)
 

@@ -27,6 +27,7 @@ from ..schemas import (
 
 
 BIAS_SCHEMA = "rolling-bias-v1"
+BiasEstimator = Literal["mean", "median"]
 
 
 class Residual(Contract):
@@ -97,6 +98,14 @@ def _positive_number(value, code: str) -> float:
     if not math.isfinite(value) or value <= 0:
         raise ValueError(code)
     return value
+
+
+def _bias_estimator(value: object) -> BiasEstimator:
+    if value == "mean":
+        return "mean"
+    if value == "median":
+        return "median"
+    raise ValueError("INVALID_BIAS_ESTIMATOR")
 
 
 def select_residuals(records, *, model_id: str, as_of, window_days: float = 21):
@@ -183,6 +192,7 @@ def update_bias(
     previous: BiasState | None = None,
     window_days: float = 21,
     shrinkage: float = 48.0,
+    estimator: BiasEstimator = "mean",
     min_interval_samples: int = 30,
     interval_fallback: bool = False,
 ) -> BiasState | None:
@@ -190,7 +200,12 @@ def update_bias(
 
     Recalculation starts from the selected saved residuals instead of updating
     aggregates in-place.  Exact retries therefore cannot double-count facts.
-    With no newly available fact the previous state is returned unchanged.
+    With no newly available fact and unchanged options, the previous state is
+    returned unchanged.
+
+    ``mean`` preserves the original correction.  ``median`` estimates the
+    robust residual centre aligned with MAE; lead-group centres are shrunk
+    toward the corresponding turbine-wide centre in either mode.
     """
 
     from .intervals import fit_intervals
@@ -204,6 +219,7 @@ def update_bias(
     shrinkage = float(shrinkage)
     if not math.isfinite(shrinkage) or shrinkage < 0:
         raise ValueError("INVALID_SHRINKAGE")
+    estimator = _bias_estimator(estimator)
 
     compatible_previous = None
     if previous is not None:
@@ -222,6 +238,7 @@ def update_bias(
     options = {
         "window_days": window_days,
         "shrinkage": shrinkage,
+        "estimator": estimator,
         "min_interval_samples": min_interval_samples,
         "interval_fallback": bool(interval_fallback),
     }
@@ -234,20 +251,38 @@ def update_bias(
     if compatible_previous is not None:
         if compatible_previous.parameters.get("source_hash") == source_hash:
             return compatible_previous
-        newest_fact = max(row.actual_available_at for row in selected)
-        same_options = all(
-            compatible_previous.parameters.get(name) == value
-            for name, value in options.items()
-        )
-        # Merely advancing the clock (and consequently the rolling-window
-        # boundary) is not a new observation and must not mint a state.
-        if newest_fact <= compatible_previous.last_actual_available_at and same_options:
-            return compatible_previous
+        # States written before the estimator option was introduced cannot
+        # reproduce the current source hash even when their selected rows and
+        # effective options are unchanged.  Keep that one migration retry
+        # idempotent.  Current states must rely on the complete source hash:
+        # an equal latest timestamp does not imply an equal source set (a new
+        # row may share it), and advancing the rolling boundary may remove
+        # rows while leaving the newest timestamp unchanged.
+        if "estimator" not in compatible_previous.parameters:
+            newest_fact = max(row.actual_available_at for row in selected)
+            same_options = all(
+                (
+                    compatible_previous.parameters.get(name, "mean")
+                    if name == "estimator"
+                    else compatible_previous.parameters.get(name)
+                )
+                == value
+                for name, value in options.items()
+            )
+            if (
+                estimator == "mean"
+                and newest_fact <= compatible_previous.last_actual_available_at
+                and same_options
+            ):
+                return compatible_previous
 
     turbines = {}
     for turbine in sorted({row.turbine_id for row in selected}):
         pool = tuple(row for row in selected if row.turbine_id == turbine)
-        global_bias = float(np.mean([row.base_error for row in pool]))
+        pool_errors = tuple(row.base_error for row in pool)
+        global_bias = float(
+            np.mean(pool_errors) if estimator == "mean" else np.median(pool_errors)
+        )
         groups = {}
         for group in LEAD_GROUPS:
             errors = tuple(
@@ -255,11 +290,16 @@ def update_bias(
             )
             count = len(errors)
             denominator = count + shrinkage
-            value = (
-                (sum(errors) + shrinkage * global_bias) / denominator
-                if denominator
-                else global_bias
-            )
+            if not denominator:
+                value = global_bias
+            elif estimator == "mean":
+                # Preserve the original/default estimator exactly.
+                value = (sum(errors) + shrinkage * global_bias) / denominator
+            else:
+                group_center = float(np.median(errors)) if errors else global_bias
+                value = (
+                    count * group_center + shrinkage * global_bias
+                ) / denominator
             groups[group] = {
                 "bias": float(value),
                 "count": count,
