@@ -1,8 +1,8 @@
 from datetime import timedelta, date
 import pytest
-from windoracle.clock import VirtualClock, targets
-from windoracle.schemas import ForecastRequest
-from windoracle.replay import scheduled_origins
+from TwinTurbo.ai.clock import VirtualClock, targets
+from TwinTurbo.ai.schemas import ForecastRequest
+from TwinTurbo.ai.replay import scheduled_origins
 from .conftest import ORIGIN
 
 

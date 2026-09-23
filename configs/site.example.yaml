@@ -27,4 +27,4 @@ forecast:
   horizon_hours: 48
   mode: replay
 storage:
-  database: artifacts/windoracle.sqlite
+  database: artifacts/TwinTurbo.ai.sqlite

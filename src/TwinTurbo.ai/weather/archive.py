@@ -17,7 +17,7 @@ BASE_URL = "https://noaa-gfs-bdp-pds.s3.amazonaws.com"
 
 
 def get_bytes(url, start=None, end=None, max_bytes=5_000_000):
-    headers = {"User-Agent": "WindOracle/0.1 (NOAA archive research)"}
+    headers = {"User-Agent": "TwinTurbo.ai/0.1 (NOAA archive research)"}
     if start is not None:
         headers["Range"] = f"bytes={start}-{end}"
     for attempt in range(3):

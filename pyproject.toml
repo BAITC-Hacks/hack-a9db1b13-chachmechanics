@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "windoracle"
+name = "TwinTurbo.ai"
 version = "0.1.0"
 description = "As-of data, operational GFS archive and versioned wind forecast replay"
 requires-python = ">=3.11"
@@ -14,11 +14,11 @@ weather-grib = ["eccodes>=2.37"]
 test = ["pytest>=8"]
 
 [project.scripts]
-windoracle = "windoracle.cli:main"
+"TwinTurbo.ai" = "TwinTurbo.ai.cli:main"
 
 [tool.setuptools]
-packages = ["windoracle", "windoracle.agents", "windoracle.weather", "windoracle.models"]
-package-dir = {windoracle = "src/TwinTurbo.ai"}
+packages = ["TwinTurbo.ai", "TwinTurbo.ai.agents", "TwinTurbo.ai.weather", "TwinTurbo.ai.models"]
+package-dir = {"TwinTurbo.ai" = "src/TwinTurbo.ai"}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

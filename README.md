@@ -10,7 +10,7 @@
 
 ## 1. Название проекта
 
-**WindOracle — прогноз ВЭС с памятью о данных, прогнозах и ошибках.**
+**TwinTurbo.ai — прогноз ВЭС с памятью о данных, прогнозах и ошибках.**
 
 Ключевая идея: воспроизвести каждый прогноз так, как он мог быть сформирован в прошлом, показать диапазон неопределённости и пересчитать результат при поступлении нового погодного запуска.
 
@@ -18,7 +18,7 @@
 
 Пользователь — диспетчер или аналитик оператора ВЭС. Для планирования ему нужны почасовая мощность на следующие двое суток, сведения о свежести прогноза и объяснение изменений между выпусками.
 
-WindOracle проектируется для следующего сценария: оператор выбирает момент выпуска, получает прогноз по двум турбинам, проверяет использованный погодный run и видит, как изменился результат после нового run. Когда поступают фактические измерения, система оценивает ошибку и может обновить коррекцию.
+TwinTurbo.ai проектируется для следующего сценария: оператор выбирает момент выпуска, получает прогноз по двум турбинам, проверяет использованный погодный run и видит, как изменился результат после нового run. Когда поступают фактические измерения, система оценивает ошибку и может обновить коррекцию.
 
 Практическая ценность MVP:
 
@@ -201,7 +201,7 @@ Fallback: более старый допустимый run, покрывающи
 
 Температура — дополнительный статистический признак P1. Настоящая поправка на плотность требует давления и корректного температурного определения; не заявлять физическую коррекцию плотности по одной температуре. Высота ступицы неизвестна: используемый уровень погодного ветра фиксируется как вход, а не как восстановленная высота турбины.
 
-**P1: ML.** HistGradientBoostingRegressor с абсолютной ошибкой для медианного прогноза. Признаки: прогнозные ветер/температура; при наличии направление через sin/cos, давление; горизонт WindOracle; lead погодной модели; возраст run; календарь целевого часа. Базовая ML-модель работает без свежей телеметрии. Модель с лагами допускается как отдельное улучшение при наличии измерений.
+**P1: ML.** HistGradientBoostingRegressor с абсолютной ошибкой для медианного прогноза. Признаки: прогнозные ветер/температура; при наличии направление через sin/cos, давление; горизонт TwinTurbo.ai; lead погодной модели; возраст run; календарь целевого часа. Базовая ML-модель работает без свежей телеметрии. Модель с лагами допускается как отдельное улучшение при наличии измерений.
 
 Пример обучения содержит `(turbine, historical_origin, target, selected_run, features_as_of_origin, actual_target)`. Один целевой час может иметь несколько горизонтов. Исторические прогнозные входы восстанавливаются по тому же правилу, что в replay. Данные 2023 года могут обучать эмпирическую кривую, даже если operational-погодного архива для ML за этот период нет; объёмы train для моделей указываются отдельно.
 
@@ -266,13 +266,13 @@ Q10–Q90 соответствует целевому покрытию 80%; из
 | `pyproject.toml`, `requirements.lock` | Пакет и проверенные зависимости |
 | `configs/site.example.yaml` | Конфигурация с явными незаполненными полями |
 | `configs/site.yaml` | Рабочая подтверждённая конфигурация |
-| `src/windoracle/cli.py` | Команды из разделов 7–8 |
-| `src/windoracle/schemas.py`, `clock.py`, `store.py` | Контракты, время, хранение |
-| `src/windoracle/ingest.py`, `features.py` | Наблюдения и признаки as-of |
-| `src/windoracle/weather/` | Интерфейс, выбранный адаптер, кэш, provenance |
-| `src/windoracle/models/` | Baseline, кривая, ML, ансамбль, интервалы, bias |
-| `src/windoracle/agents/` | Orchestrator, Archivist, Critic, Advisor |
-| `src/windoracle/replay.py`, `evaluate.py`, `export.py` | Исторический прогон и отчёты |
+| `src/TwinTurbo.ai/cli.py` | Команды из разделов 7–8 |
+| `src/TwinTurbo.ai/schemas.py`, `clock.py`, `store.py` | Контракты, время, хранение |
+| `src/TwinTurbo.ai/ingest.py`, `features.py` | Наблюдения и признаки as-of |
+| `src/TwinTurbo.ai/weather/` | Интерфейс, выбранный адаптер, кэш, provenance |
+| `src/TwinTurbo.ai/models/` | Baseline, кривая, ML, ансамбль, интервалы, bias |
+| `src/TwinTurbo.ai/agents/` | Orchestrator, Archivist, Critic, Advisor |
+| `src/TwinTurbo.ai/replay.py`, `evaluate.py`, `export.py` | Исторический прогон и отчёты |
 | `app.py` | Streamlit UI, вызывающий общий сервисный слой |
 | `tests/` | Временные инварианты, схемы, end-to-end |
 | `data/raw/`, `data/weather/`, `data/processed/` | Исходники, погодный кэш, подготовленные данные |
@@ -339,19 +339,19 @@ forecast:
   telemetry_features: false
   online_bias: false
 storage:
-  database: artifacts/windoracle.sqlite
+  database: artifacts/TwinTurbo.ai.sqlite
 ```
 
 `null` в обязательном поле — ошибка с названием поля. Не подставлять фиктивные координаты. Неизвестная номинальная мощность не блокирует нормализованный прогноз, но блокирует MW/MWh и экономический расчёт.
 
 ```bash
-python -m windoracle doctor --config configs/site.yaml
-python -m windoracle ingest --config configs/site.yaml --turbine-1 data/raw/turbine_1.csv --turbine-2 data/raw/turbine_2.csv
-python -m windoracle weather fetch --config configs/site.yaml --start 2025-10-01 --end 2026-03-02
-python -m windoracle weather audit --config configs/site.yaml
-python -m windoracle replay --config configs/site.yaml --start 2026-01-01 --end 2026-01-30 --fit-before-first-origin --adaptation off --output outputs/january_base
-python -m windoracle replay --config configs/site.yaml --start 2026-01-01 --end 2026-01-30 --fit-before-first-origin --adaptation bias --output outputs/january_bias
-python -m windoracle evaluate --baseline outputs/january_base --candidate outputs/january_bias --output reports/january
+python -m TwinTurbo.ai doctor --config configs/site.yaml
+python -m TwinTurbo.ai ingest --config configs/site.yaml --turbine-1 data/raw/turbine_1.csv --turbine-2 data/raw/turbine_2.csv
+python -m TwinTurbo.ai weather fetch --config configs/site.yaml --start 2025-10-01 --end 2026-03-02
+python -m TwinTurbo.ai weather audit --config configs/site.yaml
+python -m TwinTurbo.ai replay --config configs/site.yaml --start 2026-01-01 --end 2026-01-30 --fit-before-first-origin --adaptation off --output outputs/january_base
+python -m TwinTurbo.ai replay --config configs/site.yaml --start 2026-01-01 --end 2026-01-30 --fit-before-first-origin --adaptation bias --output outputs/january_bias
+python -m TwinTurbo.ai evaluate --baseline outputs/january_base --candidate outputs/january_bias --output reports/january
 python -m streamlit run app.py
 ```
 
@@ -362,8 +362,8 @@ python -m streamlit run app.py
 Для февраля:
 
 ```bash
-python -m windoracle replay --config configs/site.yaml --start 2026-01-31 --end 2026-02-28 --fit-before-first-origin --mode submission --adaptation off --output outputs/february
-python -m windoracle export --input outputs/february --target-start 2026-02-01 --target-end 2026-03-01 --release-policy scheduled --output outputs/submission.csv
+python -m TwinTurbo.ai replay --config configs/site.yaml --start 2026-01-31 --end 2026-02-28 --fit-before-first-origin --mode submission --adaptation off --output outputs/february
+python -m TwinTurbo.ai export --input outputs/february --target-start 2026-02-01 --target-end 2026-03-01 --release-policy scheduled --output outputs/submission.csv
 ```
 
 У `export` границы целевых дат полуоткрытые: `[2026-02-01, 2026-03-01)` по времени площадки. Полные 48-часовые выпуски, уходящие в март, сохраняются внутри `outputs/february`; экспорт отбирает февраль. Формат организатора в ТЗ не указан: `submission.csv` — внутренний формат, требующий адаптера, если появится официальный шаблон.
@@ -377,8 +377,8 @@ python -m windoracle export --input outputs/february --target-start 2026-02-01 -
 Команда должна подготовить реальный demo-пакет до сдачи. В нём: конфигурация с подтверждёнными допущениями, два небольших погодных runs, необходимые исходные данные или способ доступа, обученная допустимая модель, контрольные суммы и ожидаемые инварианты. Это ещё не созданные артефакты.
 
 ```bash
-python -m windoracle demo --manifest demo/manifest.json --offline --output outputs/judge
-python -m windoracle verify --input outputs/judge
+python -m TwinTurbo.ai demo --manifest demo/manifest.json --offline --output outputs/judge
+python -m TwinTurbo.ai verify --input outputs/judge
 python -m pytest -q
 python -m streamlit run app.py
 ```

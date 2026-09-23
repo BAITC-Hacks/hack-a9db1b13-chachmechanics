@@ -1,10 +1,10 @@
 from datetime import timedelta
 import json
 import pytest
-from windoracle.schemas import ForecastRequest
-from windoracle.weather.audit import audit_bundle
-from windoracle.weather.archive import index_ranges
-from windoracle.weather.base import WeatherUnavailable
+from TwinTurbo.ai.schemas import ForecastRequest
+from TwinTurbo.ai.weather.audit import audit_bundle
+from TwinTurbo.ai.weather.archive import index_ranges
+from TwinTurbo.ai.weather.base import WeatherUnavailable
 from .conftest import ORIGIN, bundle
 
 

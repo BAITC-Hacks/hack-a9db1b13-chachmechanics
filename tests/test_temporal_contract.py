@@ -1,6 +1,6 @@
 from datetime import timedelta
 import pytest
-from windoracle.schemas import ForecastRequest, Observation, BiasState
+from TwinTurbo.ai.schemas import ForecastRequest, Observation, BiasState
 from .conftest import ORIGIN, bundle
 
 

@@ -4,7 +4,7 @@
   "mode": "fixture",
   "prediction_source": "synthetic constant test double; no quality claim",
   "prepare_command": "python scripts/prepare_demo.py --fixture --origin 2025-06-01T18:00:00Z",
-  "verify_command": "python -m windoracle verify --input outputs/integration-smoke",
+  "verify_command": "python -m TwinTurbo.ai verify --input outputs/integration-smoke",
   "expected_forecasts": 3,
   "expected_rows_per_forecast": 96,
   "strict_export_allowed": false,

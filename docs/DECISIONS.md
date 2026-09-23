@@ -1,7 +1,7 @@
 # Участник 1: реализация и проверка интеграции
 
 Дата проверки: 23 сентября 2026. Код расположен в `src/TwinTurbo.ai/` с логическим
-именем пакета `windoracle`. Переименование команды сохранено через `package-dir`.
+именем пакета `TwinTurbo.ai`. Переименование команды сохранено через `package-dir`.
 README описывает более широкий план; подтверждённые команды этого слоя приведены ниже.
 
 ## Что работает
@@ -83,19 +83,19 @@ python -m venv .venv
 python -m pip install -r requirements.lock
 python -m pip install --no-deps -e .
 python -m pytest -q
-python -m windoracle --help
-python -m windoracle doctor
+python -m TwinTurbo.ai --help
+python -m TwinTurbo.ai doctor
 ```
 
 requirements.lock — проверенный набор Windows. На других ОС GRIB может потребовать
 платформенные зависимости ecCodes; численные результаты там ещё не проверены.
 
 ```sh
-python -m windoracle audit-csv data/raw/turbine_1.csv data/raw/turbine_2.csv
-python -m windoracle ingest --turbine-1 data/raw/turbine_1.csv --turbine-2 data/raw/turbine_2.csv
-python -m windoracle weather fetch --origin 2026-01-15T18:00:00Z --run 2026-01-15T12:00:00Z
-python -m windoracle weather fetch --origin 2026-02-01T18:00:00Z --run 2026-02-01T12:00:00Z
-python -m windoracle weather audit --origin 2026-01-15T18:00:00Z
+python -m TwinTurbo.ai audit-csv data/raw/turbine_1.csv data/raw/turbine_2.csv
+python -m TwinTurbo.ai ingest --turbine-1 data/raw/turbine_1.csv --turbine-2 data/raw/turbine_2.csv
+python -m TwinTurbo.ai weather fetch --origin 2026-01-15T18:00:00Z --run 2026-01-15T12:00:00Z
+python -m TwinTurbo.ai weather fetch --origin 2026-02-01T18:00:00Z --run 2026-02-01T12:00:00Z
+python -m TwinTurbo.ai weather audit --origin 2026-01-15T18:00:00Z
 ```
 
 CSV-пути заменить фактическими. YAML по умолчанию configs/site.example.yaml;
@@ -108,8 +108,8 @@ origin. По умолчанию не более двух; лимит байто�
 
 ```sh
 python scripts/prepare_demo.py --fixture --origin 2025-06-01T18:00:00Z
-python -m windoracle verify --input outputs/integration-smoke
-python -m windoracle export --input outputs/integration-smoke --allow-fixture --output outputs/smoke.csv
+python -m TwinTurbo.ai verify --input outputs/integration-smoke
+python -m TwinTurbo.ai export --input outputs/integration-smoke --allow-fixture --output outputs/smoke.csv
 python scripts/prepare_demo.py --fixture --real-weather --origin 2026-02-01T18:00:00Z --output outputs/archive-smoke
 ```
 
@@ -120,8 +120,8 @@ python scripts/prepare_demo.py --fixture --real-weather --origin 2026-02-01T18:0
 После появления фабрики участника 2:
 
 ```sh
-python -m windoracle predict --origin 2026-01-15T18:00:00Z --predictor windoracle.models.registry:load_predictor
-python -m windoracle replay --start 2026-01-15 --end 2026-01-15 --updates --predictor windoracle.models.registry:load_predictor
+python -m TwinTurbo.ai predict --origin 2026-01-15T18:00:00Z --predictor TwinTurbo.ai.models.registry:load_predictor
+python -m TwinTurbo.ai replay --start 2026-01-15 --end 2026-01-15 --updates --predictor TwinTurbo.ai.models.registry:load_predictor
 ```
 
 Эти две команды требуют ещё не предоставленной модели; её фабрика должна вернуть

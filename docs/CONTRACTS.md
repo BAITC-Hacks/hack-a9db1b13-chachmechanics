@@ -1,7 +1,7 @@
 # Контракты между участниками
 
 Статус: интерфейсы участника 1 реализованы и проверены. Исходники находятся в
-`src/TwinTurbo.ai/`, Python-импорты и CLI сохраняют имя `windoracle` через настройку setuptools.
+`src/TwinTurbo.ai/`, Python-импорты и CLI сохраняют имя `TwinTurbo.ai` через настройку setuptools.
 Владелец схем — участник 1. Участники 2 и 3 согласуют необходимые поля до начала интеграции.
 
 ## Путь данных
@@ -51,19 +51,19 @@
 Неполные часы имеют `power_norm=None` и quality_flag, их нельзя обучать как нули.
 
 Для CLI участник 2 предоставляет фабрику без аргументов, например
-`windoracle.models.registry:load_predictor`. Она возвращает predictor с уже
+`TwinTurbo.ai.models.registry:load_predictor`. Она возвращает predictor с уже
 загруженным состоянием. Эта фабрика в текущем каркасе ещё не реализована.
-Передать её явно: `--predictor windoracle.models.registry:load_predictor`.
+Передать её явно: `--predictor TwinTurbo.ai.models.registry:load_predictor`.
 Ни CLI, ни интегратор не подменяют отсутствие модели случайными числами.
 
 ### Подключение интерфейса участника 3
 
 ```python
-from windoracle.config import load_config
-from windoracle.store import Store
-from windoracle.weather.archive import GFSArchive
-from windoracle.service import ForecastService
-from windoracle.schemas import ForecastRequest
+from TwinTurbo.ai.config import load_config
+from TwinTurbo.ai.store import Store
+from TwinTurbo.ai.weather.archive import GFSArchive
+from TwinTurbo.ai.service import ForecastService
+from TwinTurbo.ai.schemas import ForecastRequest
 
 config = load_config("configs/site.example.yaml")
 store = Store(config.storage.database)

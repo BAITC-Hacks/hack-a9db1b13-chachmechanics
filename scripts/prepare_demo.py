@@ -1,21 +1,21 @@
 """Explicit SYNTHETIC integration smoke test; this does not train a wind model.
 
 python scripts/prepare_demo.py --fixture --origin 2025-06-01T18:00:00Z
-python -m windoracle verify --input outputs/integration-smoke
+python -m TwinTurbo.ai verify --input outputs/integration-smoke
 """
 import argparse
 from datetime import timedelta
 from pathlib import Path
 
-from windoracle.cli import output, persist_outputs, timestamp
-from windoracle.config import load_config
-from windoracle.replay import replay
-from windoracle.schemas import (ModelState, PredictionBatch, PredictionRow,
+from TwinTurbo.ai.cli import output, persist_outputs, timestamp
+from TwinTurbo.ai.config import load_config
+from TwinTurbo.ai.replay import replay
+from TwinTurbo.ai.schemas import (ModelState, PredictionBatch, PredictionRow,
                                WeatherBundle, WeatherRunMetadata, WeatherValue)
-from windoracle.service import ForecastService
-from windoracle.store import Store
-from windoracle.weather.archive import GFSArchive
-from windoracle.weather.cache import WeatherCache, atomic_write
+from TwinTurbo.ai.service import ForecastService
+from TwinTurbo.ai.store import Store
+from TwinTurbo.ai.weather.archive import GFSArchive
+from TwinTurbo.ai.weather.cache import WeatherCache, atomic_write
 
 
 class SmokePredictor:

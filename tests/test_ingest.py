@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 import pandas as pd
 import pytest
-from windoracle.ingest import SOURCE_COLUMNS, audit_csv, ingest_csv
+from TwinTurbo.ai.ingest import SOURCE_COLUMNS, audit_csv, ingest_csv
 
 
 def csv_file(tmp_path, timestamps, powers=None):

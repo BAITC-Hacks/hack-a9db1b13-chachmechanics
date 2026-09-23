@@ -40,7 +40,7 @@ def load_predictor(spec):
 
 
 def parser():
-    root = argparse.ArgumentParser(prog="windoracle")
+    root = argparse.ArgumentParser(prog="TwinTurbo.ai")
     commands = root.add_subparsers(dest="command", required=True)
     audit = commands.add_parser("audit-csv", help="Audit the supplied dataset without assuming timezone")
     audit.add_argument("paths", nargs="+")

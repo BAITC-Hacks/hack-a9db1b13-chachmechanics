@@ -1,5 +1,5 @@
 import pytest
-from windoracle.schemas import ForecastRequest, PredictionBatch
+from TwinTurbo.ai.schemas import ForecastRequest, PredictionBatch
 from .conftest import ORIGIN
 
 
@@ -23,7 +23,7 @@ def test_model_cannot_return_incomplete_batch(setup):
 
 
 def test_ui_can_read_without_model(setup):
-    from windoracle.service import ForecastService
+    from TwinTurbo.ai.service import ForecastService
     req = ForecastRequest(origin_time=ORIGIN, turbine_ids=("turbine_1", "turbine_2"), mode="fixture")
     result = setup.create_forecast(req)
     reader = ForecastService(setup.config, setup.store, setup.weather)
@@ -47,7 +47,7 @@ def test_model_versions_cannot_be_overwritten(setup):
 
 def test_bias_versions_are_available_only_after_creation(setup):
     from datetime import timedelta
-    from windoracle.schemas import BiasState
+    from TwinTurbo.ai.schemas import BiasState
     setup.store.save_model(setup.predictor.state)
     bias = BiasState(bias_id="b1", model_id=setup.predictor.state.model_id,
         created_as_of=ORIGIN, last_actual_available_at=ORIGIN - timedelta(hours=1), parameters={"offset": 0.1})

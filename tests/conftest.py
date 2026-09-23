@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta, timezone
 import pytest
-from windoracle.config import Config, SiteConfig, TurbineConfig
-from windoracle.schemas import (ModelState, PredictionBatch, PredictionRow, WeatherBundle,
+from TwinTurbo.ai.config import Config, SiteConfig, TurbineConfig
+from TwinTurbo.ai.schemas import (ModelState, PredictionBatch, PredictionRow, WeatherBundle,
     WeatherRunMetadata, WeatherValue)
-from windoracle.store import Store
-from windoracle.weather.cache import WeatherCache
-from windoracle.weather.archive import GFSArchive
-from windoracle.service import ForecastService
+from TwinTurbo.ai.store import Store
+from TwinTurbo.ai.weather.cache import WeatherCache
+from TwinTurbo.ai.weather.archive import GFSArchive
+from TwinTurbo.ai.service import ForecastService
 
 ORIGIN = datetime(2025, 6, 1, 18, tzinfo=timezone.utc)
 

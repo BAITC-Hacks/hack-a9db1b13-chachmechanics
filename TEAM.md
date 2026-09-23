@@ -1,11 +1,11 @@
-# WindOracle: распределение работы
+# TwinTurbo.ai: распределение работы
 
 Проект разделён между тремя участниками. Участник 1 реализовал импорт, NOAA GFS,
 as-of, хранение, replay, CLI, экспорт и service. Модели и интерфейс интегрируются
 по docs/CONTRACTS.md. Фактический статус и проверенные команды участника 1 — docs/DECISIONS.md.
 
-Имя Python-пакета — `windoracle`. Физическая папка исходников переименована
-командой в `src/TwinTurbo.ai/`; все пути `src/windoracle/` в карте владения ниже
+Имя Python-пакета — `TwinTurbo.ai`. Физическая папка исходников переименована
+командой в `src/TwinTurbo.ai/`; все пути `src/TwinTurbo.ai/` в карте владения ниже
 обозначают соответствующие файлы в этой папке. Выполнять `pip install -e .`
 перед тестами и запуском. Скрытые .gitkeep сохраняют пустые директории в Git.
 
@@ -59,26 +59,26 @@ fetch, проверка изменений команды, слияние при
 - `.env.example`
 - `configs/site.example.yaml`
 - `configs/site.yaml`
-- `src/windoracle/__init__.py`
-- `src/windoracle/__main__.py`
-- `src/windoracle/cli.py`
-- `src/windoracle/config.py`
-- `src/windoracle/schemas.py`
-- `src/windoracle/clock.py`
-- `src/windoracle/store.py`
-- `src/windoracle/ingest.py`
-- `src/windoracle/service.py`
-- `src/windoracle/replay.py`
-- `src/windoracle/export.py`
-- `src/windoracle/weather/__init__.py`
-- `src/windoracle/weather/base.py`
-- `src/windoracle/weather/archive.py`
-- `src/windoracle/weather/cache.py`
-- `src/windoracle/weather/audit.py`
-- `src/windoracle/agents/__init__.py`
-- `src/windoracle/agents/orchestrator.py`
-- `src/windoracle/agents/weather_archivist.py`
-- `src/windoracle/agents/memory.py`
+- `src/TwinTurbo.ai/__init__.py`
+- `src/TwinTurbo.ai/__main__.py`
+- `src/TwinTurbo.ai/cli.py`
+- `src/TwinTurbo.ai/config.py`
+- `src/TwinTurbo.ai/schemas.py`
+- `src/TwinTurbo.ai/clock.py`
+- `src/TwinTurbo.ai/store.py`
+- `src/TwinTurbo.ai/ingest.py`
+- `src/TwinTurbo.ai/service.py`
+- `src/TwinTurbo.ai/replay.py`
+- `src/TwinTurbo.ai/export.py`
+- `src/TwinTurbo.ai/weather/__init__.py`
+- `src/TwinTurbo.ai/weather/base.py`
+- `src/TwinTurbo.ai/weather/archive.py`
+- `src/TwinTurbo.ai/weather/cache.py`
+- `src/TwinTurbo.ai/weather/audit.py`
+- `src/TwinTurbo.ai/agents/__init__.py`
+- `src/TwinTurbo.ai/agents/orchestrator.py`
+- `src/TwinTurbo.ai/agents/weather_archivist.py`
+- `src/TwinTurbo.ai/agents/memory.py`
 - `tests/__init__.py`
 - `tests/conftest.py`
 - `tests/test_ingest.py`
@@ -94,19 +94,19 @@ fetch, проверка изменений команды, слияние при
 
 ### Файлы участника 2
 
-- `src/windoracle/features.py`
-- `src/windoracle/evaluate.py`
-- `src/windoracle/models/__init__.py`
-- `src/windoracle/models/baseline.py`
-- `src/windoracle/models/power_curve.py`
-- `src/windoracle/models/ml.py`
-- `src/windoracle/models/ensemble.py`
-- `src/windoracle/models/bias.py`
-- `src/windoracle/models/intervals.py`
-- `src/windoracle/models/registry.py`
-- `src/windoracle/agents/twin_builder.py`
-- `src/windoracle/agents/forecaster.py`
-- `src/windoracle/agents/critic.py`
+- `src/TwinTurbo.ai/features.py`
+- `src/TwinTurbo.ai/evaluate.py`
+- `src/TwinTurbo.ai/models/__init__.py`
+- `src/TwinTurbo.ai/models/baseline.py`
+- `src/TwinTurbo.ai/models/power_curve.py`
+- `src/TwinTurbo.ai/models/ml.py`
+- `src/TwinTurbo.ai/models/ensemble.py`
+- `src/TwinTurbo.ai/models/bias.py`
+- `src/TwinTurbo.ai/models/intervals.py`
+- `src/TwinTurbo.ai/models/registry.py`
+- `src/TwinTurbo.ai/agents/twin_builder.py`
+- `src/TwinTurbo.ai/agents/forecaster.py`
+- `src/TwinTurbo.ai/agents/critic.py`
 - `tests/test_models.py`
 - `tests/test_bias.py`
 - `tests/test_intervals.py`
@@ -121,7 +121,7 @@ fetch, проверка изменений команды, слияние при
 - `ui/controls.py`
 - `ui/provenance.py`
 - `ui/events.py`
-- `src/windoracle/agents/advisor.py`
+- `src/TwinTurbo.ai/agents/advisor.py`
 - `tests/test_ui_contract.py`
 - `docs/DEMO.md`
 

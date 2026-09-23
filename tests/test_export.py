@@ -2,8 +2,8 @@ import csv
 import io
 from datetime import timedelta
 import pytest
-from windoracle.schemas import ForecastRequest
-from windoracle.export import export_csv
+from TwinTurbo.ai.schemas import ForecastRequest
+from TwinTurbo.ai.export import export_csv
 from .conftest import ORIGIN
 
 
@@ -22,7 +22,7 @@ def test_fixture_export_guard_and_halfopen_window(setup):
 
 def test_portable_output_and_tamper_check(setup, tmp_path):
     import json
-    from windoracle.cli import persist_outputs, read_outputs
+    from TwinTurbo.ai.cli import persist_outputs, read_outputs
     req = ForecastRequest(origin_time=ORIGIN, turbine_ids=("turbine_1", "turbine_2"), mode="fixture")
     result = setup.create_forecast(req)
     directory = tmp_path / "portable"

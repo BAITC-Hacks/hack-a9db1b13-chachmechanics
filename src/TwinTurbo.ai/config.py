@@ -38,7 +38,7 @@ class ForecastConfig(Contract):
 
 
 class StorageConfig(Contract):
-    database: str = "artifacts/windoracle.sqlite"
+    database: str = "artifacts/TwinTurbo.ai.sqlite"
 
 
 class Config(Contract):

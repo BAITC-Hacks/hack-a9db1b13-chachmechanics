@@ -1,5 +1,5 @@
 from datetime import timedelta
-from windoracle.replay import replay
+from TwinTurbo.ai.replay import replay
 from .conftest import ORIGIN, bundle
 
 
@@ -18,9 +18,9 @@ def test_new_run_preserves_previous_version(setup):
 
 
 def test_same_cycle_with_different_cached_window_is_not_new_run(setup):
-    from windoracle.agents.orchestrator import Orchestrator
-    from windoracle.clock import VirtualClock
-    from windoracle.schemas import ForecastRequest
+    from TwinTurbo.ai.agents.orchestrator import Orchestrator
+    from TwinTurbo.ai.clock import VirtualClock
+    from TwinTurbo.ai.schemas import ForecastRequest
     req = ForecastRequest(origin_time=ORIGIN, turbine_ids=("turbine_1", "turbine_2"), mode="fixture")
     first = setup.create_forecast(req)
     copy = bundle("same-cycle-other-window", count=75)
