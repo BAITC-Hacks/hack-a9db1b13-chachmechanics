@@ -151,6 +151,8 @@ def test_models_are_scored_only_on_common_keys_but_keep_separate_coverage():
     assert comparison.candidate.metrics_by_turbine_and_lead["turbine_1"]["all"]["mae"] == pytest.approx(.1)
     document = comparison.to_dict()
     assert document["schema"] == "twinturbo.model-comparison.v1"
+    assert len(document["expected_keys"]) == 3
+    assert document["lead_groups"][0] == ["lead_01_06", 1, 6]
     assert comparison.to_json() == comparison.to_json()
     assert '"baseline"' in comparison.to_json()
 

@@ -481,6 +481,20 @@ class ModelComparison:
     common_keys: tuple[ForecastKey, ...]
     baseline: EvaluationReport
     candidate: EvaluationReport
+    expected_keys: tuple[ForecastKey, ...] = ()
+    evaluation_as_of: datetime | None = None
+    lead_groups: tuple[tuple[str, int, int], ...] = DEFAULT_LEAD_GROUPS
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "common_keys", tuple(sorted(self.common_keys)))
+        object.__setattr__(self, "expected_keys", tuple(sorted(self.expected_keys)))
+        if self.evaluation_as_of is not None:
+            object.__setattr__(
+                self,
+                "evaluation_as_of",
+                _as_utc(self.evaluation_as_of, "evaluation_as_of"),
+            )
+        object.__setattr__(self, "lead_groups", _validate_groups(self.lead_groups))
 
     def to_dict(self) -> dict[str, Any]:
         """Return a stable, JSON-safe comparison report document."""
@@ -495,6 +509,20 @@ class ModelComparison:
                 }
                 for key in self.common_keys
             ],
+            "expected_keys": [
+                {
+                    "origin_time": key.origin_time.isoformat(),
+                    "target_start": key.target_start.isoformat(),
+                    "turbine_id": key.turbine_id,
+                }
+                for key in self.expected_keys
+            ],
+            "evaluation_as_of": (
+                self.evaluation_as_of.isoformat()
+                if self.evaluation_as_of is not None
+                else None
+            ),
+            "lead_groups": [list(group) for group in self.lead_groups],
             "baseline": self.baseline.model_dump(mode="json"),
             "candidate": self.candidate.model_dump(mode="json"),
         }
@@ -558,6 +586,9 @@ def compare_models(
         common_keys=tuple(point.key for point in base_common),
         baseline=baseline_report,
         candidate=candidate_report,
+        expected_keys=tuple(sorted(_as_key(key) for key in expected)),
+        evaluation_as_of=evaluation_as_of,
+        lead_groups=tuple(lead_groups),
     )
 
 

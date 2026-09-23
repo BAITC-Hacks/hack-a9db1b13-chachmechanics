@@ -357,3 +357,45 @@ def test_power_curve_predictor_integrates_with_service_for_96_rows(setup):
         (row.q10, row.q50, row.q90) == (None, None, None)
         for row in result.predictions.rows
     )
+
+
+def test_registry_round_trips_baseline_ridge_and_ensemble(tmp_path):
+    source = snapshot()
+    builder = TwinBuilder(provenance="synthetic")
+    twin = builder.build(source, cutoff=ORIGIN - timedelta(hours=3))
+    baseline = builder.build(
+        source, kind="baseline", cutoff=ORIGIN - timedelta(hours=3))
+    ml = fit_ridge_predictor(
+        training_examples(),
+        training_cutoff=ORIGIN,
+        activated_at=ORIGIN,
+        artifact_ref="inline:test-ridge",
+        provenance="synthetic",
+    )
+    selection = select_lead_weights(
+        tuple(
+            EnsembleExample(
+                turbine_id="turbine_1",
+                origin_time=ORIGIN - timedelta(days=3),
+                target_start=ORIGIN - timedelta(days=3) + timedelta(hours=lead),
+                actual_available_at=ORIGIN - timedelta(hours=12),
+                actual_norm=.5,
+                twin_prediction=.4,
+                ml_prediction=.5,
+            )
+            for lead in (1, 7, 13, 25)
+        ),
+        as_of=ORIGIN,
+    )
+    ensemble = build_ensemble_predictor(
+        twin, ml, selection, activated_at=ORIGIN, artifact_ref="inline:test-ensemble")
+
+    for name, predictor in (
+        ("baseline", baseline),
+        ("ridge", ml),
+        ("ensemble", ensemble),
+    ):
+        path = save_predictor(predictor, tmp_path / f"{name}.json")
+        loaded = load_predictor(path)
+        assert loaded.state == predictor.state
+        assert loaded.predict(source) == predictor.predict(source)

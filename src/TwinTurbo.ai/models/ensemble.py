@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 import math
 from typing import Iterable, Mapping, Protocol
 
@@ -42,6 +42,8 @@ class EnsembleExample:
             object.__setattr__(self, name, utc(getattr(self, name)))
         if not self.turbine_id or self.target_start <= self.origin_time:
             raise ValueError("Invalid ensemble validation key")
+        if self.actual_available_at < self.target_start + timedelta(hours=1):
+            raise ValueError("Validation actual cannot be available before target end")
         for name in ("actual_norm", "twin_prediction", "ml_prediction"):
             value = float(getattr(self, name))
             if not math.isfinite(value) or not 0 <= value <= 1:
@@ -67,6 +69,9 @@ class LeadWeight:
             not math.isfinite(float(self.validation_mae)) or self.validation_mae < 0
         ):
             raise ValueError("validation_mae must be finite and non-negative")
+        object.__setattr__(self, "ml_weight", float(self.ml_weight))
+        if self.validation_mae is not None:
+            object.__setattr__(self, "validation_mae", float(self.validation_mae))
 
 
 @dataclass(frozen=True, slots=True)
@@ -81,10 +86,15 @@ class WeightSelection:
         object.__setattr__(self, "max_label_available_at", utc(self.max_label_available_at))
         if self.max_label_available_at > self.selected_as_of:
             raise ValueError("Weight selection uses a future label")
-        if {item.lead_group for item in self.weights} != set(LEAD_GROUPS):
+        if (len(self.weights) != len(LEAD_GROUPS)
+                or {item.lead_group for item in self.weights} != set(LEAD_GROUPS)):
             raise ValueError("Weight selection must cover all lead groups")
         if self.sample_count != sum(item.sample_count for item in self.weights):
             raise ValueError("Weight selection sample count mismatch")
+        order = {name: index for index, name in enumerate(LEAD_GROUPS)}
+        object.__setattr__(
+            self, "weights", tuple(sorted(self.weights, key=lambda item: order[item.lead_group]))
+        )
 
     def to_dict(self) -> dict[str, object]:
         return {
