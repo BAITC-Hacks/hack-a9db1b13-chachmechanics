@@ -16,7 +16,8 @@ RUN apt-get update \
 
 COPY requirements.lock pyproject.toml ./
 RUN python -m pip install --upgrade pip \
-    && python -m pip install --requirement requirements.lock
+    && python -m pip install --requirement requirements.lock \
+    && python -m eccodes selfcheck
 
 COPY . .
 RUN python -m pip install --no-deps --editable . \
