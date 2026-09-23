@@ -67,7 +67,24 @@ def operational_summary(result, turbine_id: str, horizon_hours: int) -> dict:
         ) if interval_rows else None,
     }
 
+    status_counts: dict[str, int] = {}
+    for row in rows:
+        for token in str(row.get("status") or "").split("|"):
+            if token:
+                status_counts[token] = status_counts.get(token, 0) + 1
+    out_of_domain_count = status_counts.get("out_of_domain", 0)
+
     recommendations = []
+    if out_of_domain_count:
+        recommendations.append({
+            "severity": "warning",
+            "title": "Ветер вне обученного диапазона кривой",
+            "text": (
+                f"{out_of_domain_count} из {len(rows)} часов помечены "
+                "out_of_domain. Прогноз экстраполируется к границе кривой; "
+                "учитывайте это как отдельный признак неуверенности."
+            ),
+        })
     widths = [
         row["q90"] - row["q10"]
         for row in rows
@@ -107,6 +124,11 @@ def operational_summary(result, turbine_id: str, horizon_hours: int) -> dict:
         "actual_kium": actual_kium,
         "accuracy": accuracy,
         "uncertainty": uncertainty,
+        "quality": {
+            "row_count": len(rows),
+            "out_of_domain_count": out_of_domain_count,
+            "status_counts": status_counts,
+        },
         "recommendations": recommendations,
     }
 

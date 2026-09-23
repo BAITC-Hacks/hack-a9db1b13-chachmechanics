@@ -116,6 +116,16 @@ def resolve_from_root(path: Path) -> Path:
     return path.resolve() if path.is_absolute() else (ROOT / path).resolve()
 
 
+def portable_path(path: Path) -> str:
+    """Use stable repository-relative paths in committed provenance reports."""
+
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(ROOT).as_posix()
+    except ValueError:
+        return str(resolved)
+
+
 def daily_origins(start: datetime, end: datetime) -> tuple[datetime, ...]:
     start, end = utc(start), utc(end)
     if start > end:
@@ -363,19 +373,19 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "offline_only": True,
         "raw_csv_read": False,
         "config": {
-            "path": str(config_path),
+            "path": portable_path(config_path),
             "sha256": file_sha256(config_path),
             "config_hash": config.config_hash,
             "source_timezone": config.site.timezone,
         },
         "model": {
-            "path": str(model_path),
+            "path": portable_path(model_path),
             "sha256": file_sha256(model_path),
             "model_id": predictor.state.model_id,
             "training_cutoff": predictor.state.training_cutoff.isoformat(),
         },
         "bias": {
-            "path": str(bias_path),
+            "path": portable_path(bias_path),
             "sha256": file_sha256(bias_path),
             "bias_id": bias.bias_id,
             "created_as_of": bias.created_as_of.isoformat(),
@@ -396,7 +406,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "published_rows": sum(len(result.predictions.rows) for result in results),
         },
         "weather": {
-            "cache_path": str(cache_path),
+            "cache_path": portable_path(cache_path),
             "cached_bundle_count": len(bundles),
             "selected_runs": [
                 {
@@ -409,8 +419,8 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 for request, bundle in zip(requests, selected_runs, strict=True)
             ],
         },
-        "store": str(database_path),
-        "output": str(output_path),
+        "store": portable_path(database_path),
+        "output": portable_path(output_path),
         "forecast_ids": [result.forecast_id for result in results],
         "status_counts": dict(sorted(status_counts.items())),
     }

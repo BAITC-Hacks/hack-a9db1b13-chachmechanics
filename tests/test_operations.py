@@ -15,6 +15,7 @@ def test_operational_summary_reports_kium_error_and_honest_guidance():
                 "prediction_norm": 0.4,
                 "q10": 0.1,
                 "q90": 0.7,
+                "status": "ok|out_of_domain|bias:calibrated",
             },
             {
                 "turbine_id": "turbine_1",
@@ -23,6 +24,7 @@ def test_operational_summary_reports_kium_error_and_honest_guidance():
                 "prediction_norm": 0.8,
                 "q10": 0.5,
                 "q90": 1.0,
+                "status": "ok|bias:calibrated",
             },
         ],
         "actuals": [
@@ -49,6 +51,8 @@ def test_operational_summary_reports_kium_error_and_honest_guidance():
     assert summary["accuracy"]["underforecast_rate"] == pytest.approx(0.5)
     assert summary["accuracy"]["overforecast_rate"] == pytest.approx(0.5)
     assert summary["uncertainty"]["coverage_q10_q90"] == pytest.approx(1.0)
+    assert summary["quality"]["out_of_domain_count"] == 1
+    assert summary["recommendations"][0]["title"] == "Ветер вне обученного диапазона кривой"
     codes = " ".join(item["text"].lower() for item in summary["recommendations"])
     assert "резерв" in codes
     assert "только после диагностики" not in codes
