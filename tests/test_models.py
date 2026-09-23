@@ -3,9 +3,22 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 from windoracle.agents.twin_builder import TwinBuilder
-from windoracle.features import FEATURE_NAMES, LEAD_GROUPS, build_features, feature_vector
+from windoracle.features import (
+    FEATURE_NAMES,
+    LEAD_GROUPS,
+    TrainingExample,
+    build_features,
+    feature_vector,
+)
 from windoracle.models.baseline import fit_turbine_means
+from windoracle.models.ensemble import (
+    EnsembleExample,
+    build_ensemble_predictor,
+    select_lead_weights,
+)
+from windoracle.models.ml import fit_ridge_predictor
 from windoracle.models.power_curve import fit_power_curve, fit_power_curves
+from windoracle.models.registry import load_predictor, save_predictor
 from windoracle.schemas import (
     AsOfSnapshot,
     BiasState,
@@ -153,6 +166,7 @@ def test_twin_builder_respects_availability_cutoff_and_is_deterministic():
     for row in batch.rows:
         by_turbine.setdefault(row.turbine_id, row.prediction_norm)
     assert by_turbine == {"turbine_1": pytest.approx(.6), "turbine_2": pytest.approx(.3)}
+    assert all("out_of_domain" in row.status for row in batch.rows)
 
     groups = {
         name: {"bias": .1, "count": 1, "status": "calibrated"}
@@ -192,3 +206,136 @@ def test_twin_builder_respects_availability_cutoff_and_is_deterministic():
 def test_twin_builder_rejects_cutoff_after_snapshot_origin():
     with pytest.raises(ValueError, match="cutoff"):
         TwinBuilder().build(snapshot(), cutoff=ORIGIN + timedelta(seconds=1))
+
+
+def training_examples(count=16):
+    rows = []
+    for turbine, factor in (("turbine_1", .08), ("turbine_2", .04)):
+        for index in range(count):
+            origin = ORIGIN - timedelta(days=count - index + 2)
+            wind = 2.0 + index * .5
+            target = origin + timedelta(hours=(index % 4) + 1)
+            rows.append(TrainingExample(
+                turbine_id=turbine,
+                origin_time=origin,
+                target_start=target,
+                weather_run_init_time=origin - timedelta(hours=6),
+                wind_ms=wind,
+                temperature_c=5 + index,
+                u_ms=wind,
+                v_ms=0,
+                actual_norm=min(1, factor * wind),
+                actual_available_at=target + timedelta(hours=1, minutes=15),
+            ))
+    return tuple(rows)
+
+
+def test_ridge_ml_is_per_turbine_deterministic_and_leakage_safe():
+    examples = training_examples() + (
+        TrainingExample(
+            turbine_id="turbine_1",
+            origin_time=ORIGIN - timedelta(hours=3),
+            target_start=ORIGIN - timedelta(hours=1),
+            weather_run_init_time=ORIGIN - timedelta(hours=9),
+            wind_ms=20,
+            temperature_c=0,
+            u_ms=20,
+            v_ms=0,
+            actual_norm=1,
+            actual_available_at=ORIGIN + timedelta(minutes=15),
+        ),
+    )
+    first = fit_ridge_predictor(
+        examples,
+        training_cutoff=ORIGIN,
+        activated_at=ORIGIN,
+        artifact_ref="inline:test-ridge",
+        provenance="synthetic",
+    )
+    second = fit_ridge_predictor(
+        examples,
+        training_cutoff=ORIGIN,
+        activated_at=ORIGIN,
+        artifact_ref="inline:test-ridge",
+        provenance="synthetic",
+    )
+    assert first == second
+    assert first.state.max_label_available_at < ORIGIN
+    source = snapshot()
+    source = source.model_copy(update={
+        "weather_values": tuple(
+            value.model_copy(update={"wind_ms": 6, "u_ms": 6})
+            for value in source.weather_values
+        )
+    })
+    batch = first.predict(source)
+    assert len(batch.rows) == 4
+    assert all(0 <= row.prediction_norm <= 1 for row in batch.rows)
+    by_turbine = {row.turbine_id: row.prediction_norm for row in batch.rows}
+    assert by_turbine["turbine_1"] > by_turbine["turbine_2"]
+
+
+def test_ensemble_weights_use_only_available_validation_labels():
+    validation = tuple(
+        EnsembleExample(
+            turbine_id="turbine_1",
+            origin_time=ORIGIN - timedelta(days=3),
+            target_start=ORIGIN - timedelta(days=3) + timedelta(hours=lead),
+            actual_available_at=ORIGIN - timedelta(hours=12),
+            actual_norm=.8,
+            twin_prediction=.2,
+            ml_prediction=.8,
+        )
+        for lead in (1, 7, 13, 25)
+    ) + (
+        EnsembleExample(
+            turbine_id="turbine_1",
+            origin_time=ORIGIN - timedelta(hours=3),
+            target_start=ORIGIN - timedelta(hours=2),
+            actual_available_at=ORIGIN + timedelta(hours=1),
+            actual_norm=0,
+            twin_prediction=0,
+            ml_prediction=1,
+        ),
+    )
+    selection = select_lead_weights(validation, as_of=ORIGIN)
+    assert selection.sample_count == 4
+    assert all(weight.ml_weight == 1 for weight in selection.weights)
+
+    twin = TwinBuilder(provenance="synthetic").build(
+        snapshot(), cutoff=ORIGIN - timedelta(hours=3))
+    ml = fit_ridge_predictor(
+        training_examples(),
+        training_cutoff=ORIGIN,
+        activated_at=ORIGIN,
+        artifact_ref="inline:test-ridge",
+        provenance="synthetic",
+    )
+    ensemble = build_ensemble_predictor(
+        twin, ml, selection, activated_at=ORIGIN, artifact_ref="inline:test-ensemble")
+    ensemble_values = [row.prediction_norm for row in ensemble.predict_base(snapshot()).rows]
+    ml_values = [row.prediction_norm for row in ml.predict_base(snapshot()).rows]
+    assert ensemble_values == ml_values
+
+
+def test_json_registry_round_trip_and_zero_arg_factory(tmp_path, monkeypatch):
+    predictor = TwinBuilder(provenance="synthetic").build(
+        snapshot(), cutoff=ORIGIN - timedelta(hours=3))
+    artifact = tmp_path / "curve.json"
+    save_predictor(predictor, artifact)
+    assert save_predictor(predictor, artifact) == artifact.resolve()
+    loaded = load_predictor(artifact)
+    assert loaded.state == predictor.state
+    assert loaded.predict(snapshot()) == predictor.predict(snapshot())
+
+    monkeypatch.setenv("TWINTURBO_MODEL_ARTIFACT", str(artifact))
+    assert load_predictor().state == predictor.state
+
+    artifact.write_text(
+        artifact.read_text(encoding="utf-8").replace(
+            '"domain_max_wind_ms":8.0', '"domain_max_wind_ms":9.0'
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="CHECKSUM"):
+        load_predictor(artifact)
