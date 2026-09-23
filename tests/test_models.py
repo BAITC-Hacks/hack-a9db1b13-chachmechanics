@@ -22,6 +22,7 @@ from windoracle.models.registry import load_predictor, save_predictor
 from windoracle.schemas import (
     AsOfSnapshot,
     BiasState,
+    ForecastRequest,
     Observation,
     TargetInterval,
     WeatherRunMetadata,
@@ -339,3 +340,20 @@ def test_json_registry_round_trip_and_zero_arg_factory(tmp_path, monkeypatch):
     )
     with pytest.raises(ValueError, match="CHECKSUM"):
         load_predictor(artifact)
+
+
+def test_power_curve_predictor_integrates_with_service_for_96_rows(setup):
+    setup.predictor = TwinBuilder(provenance="synthetic").build(
+        snapshot(), cutoff=ORIGIN - timedelta(hours=3))
+    result = setup.create_forecast(ForecastRequest(
+        origin_time=ORIGIN,
+        turbine_ids=("turbine_1", "turbine_2"),
+        horizon_hours=48,
+        mode="fixture",
+    ))
+    assert len(result.predictions.rows) == 96
+    assert all(0 <= row.prediction_norm <= 1 for row in result.predictions.rows)
+    assert all(
+        (row.q10, row.q50, row.q90) == (None, None, None)
+        for row in result.predictions.rows
+    )
