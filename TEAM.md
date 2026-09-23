@@ -111,6 +111,9 @@ fetch, проверка изменений команды, слияние при
 - `tests/test_bias.py`
 - `tests/test_intervals.py`
 - `tests/test_metrics.py`
+- `src/TwinTurbo.ai/models/README.md`
+- `reports/forecast-models/` — отчёты участника 2
+- `artifacts/models/power_curve-*.json` — неизменяемые P0-артефакты участника 2
 
 ### Файлы участника 3
 
