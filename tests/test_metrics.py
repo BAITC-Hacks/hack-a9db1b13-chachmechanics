@@ -144,7 +144,7 @@ def test_reproducible_fixture_report(tmp_path):
         assert m["curve_bias"]["interval_metrics"][t]["all"]["sample_count"] > 0
 
 
-def run_real_cache_report(path, config_path, origins):
+def run_real_cache_report(path, config_path, origins, horizon_hours=48):
     """Read already prepared data/cache using participant 1 APIs, with no download."""
     from TwinTurbo.ai.config import load_config
     from TwinTurbo.ai.service import ForecastService
@@ -159,8 +159,8 @@ def run_real_cache_report(path, config_path, origins):
     store = Store(config.storage.database)
     service = ForecastService(config, store, GFSArchive(config))
     snapshots = tuple(service.snapshot(ForecastRequest(origin_time=origin,
-        turbine_ids=tuple(t.id for t in config.site.turbines), mode="replay")) for origin in origins)
-    as_of = max(origins)+timedelta(hours=50)
+        turbine_ids=tuple(t.id for t in config.site.turbines), mode="replay", horizon_hours=horizon_hours)) for origin in origins)
+    as_of = max(origins)+timedelta(hours=horizon_hours+2)
     observations = store.observations_as_of(as_of, tuple(t.id for t in config.site.turbines))
     report, forecasts = walk_forward([TemporalFold(snapshots[0], snapshots)], observations, as_of=as_of)
     curve = PowerCurvePredictor.fit(snapshots[0])
@@ -170,6 +170,8 @@ def run_real_cache_report(path, config_path, origins):
     report['training_counts'] = {t:c.train_count for t,c in curve.curves.items()}
     report['curve_bin_counts'] = {t:len(c.wind) for t,c in curve.curves.items()}
     report['config'] = config.model_dump(mode='json')
+    report['experiment'] = {'origins':[x.isoformat() for x in origins], 'horizon_hours':horizon_hours,
+                            'schedule':'explicit chronological experimental origins; not the daily submission schedule'}
     report['source_revisions'] = sorted({o.revision for o in observations})
     report['weather_runs'] = [s.weather_run_metadata.model_dump(mode='json') for s in snapshots]
     report['warnings'] = sorted({w for s in snapshots for w in s.quality_flags})
@@ -192,6 +194,7 @@ if __name__ == "__main__":
     parser.add_argument("--output",default="reports/forecast-models/fixture-comparison.json")
     parser.add_argument("--real-cache", action="store_true", help="Use participant 1's existing DB and GFS cache")
     parser.add_argument("--config", default="configs/site.example.yaml")
+    parser.add_argument("--horizon", type=int, choices=(24,48), default=48)
     parser.add_argument("--origins", nargs="+", help="Explicit aware UTC origins, chronological")
     args = parser.parse_args()
     if args.real_cache:
@@ -199,7 +202,7 @@ if __name__ == "__main__":
         if not args.origins:
             parser.error("--real-cache requires --origins")
         report,_ = run_real_cache_report(args.output,args.config,
-            [datetime.fromisoformat(x.replace('Z','+00:00')) for x in args.origins])
+            [datetime.fromisoformat(x.replace('Z','+00:00')) for x in args.origins], args.horizon)
     else:
         report,_ = run_fixture_report(args.output)
     print(json.dumps({"output":args.output,"fixture_only":report["fixture_only"],
