@@ -1,0 +1,30 @@
+# Dataset-first example. UTC is a processing assumption, NOT a confirmed SCADA timezone.
+# Replace timezone/time_basis when the source clock is known. No dates are hardcoded.
+site:
+  timezone: UTC
+  timestamp_semantics: interval_start
+  time_basis: assumed
+  observation_delay_minutes: 15
+  turbines:
+    - id: turbine_1
+      latitude: 43.645150
+      longitude: 78.535604
+      rated_power_mw: null
+    - id: turbine_2
+      latitude: 43.643198
+      longitude: 78.538828
+      rated_power_mw: null
+weather:
+  provider: noaa_gfs_s3
+  publication_delay_hours: 6
+  max_run_age_hours: 24
+  wind_height_m: 100
+  sample_step_hours: 3
+  max_download_mb_per_run: 250
+  cache_dir: data/weather
+forecast:
+  issue_local_time: '23:00'
+  horizon_hours: 48
+  mode: replay
+storage:
+  database: artifacts/windoracle.sqlite
